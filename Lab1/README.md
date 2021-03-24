@@ -1,2 +1,0 @@
-# Laboratorio 1
-

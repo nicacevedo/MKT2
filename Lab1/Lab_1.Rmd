@@ -260,8 +260,8 @@ Explore brevemente la documentación de la función *lm()* para ver cómo puede 
 
 ```{r preg3}
 
-# ypred <- ...
-# plot(y, ypred)
+ypred <- predict(myreg)
+plot(df$y, ypred,main="y real value vs pred",xlab="y value",ylab="y prediction value")
 ```
 
 Comente brevemente cómo interpreta los resultados.

@@ -194,8 +194,8 @@ Use la función *rnorm()* para definir un dataframe con columnas $x_1$ y $x_2$ d
 set.seed(12)
 
 # Columnas N(0,1)
-x1 <- rnorm(30)
-x2 <- rnorm(30)
+x1 <- rnorm(30, 10, 5)
+x2 <- rnorm(30, 10, 5)
 e  <- rnorm(30)
 
 # Dataframe
@@ -235,8 +235,8 @@ Repita la pregunta 1, pero generando las columnas $x_1$, $x_2$, $\varepsilon$ (y
 set.seed(12)
 
 # Columnas N(0,1)
-x1 <- rnorm(10000)
-x2 <- rnorm(10000)
+x1 <- rnorm(10000, 10, 5)
+x2 <- rnorm(10000, 10, 5)
 e  <- rnorm(10000)
 
 # Dataframe
@@ -254,6 +254,8 @@ summary(myreg)
 
 Comente qué cambia.
 
+Podemos observar que con 30 observaciones los coeficientes de la regresión dan muy distintos a los "teóricos", ya que nuestro set de entrenamiento para el modelo es muy pequeño; en cambio, cuando tenemos 10000 observaciones podemos notar que los coeficientes son casi idénticos a los "terócios", lo que es bastantes esperable, dado que la muestra es muchísimo más grande.
+
 ##### Pregunta 3
 
 Explore brevemente la documentación de la función *lm()* para ver cómo puede rescatar los valores predichos por el modelo de regresión para cada valor de $x_1$ y $x_2$. Llámele *ypred* a este vector y use la función *plot()* para generar un scatter plot de y vs ypred.  
@@ -261,7 +263,10 @@ Explore brevemente la documentación de la función *lm()* para ver cómo puede 
 ```{r preg3}
 
 ypred <- predict(myreg)
-plot(df$y, ypred,main="y real value vs pred",xlab="y value",ylab="y prediction value")
+plot(df$y, ypred,main="Real Value v/s Prediction",xlab="y",ylab="y predicted", asp = c(1,1))
 ```
 
 Comente brevemente cómo interpreta los resultados.
+
+Podemos ver que la clara realción entre el valor real y el predicho, ya que la muestra es lo fuficientemente grande para que los coeficientes fueran casi los reales, lo que nos deja sólo con el error asociado a la "aleatoriedad" (que en nuestro caso es el $\epsilon$) alejándonos un poco del valor real. Aún así, la predicción es bastante cercana a la realidad y obtenemos una figura bastante parecida a una función identidad.
+

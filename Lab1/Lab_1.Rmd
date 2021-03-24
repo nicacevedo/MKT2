@@ -1,6 +1,6 @@
 ---
 title:  'Laboratorio 1. IN5602 - Semestre Primavera 2020'
-author: 'Agregar Nombre'
+author: 'Nicolás Acevedo, Constanza Bastías y Pablo Ubilla'
 date:   '9 de Septiembre de 2020'
 output:
   html_document:

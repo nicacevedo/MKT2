@@ -187,6 +187,7 @@ subset(mi_df, w=="Grupo 2")
 Use la función *rnorm()* para definir un dataframe con columnas $x_1$ y $x_2$ de tamaño 30. Use la misma función para definir tambien una columna de errores normales $\epsilon$. Notar que puede incluir en la función *rnorm()* la media y desviación estándar que desea en sus vectores. Para este caso use la que prefiera, si no le entrega ninguna a la función, por defecto creará datos con media 0 y desviación estándar 1. 
 
 ```{r p1a}
+
 # Definir DataFrame con columnas x1, x2 y e
 
 # Semilla
@@ -229,10 +230,26 @@ Repita la pregunta 1, pero generando las columnas $x_1$, $x_2$, $\varepsilon$ (y
 ```{r p2b}
 
 # definir dataframe con columnas x1, x2 y e 
-# definir df$y = b0 + b1*df$x1 + b2*df$x2 + df$e
-# myreg <- lm()
-#summary(myreg)
 
+# Semilla
+set.seed(12)
+
+# Columnas N(0,1)
+x1 <- rnorm(10000)
+x2 <- rnorm(10000)
+e  <- rnorm(10000)
+
+# Dataframe
+df <- data.frame(x1, x2, e)
+
+# Definir df$y = b0 + b1*df$x1 + b2*df$x2 + df$e
+df$y <- b0 + b1*df$x1 + b2*df$x2 + df$e
+
+# myreg <- lm()
+myreg <- lm(y ~ x1 + x2, df)
+
+#summary(myreg)
+summary(myreg)
 ```
 
 Comente qué cambia.

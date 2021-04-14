@@ -367,7 +367,7 @@ A continuación se emplean 3 modelos de predicción: regresión lineal, knn y ra
 ```{r p2}
 #Corra 1 modelo de regresión lineal y 2 modelos de Machine Learning vistos en la clase con la base de datos reducida,  para predecir el precio de las casas.
 
-train.lm <- train(form = Sale_Price ~ ., #Fórmula
+train.lm <- train(form = ale_Price ~ ., #Fórmula
   data = train, #Datos
   method = "lm", #Algoritmo 
   trControl = trainControl(method = "cv", number = 10) #Method = cross validation, number=10 (k-fold) 
@@ -418,5 +418,13 @@ error.randomf <- test$Sale_Price-test.randomf
 ```{r p3}
 # Comparación de Modelos: Compare los modelos a través de métricas presentadas en el laboratorio. 
 # ¿Cuál es el mejor modelo predictivo?
+
+sales.test <- data.frame(lm=test.lm, knn=test.knn,  rf=test.randomf, sales=test$Sale_Price)
+error.test <- data.frame(lm=error.lm, knn=error.knn, rf=error.randomf)
+
+summary(abs(error.test))
+summary(error.test)
+boxplot(abs(subset(error.test, select=-lm))); title(main="ML models", sub="Forecasting Absolute Errors")
+boxplot(subset(error.test, select=-lm)); title(main="ML models", sub="Forecasting Errors")
 
 ```

@@ -1,0 +1,850 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Laboratorio 2 IN5602 - Semestre Otoño 2021},
+  pdfauthor={Nicolás Acevedo, Constanza Bastías y Pablo Ubilla},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Laboratorio 2 IN5602 - Semestre Otoño 2021}
+\author{Nicolás Acevedo, Constanza Bastías y Pablo Ubilla}
+\date{14 de abril de 2021}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{machine-learning}{%
+\section{Machine Learning}\label{machine-learning}}
+
+Modelos que puedan automáticamente aprender sobre conjuntos de datos y
+su forma funcional. Se puede utiliar un conjunto determinado de
+características para entrenar un algoritmo y extraer información. Estos
+algoritmos pueden clasificarse según la cantidad y el tipo de
+supervisión durante el entrenamiento. Los dos tipos principales en los
+que se enfoca el curso son:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Learners supervisados: construyen modelos predictivos.
+\item
+  Learners no supervisados: construyen modelos descriptivos.
+\end{enumerate}
+
+\textbf{¿Cuándo usar ML?}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Foco en el pronóstico y no en el entendimiento de las relaciones de
+  las variables.
+\item
+  Cuando existen relaciones complejas y no lineales.
+\item
+  Base de datos ``grandes''
+\end{enumerate}
+
+\hypertarget{aprendizaje-supervisado}{%
+\subsection{Aprendizaje supervisado}\label{aprendizaje-supervisado}}
+
+El algoritmo intenta modelar las relaciones entre la variable objetivo
+(variable que se predice, \(Y\)) y los atributos (variables predictoras,
+\(X's\)). Por ejemplo: usar los atributos de una casa (\(X's\)) para
+predecir el precio de venta (\(Y\))
+
+La mayoría de los problemas de aprendizaje supervisado pueden agruparse
+en regresión o clasificación.
+
+\begin{enumerate}
+\def\labelenumi{\alph{enumi})}
+\tightlist
+\item
+  Cuando el objetivo es predecir un resultado numérico, nos referimos a
+  un problema de regresión (no debe confundirse con el modelo de
+  regresión lineal).
+\item
+  Cuando el objetivo es predecir un resultado categórico, nos referimos
+  a un problema de clasificación.
+\end{enumerate}
+
+\hypertarget{aprendizaje-sin-supervisiuxf3n}{%
+\subsection{Aprendizaje sin
+supervisión}\label{aprendizaje-sin-supervisiuxf3n}}
+
+El objetivo es describir los datos, pero a el análisis se realiza sin
+una variable objetivo (\(Y\)). El aprendizaje no supervisado se ocupa de
+identificar grupos en un conjunto de datos. Los grupos pueden estar
+definidos por las unidades (clustering) o por las características.
+
+\hypertarget{divisiuxf3n-de-los-datos}{%
+\subsection{División de los datos}\label{divisiuxf3n-de-los-datos}}
+
+Para dividir los datos podemos usar muestreo aleatorio (Por lo general,
+se divide haciendo ``80-20''o ``70-30'')
+
+\begin{itemize}
+\item
+  Data train: Estos datos se utilizan para desarrollar conjuntos de
+  características, entrenar el algoritmo, comparar modelos.
+\item
+  Data test: Estos datos se utilizan para estimar una evaluación
+  imparcial del rendimiento del modelo.
+\end{itemize}
+
+\hypertarget{desarollo-del-laboratorio}{%
+\section{Desarollo del laboratorio}\label{desarollo-del-laboratorio}}
+
+\hypertarget{enunciado}{%
+\subsection{Enunciado}\label{enunciado}}
+
+Se tiene información sobre ventas de propiedades en EE.UU y se requiere
+utilizar los atributos de estas propiedades para predecir el precio de
+venta de la vivienda.
+
+\begin{itemize}
+\tightlist
+\item
+  Tipo de problema: regresión supervisada (\(Y\) es númerico)
+\item
+  Resultado de interés: \texttt{Sale\_Price} (en dólares)
+\item
+  Características o variables explicativas \(X\): 80
+\item
+  Observaciones: 2.930
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rm}\NormalTok{(}\AttributeTok{list=}\FunctionTok{ls}\NormalTok{())                }\CommentTok{\#Limpia todos los objetos creados en R}
+\FunctionTok{graphics.off}\NormalTok{()           }\CommentTok{\#Limpia los gráficos}
+\FunctionTok{options}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)  }\CommentTok{\#Dígitos después del punto para observar (décimas, centésimas,...)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{12345}\NormalTok{)      }\CommentTok{\#Fijar semilla de aleatoriedad}
+\CommentTok{\# setwd("C:/Users/color/Downloads/Marketing/LAB2\_IN5602") \#Fijar directorio de preferencia}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{paquetes}{%
+\subsubsection{Paquetes}\label{paquetes}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(readr)     }\CommentTok{\#Para leer CSV}
+\FunctionTok{library}\NormalTok{(glmnet)    }\CommentTok{\#Para ajustar modelo lineal}
+\FunctionTok{library}\NormalTok{(corrplot)  }\CommentTok{\#Para realizar correlogramas}
+\FunctionTok{library}\NormalTok{(dplyr)     }\CommentTok{\#Para manipulación de datos}
+\FunctionTok{library}\NormalTok{(ggplot2)   }\CommentTok{\#Para gráficos}
+\FunctionTok{library}\NormalTok{(caret)     }\CommentTok{\#Para validar y entrenar los modelos}
+\FunctionTok{library}\NormalTok{(knitr) }
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{carga-de-datos}{%
+\subsubsection{Carga de datos}\label{carga-de-datos}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Casas }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"Casas.csv"}\NormalTok{)}
+\FunctionTok{kable}\NormalTok{(Casas[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{9}\NormalTok{]) }\CommentTok{\#kable crea una tabla head(Casas) sirve para visualiar la data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.02}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.18}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.09}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.06}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.05}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.09}}@{}}
+\toprule
+X & MS\_SubClass & MS\_Zoning & Lot\_Frontage & Lot\_Area & Street &
+Alley & Lot\_Shape & Land\_Contour \\
+\midrule
+\endhead
+1 & One\_Story\_1946\_and\_Newer\_All\_Styles &
+Residential\_Low\_Density & 141 & 31770 & Pave & No\_Alley\_Access &
+Slightly\_Irregular & Lvl \\
+2 & One\_Story\_1946\_and\_Newer\_All\_Styles &
+Residential\_High\_Density & 80 & 11622 & Pave & No\_Alley\_Access &
+Regular & Lvl \\
+3 & One\_Story\_1946\_and\_Newer\_All\_Styles &
+Residential\_Low\_Density & 81 & 14267 & Pave & No\_Alley\_Access &
+Slightly\_Irregular & Lvl \\
+4 & One\_Story\_1946\_and\_Newer\_All\_Styles &
+Residential\_Low\_Density & 93 & 11160 & Pave & No\_Alley\_Access &
+Regular & Lvl \\
+5 & Two\_Story\_1946\_and\_Newer & Residential\_Low\_Density & 74 &
+13830 & Pave & No\_Alley\_Access & Slightly\_Irregular & Lvl \\
+\bottomrule
+\end{longtable}
+
+\hypertarget{divisiuxf3n-de-los-datos-1}{%
+\subsubsection{División de los datos}\label{divisiuxf3n-de-los-datos-1}}
+
+Vamos a escoger 70\% entrenamiento y 30\% para testeo:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Construimos un vector que esta formado por números de filas aleatoriamente}
+\NormalTok{index }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(Casas), }\AttributeTok{size=} \FunctionTok{nrow}\NormalTok{(Casas)}\SpecialCharTok{*}\FloatTok{0.7}\NormalTok{)}
+\CommentTok{\# Base de entrenamiento: del total de datos, tomamos las filas aletorizadas que tienen datos en index}
+\NormalTok{train }\OtherTok{\textless{}{-}}\NormalTok{ Casas[index, ]}
+\CommentTok{\# Anteponiendo el "{-}" escogemos las filas en de la base que no están en index }
+\NormalTok{test  }\OtherTok{\textless{}{-}}\NormalTok{ Casas[}\SpecialCharTok{{-}}\NormalTok{index, ]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{eda}{%
+\subsubsection{EDA}\label{eda}}
+
+Antes de entrenar un modelo predictivo, o incluso antes de realizar
+cualquier cálculo con un nuevo conjunto de datos, es muy importante
+realizar una exploración descriptiva de los mismos. Este proceso permite
+entender mejor que información contiene cada variable, así como detectar
+posibles errores.
+
+\hypertarget{gruxe1ficos}{%
+\paragraph{Gráficos}\label{gruxe1ficos}}
+
+\hypertarget{variable-de-interuxe9s}{%
+\paragraph{Variable de interés}\label{variable-de-interuxe9s}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{Casas)}\SpecialCharTok{+} \CommentTok{\#Se define un gráfico con ggplot()}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Sale\_Price)}\SpecialCharTok{+} \CommentTok{\#Solo le ingresamos el eje "x" para un histograma}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{col=}\StringTok{"black"}\NormalTok{, }\AttributeTok{fill=}\StringTok{"green"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{) }\CommentTok{\# Se define la forma del gráfico. "col" pinta el contorno, "fill" el entorno y "alpha" entrega transparencia }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/histograma-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data=}\NormalTok{Casas)}\SpecialCharTok{+}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\FunctionTok{log}\NormalTok{(Sale\_Price))}\SpecialCharTok{+}
+  \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{col=}\StringTok{"black"}\NormalTok{, }\AttributeTok{fill=}\StringTok{"green"}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.2}\NormalTok{)}\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Log(Precio de venta)"}\NormalTok{)}\SpecialCharTok{+} \CommentTok{\#Etiqueta para el eje x}
+  \FunctionTok{ylab}\NormalTok{(}\StringTok{"Frecuencia"}\NormalTok{)}\SpecialCharTok{+} \CommentTok{\#Etiqueta para el eje y}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Distribución log(Precio de venta)"}\NormalTok{)}\SpecialCharTok{+} \CommentTok{\#Título del gráfico}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\CommentTok{\#centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/histograma 2-1.pdf}
+
+\hypertarget{variables-explicativas}{%
+\paragraph{Variables explicativas}\label{variables-explicativas}}
+
+Escogemos algunas variables: \texttt{Year\_Built} (Año en que se
+construyó la casa), \texttt{Roof\_Style} (Tipo de techo),
+\texttt{Gr\_Liv\_Area} (espacio habitable total sobre el suelo de una
+casa) y \texttt{Heating\_QC}(Calidad y estado de la calefacción)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#R no siempre interpreta bien la naturaleza de las variables: Roof\_Style y Heating\_QC son factores, pero están como character(string)}
+
+\CommentTok{\#en train}
+\NormalTok{train}\SpecialCharTok{$}\NormalTok{Roof\_Style}\OtherTok{=}\FunctionTok{as.factor}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{Roof\_Style)}
+\NormalTok{train}\SpecialCharTok{$}\NormalTok{Heating\_QC}\OtherTok{=}\FunctionTok{as.factor}\NormalTok{(train}\SpecialCharTok{$}\NormalTok{Heating\_QC)}
+\CommentTok{\#en test}
+\NormalTok{test}\SpecialCharTok{$}\NormalTok{Roof\_Style}\OtherTok{=}\FunctionTok{as.factor}\NormalTok{(test}\SpecialCharTok{$}\NormalTok{Roof\_Style)}
+\NormalTok{test}\SpecialCharTok{$}\NormalTok{Heating\_QC}\OtherTok{=}\FunctionTok{as.factor}\NormalTok{(test}\SpecialCharTok{$}\NormalTok{Heating\_QC)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{year_built}{%
+\subparagraph{\texorpdfstring{\texttt{Year\_Built}}{Year\_Built}}\label{year_built}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(gridExtra) }\CommentTok{\#Para unir gráficas}
+\NormalTok{g1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(Casas) }\SpecialCharTok{+}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Year\_Built, }\AttributeTok{y=}\NormalTok{Sale\_Price) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size=}\DecValTok{1}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.4}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#"size" aumenta el tamaño de los puntos, "alpha" da transparencia}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se=}\ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Agregamos un ajuste no lineal sobre los puntos. "se" integra errores estándares}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Año de construcción"}\NormalTok{)}
+
+
+\NormalTok{g2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(Casas) }\SpecialCharTok{+}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Year\_Built, }\AttributeTok{y=}\NormalTok{Sale\_Price) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{alpha =}\NormalTok{ .}\DecValTok{4}\NormalTok{) }\SpecialCharTok{+} 
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\#Agregamos un ajuste lineal sobre los puntos.}
+  \FunctionTok{scale\_y\_log10}\NormalTok{() }\SpecialCharTok{+} \CommentTok{\# "scale\_y\_log10" transforma el eje "y" a logaritmo.}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Año de construcción"}\NormalTok{) }
+
+\FunctionTok{grid.arrange}\NormalTok{(g1, g2, }\AttributeTok{nrow =} \DecValTok{1}\NormalTok{) }\CommentTok{\#une las  gráficas. }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/Gráfico de dispersión-1.pdf}
+
+\hypertarget{gr_liv_area-seguxfan-heating_qc}{%
+\subparagraph{\texorpdfstring{\texttt{Gr\_Liv\_Area} según
+\texttt{Heating\_QC}}{Gr\_Liv\_Area según Heating\_QC}}\label{gr_liv_area-seguxfan-heating_qc}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(Casas) }\SpecialCharTok{+}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Gr\_Liv\_Area, }\AttributeTok{y=}\NormalTok{Sale\_Price, }\AttributeTok{col=}\NormalTok{Heating\_QC)}\SpecialCharTok{+} \CommentTok{\#Se agrega una dimensión de colores "col".}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size=}\DecValTok{1}\NormalTok{, }\AttributeTok{alpha=}\FloatTok{0.4}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{se=}\ConstantTok{FALSE}\NormalTok{, }\AttributeTok{method=}\StringTok{"lm"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{xlab}\NormalTok{(}\StringTok{"Espacio habitable"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\hypertarget{roof_style}{%
+\subparagraph{\texorpdfstring{\texttt{Roof\_Style}}{Roof\_Style}}\label{roof_style}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(Casas) }\SpecialCharTok{+}
+  \FunctionTok{aes}\NormalTok{(}\AttributeTok{x=}\NormalTok{Roof\_Style, }\AttributeTok{y=}\FunctionTok{log}\NormalTok{(Sale\_Price)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{(}\AttributeTok{alpha=}\FloatTok{0.4}\NormalTok{, }\AttributeTok{fill=}\StringTok{"black"}\NormalTok{) }\CommentTok{\#cambiamos el tipo de gráfico}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{regresiuxf3n-lineal}{%
+\subsection{Regresión Lineal}\label{regresiuxf3n-lineal}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{train.lm }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}\AttributeTok{form =}\NormalTok{ Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }\CommentTok{\#Fórmula}
+  \AttributeTok{data =}\NormalTok{ train, }\CommentTok{\#Datos}
+  \AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\CommentTok{\#Algoritmo }
+  \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{10}\NormalTok{) }\CommentTok{\#Method = cross validation, number=10 (k{-}fold) }
+\NormalTok{)}
+
+\NormalTok{test.lm  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.lm , }\AttributeTok{newdata=}\NormalTok{test) }\CommentTok{\#Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)}
+\NormalTok{error.lm }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.lm }\CommentTok{\#Calcular los errores de predicción (dato real {-} dato estimado)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{mars}{%
+\subsection{MARS}\label{mars}}
+
+Este algoritmo no asume una forma funcional de los datos, toma las
+variables \(X\) y trata de ``formar'' funciones no lineales e
+interacciones que se ajusten a los datos. Las no linealidades e
+interacciones se van ``ajustando'' a una función escalonada o por tramos
+donde el objetivo es encontrar puntos de cortes o ``knots'' que se
+adecuan de mejor forma a los datos. Luego de haber de encontrado muchos
+``knots'', el algoritmo realiza una ``limpieza'' donde se eliminan
+puntos que no contribuyen significativamente a la precisión predictiva
+(redundantes). Este proceso se le llama poda.
+
+\includegraphics{3.png}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Ejecutar MARS (Multivariate adaptive regression spline)}
+\NormalTok{train.mars }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}\AttributeTok{form =}\NormalTok{ Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
+                    \AttributeTok{data=}\NormalTok{train, }
+                    \AttributeTok{method=}\StringTok{"earth"}\NormalTok{, }\CommentTok{\#MARS}
+                    \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                    \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{), }\CommentTok{\#Pre{-}procesa datos. "center" resta el promedio de las variables, "scale" las divide por la desviación estandar. Esto ayuda para el tratamiento de outliers.}
+                    \AttributeTok{tuneLength =} \DecValTok{5} \CommentTok{\#Indica que pruebe diferentes valores por default para el parámetro principal}
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(train.mars)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Multivariate Adaptive Regression Spline 
+## 
+## 2051 samples
+##    4 predictor
+## 
+## Pre-processing: centered (11), scaled (11) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 1847, 1846, 1845, 1844, 1845, 1846, ... 
+## Resampling results across tuning parameters:
+## 
+##   nprune  RMSE   Rsquared  MAE  
+##   2       56407  0.510     38929
+##   3       47313  0.655     32514
+##   5       46666  0.671     30947
+##   6       44557  0.700     29511
+##   8       44748  0.702     29549
+## 
+## Tuning parameter 'degree' was held constant at a value of 1
+## RMSE was used to select the optimal model using the smallest value.
+## The final values used for the model were nprune = 6 and degree = 1.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(train.mars)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.mars  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.mars, }\AttributeTok{newdata=}\NormalTok{test) }\CommentTok{\#Vector de datos predichos }
+\NormalTok{error.mars }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.mars }\CommentTok{\#(dato real {-} dato estimado)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{k-nearest-neighbors}{%
+\subsection{K-Nearest Neighbors}\label{k-nearest-neighbors}}
+
+Es un algoritmo en el que cada observación se predice en función de su
+``similitud'' con otras observaciones y luego usa el valor de respuesta
+media de k observaciones como el resultado previsto. Para medir
+``similitud'' usamos métricas (distancias) en el espacio
+\(\mathcal{R}^j\). Para dos observaciones \(i\) y \(n\), \(J\)
+predictores, tenemos la métricas:
+
+\[\sqrt{\sum_{j=1}^J (X_{ij}-X_{nj})^2} \hspace{.5 cm} \text{(Métrica Eucliadiana)}\]
+
+\[\sum_{j=1}^J |X_{ij}-X_{nj}| \hspace{.5 cm} \text{(Métrica Manhattan)}\]
+
+\[\left(\sum_{j=1}^J |X_{ij}-X_{nj}|^{p}\right)^{1/p} \hspace{.5 cm} \text{(Métrica Minkowski)}\]
+Al encontrar los k-vecinos más cercanos, ponderamos sus resultados
+(\(Y\)):
+
+\[\hat{Y}_i=w_1Y_{1,i}+...+w_kY_{k,i}\]
+
+Si utilizamos ponderaciones \(w_k\) que no son iguales (ese caso es
+\(w_k=1/k\)), puntos cercanos deberían pesar más que puntos lejanos.
+
+\includegraphics{4.png}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Ejecutar KNN}
+\NormalTok{train.knn }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
+                   \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"knn"}\NormalTok{,  }
+                   \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                   \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
+                   \AttributeTok{tuneLength =} \DecValTok{5} 
+\NormalTok{)}
+
+\FunctionTok{print}\NormalTok{(train.knn)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## k-Nearest Neighbors 
+## 
+## 2051 samples
+##    4 predictor
+## 
+## Pre-processing: centered (11), scaled (11) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 1846, 1847, 1846, 1845, 1846, 1845, ... 
+## Resampling results across tuning parameters:
+## 
+##   k   RMSE   Rsquared  MAE  
+##    5  41168  0.740     27443
+##    7  40575  0.746     27071
+##    9  40271  0.749     26946
+##   11  40230  0.749     26801
+##   13  40483  0.746     26826
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was k = 11.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(train.knn)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.knn  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.knn, }\AttributeTok{newdata=}\NormalTok{test) }
+\NormalTok{error.knn }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.knn}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{cart}{%
+\subsection{CART}\label{cart}}
+
+Modelo basado en árboles de regresión - algoritmo no paramétrico - se
+utiliza cuando hay múltiples regresores. Divide el espacio de las
+características (\(X\)) según particiones binarias dada alguna regla de
+condición. De esto van resultando regiones más pequeñas.
+
+El objetivo en cada nodo es encontrar la ``mejor'' característica
+(\(X_j\)) para dividir los datos restantes en una de dos regiones
+(\(R_1\) y \(R_2\)) de manera que el error general entre la respuesta
+real (\(Y\)) y la constante predicha (\(c\)) se minimiza. Para problemas
+de regresión, la función objetivo a minimizar es el \(SSE\) (suma de
+cuadrados residuales) total.
+
+\[SSE=\sum_{i\in R_1} (y_i-c_1)^2 + \sum_{i\in R_2} (y_i-c_2)^2 \]
+\includegraphics{5.png}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Ejecutar CART (Classification and Regression Trees)}
+\NormalTok{train.cart }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
+                    \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"rpart2"}\NormalTok{,  }
+                    \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                    \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
+                    \AttributeTok{tuneLength =} \DecValTok{5}
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(train.cart)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## CART 
+## 
+## 2051 samples
+##    4 predictor
+## 
+## Pre-processing: centered (11), scaled (11) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 1846, 1848, 1845, 1847, 1845, 1846, ... 
+## Resampling results across tuning parameters:
+## 
+##   maxdepth  RMSE   Rsquared  MAE  
+##   1         64227  0.366     44315
+##   2         55454  0.526     38751
+##   3         53319  0.562     37587
+##   4         52069  0.583     36415
+##   5         45363  0.681     31887
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was maxdepth = 5.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(train.cart)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.cart  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.cart, }\AttributeTok{newdata=}\NormalTok{test)}
+\NormalTok{error.cart }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.cart }
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{random-forest}{%
+\subsection{Random Forest}\label{random-forest}}
+
+Random Forest se construye utilizando los principios fundamentales de
+los árboles de regresión y el bagging. Este úlimo, genera múltiples
+muestras de los datos y las agrega a los múltiples árboles de regresión.
+Pero al construir estos árboles de decisión se debe elegir una muestra
+aleatoria de predictores\(X\) (llamados \(mtry\)).Esta agregación reduce
+la variación del procedimiento general y da como resultado un mejor
+rendimiento predictivo.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Ejecutar Random Forest}
+\NormalTok{train.randomf }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
+                       \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"rf"}\NormalTok{,  }
+                       \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                       \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
+                       \AttributeTok{tuneLength =} \DecValTok{5} 
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(train.randomf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Random Forest 
+## 
+## 2051 samples
+##    4 predictor
+## 
+## Pre-processing: centered (11), scaled (11) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 1845, 1846, 1847, 1845, 1846, 1846, ... 
+## Resampling results across tuning parameters:
+## 
+##   mtry  RMSE   Rsquared  MAE  
+##    2    47824  0.711     32036
+##    4    40078  0.761     26617
+##    6    38666  0.772     25460
+##    8    38962  0.769     25629
+##   11    39593  0.763     26043
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was mtry = 6.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(train.randomf)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.randomf  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.randomf, }\AttributeTok{newdata=}\NormalTok{test) }
+\NormalTok{error.randomf }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.randomf}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{comparaciuxf3n-de-modelos}{%
+\subsection{Comparación de modelos}\label{comparaciuxf3n-de-modelos}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sales.test }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{lm=}\NormalTok{test.lm, }\AttributeTok{mars=}\FunctionTok{unname}\NormalTok{(test.mars),  }\AttributeTok{knn=}\NormalTok{test.knn,  }\AttributeTok{cart=}\NormalTok{test.cart,  }\AttributeTok{rf=}\NormalTok{test.randomf, }\AttributeTok{sales=}\NormalTok{test}\SpecialCharTok{$}\NormalTok{Sale\_Price)}
+\NormalTok{error.test }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{lm=}\NormalTok{error.lm, }\AttributeTok{mars=}\FunctionTok{unname}\NormalTok{(error.mars), }\AttributeTok{knn=}\NormalTok{error.knn, }\AttributeTok{cart=}\NormalTok{error.cart, }\AttributeTok{rf=}\NormalTok{error.randomf)}
+
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{abs}\NormalTok{(error.test))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        lm              mars             knn              cart       
+##  Min.   :    31   Min.   :   109   Min.   :     9   Min.   :    13  
+##  1st Qu.:  9891   1st Qu.:  9433   1st Qu.:  8000   1st Qu.: 10387  
+##  Median : 22802   Median : 20667   Median : 19077   Median : 23566  
+##  Mean   : 30386   Mean   : 28870   Mean   : 27700   Mean   : 32816  
+##  3rd Qu.: 40731   3rd Qu.: 38102   3rd Qu.: 36841   3rd Qu.: 43279  
+##  Max.   :475711   Max.   :439686   Max.   :306721   Max.   :276079  
+##        rf        
+##  Min.   :   191  
+##  1st Qu.:  7625  
+##  Median : 17177  
+##  Mean   : 25016  
+##  3rd Qu.: 33002  
+##  Max.   :279007
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(error.test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        lm               mars              knn               cart        
+##  Min.   :-475711   Min.   :-439686   Min.   :-306721   Min.   :-235019  
+##  1st Qu.: -26428   1st Qu.: -22404   1st Qu.: -23082   1st Qu.: -30352  
+##  Median :  -3344   Median :  -2192   Median :  -3282   Median :  -4574  
+##  Mean   :  -3070   Mean   :  -2374   Mean   :  -2287   Mean   :  -3593  
+##  3rd Qu.:  18394   3rd Qu.:  17228   3rd Qu.:  14475   3rd Qu.:  18398  
+##  Max.   : 212784   Max.   : 213843   Max.   : 258964   Max.   : 276079  
+##        rf         
+##  Min.   :-279007  
+##  1st Qu.: -21182  
+##  Median :  -3466  
+##  Mean   :  -2657  
+##  3rd Qu.:  11921  
+##  Max.   : 193396
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{subset}\NormalTok{(error.test, }\AttributeTok{select=}\SpecialCharTok{{-}}\NormalTok{lm))); }\FunctionTok{title}\NormalTok{(}\AttributeTok{main=}\StringTok{"ML models"}\NormalTok{, }\AttributeTok{sub=}\StringTok{"Forecasting Absolute Errors"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(error.test, }\AttributeTok{select=}\SpecialCharTok{{-}}\NormalTok{lm)); }\FunctionTok{title}\NormalTok{(}\AttributeTok{main=}\StringTok{"ML models"}\NormalTok{, }\AttributeTok{sub=}\StringTok{"Forecasting Errors"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-8-2.pdf}
+
+\hypertarget{preguntas}{%
+\subsection{Preguntas}\label{preguntas}}
+
+\hypertarget{pregunta-1}{%
+\subsubsection{Pregunta 1}\label{pregunta-1}}
+
+Para esta pregunta se escogen atributos 10 (variables explicativas) que
+puedan ser predictoras del precio de las casa. Se escogen entonces
+\emph{Street, Lot\_Shape, Exter\_Cond, Central\_Air, Garage\_Area,
+Kitchen\_Qual, Year\_Built, Gr\_Liv\_Area, Roof\_Style} y
+\emph{Heating\_QC}.
+
+¿ Por qué podrían ser útiles \emph{Garage\_Area, Kitchen\_Qual} y
+\emph{Exter\_Cond}?
+
+\begin{itemize}
+\item
+  \emph{Garage\_Area}: El sólo hecho de que una casa cuente con un
+  garage suele implicar que la casa tenga un alto precio. Es necesario
+  que esta sea de un tamaño considerable (en la mayoría de los casos en
+  USA) para contar con un garage. En cuanto al área de este, mientras
+  mayor es, significa que tiene capacidad para más vehículos (u otros
+  objetos), lo que implica que la casa también debe ser mayor para poder
+  dar el paso a un garage de mayor tamaño. Dicho esto, es esperable que
+  a mayor área de garage, el precio de las casas sea mayor.
+\item
+  \emph{Kitchen\_Qual}: \emph{Este atributo es similar al anterior en el
+  sentido de que una mayor calidad en la cocina implica que está
+  apuntando a personas de mayores recursos, no a personas que sólo
+  buscan una casa con cocina funcional, por lo que puede esperarce que a
+  mayor calidad en la cocina, mayor sea el precio de la casa.}
+\item
+  \emph{Exter\_Cond}: Si la condición actual de la parte exterior de la
+  casa no es óptima, es esperable que los precios de las casas sean
+  menores, mientras que en una condición óptima sean mayores, ya que
+  está directamente relacioando con la calidad de lo que se está
+  comprando y no se pagarán precios altos por algo de mala calidad.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Construcción de la sub{-}base}
+
+\NormalTok{Casas }\OtherTok{\textless{}{-}}\NormalTok{ Casas[,}\FunctionTok{c}\NormalTok{(}\StringTok{"Street"}\NormalTok{, }\StringTok{"Lot\_Shape"}\NormalTok{, }\StringTok{"Exter\_Cond"}\NormalTok{, }\StringTok{"Central\_Air"}\NormalTok{, }\StringTok{"Garage\_Area"}\NormalTok{, }\StringTok{"Kitchen\_Qual"}\NormalTok{, }\StringTok{"Year\_Built"}\NormalTok{, }\StringTok{"Gr\_Liv\_Area"}\NormalTok{, }\StringTok{"Roof\_Style"}\NormalTok{, }\StringTok{"Heating\_QC"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{pregunta-2}{%
+\subsubsection{Pregunta 2}\label{pregunta-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Corra 1 modelo de regresión lineal y 2 modelos de Machine Learning vistos en la clase con la base de datos reducida,  para predecir el precio de las casas.}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{pregunta-3}{%
+\subsubsection{Pregunta 3}\label{pregunta-3}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Comparación de Modelos: Compare los modelos a través de métricas presentadas en el laboratorio. }
+\CommentTok{\# ¿Cuál es el mejor modelo predictivo?}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

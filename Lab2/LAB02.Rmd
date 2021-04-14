@@ -196,7 +196,7 @@ ggplot(Casas) +
 train.lm <- train(form = Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, #Fórmula
   data = train, #Datos
   method = "lm", #Algoritmo 
-  trControl = trainControl(method = "cv", number = 10) #Method = cross validation, number=10 (k-fold) 
+  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
 )
 
 test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
@@ -216,7 +216,7 @@ Este algoritmo no asume una forma funcional de los datos, toma las variables $X$
 train.mars <- train(form = Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
                     data=train, 
                     method="earth", #MARS
-                    trControl = trainControl("cv", number=10),
+                    trControl = trainControl("cv", number=5),
                     preProcess = c("center","scale"), #Pre-procesa datos. "center" resta el promedio de las variables, "scale" las divide por la desviación estandar. Esto ayuda para el tratamiento de outliers.
                     tuneLength = 5 #Indica que pruebe diferentes valores por default para el parámetro principal
 )
@@ -247,7 +247,7 @@ Si utilizamos ponderaciones $w_k$ que no son iguales (ese caso es $w_k=1/k$), pu
 ### Ejecutar KNN
 train.knn <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
                    data=train, method="knn",  
-                   trControl = trainControl("cv", number=10),
+                   trControl = trainControl("cv", number=5),
                    preProcess = c("center","scale"),
                    tuneLength = 5 
 )
@@ -271,7 +271,7 @@ $$SSE=\sum_{i\in R_1} (y_i-c_1)^2 + \sum_{i\in R_2} (y_i-c_2)^2 $$ ![](5.png)
 ### Ejecutar CART (Classification and Regression Trees)
 train.cart <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
                     data=train, method="rpart2",  
-                    trControl = trainControl("cv", number=10),
+                    trControl = trainControl("cv", number=5),
                     preProcess = c("center","scale"),
                     tuneLength = 5
 )
@@ -290,7 +290,7 @@ Random Forest se construye utilizando los principios fundamentales de los árbol
 ### Ejecutar Random Forest
 train.randomf <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
                        data=train, method="rf",  
-                       trControl = trainControl("cv", number=10),
+                       trControl = trainControl("cv", number=5),
                        preProcess = c("center","scale"),
                        tuneLength = 5 
 )
@@ -331,7 +331,7 @@ Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan s
 ```{r p1}
 # Construcción de la sub-base
 
-Casas <- Casas[,c("Street", "Lot_Shape", "Exter_Cond", "Central_Air", "Garage_Area", "Kitchen_Qual", "Year_Built", "Gr_Liv_Area", "Roof_Style", "Heating_QC")]
+Casas <- Casas[,c("Sale_Price", "Street", "Lot_Shape", "Exter_Cond", "Central_Air", "Garage_Area", "Kitchen_Qual", "Year_Built", "Gr_Liv_Area", "Roof_Style", "Heating_QC")]
 
 # Para evitar problemas pasamos los atributos de tipo
 # categóricos a factores
@@ -341,6 +341,9 @@ for (col in colnames(Casas)){
     Casas[[col]] <- as.factor(Casas[[col]])
   }
 }
+
+#Pasamos la variable dependiente (Sales Prices) a numerica
+Casas$Sale_Price = as.numeric(Casas$Sale_Price)
 
 # Vemos las descripciones de los atributos
 str(Casas)
@@ -367,15 +370,15 @@ A continuación se emplean 3 modelos de predicción: regresión lineal, knn y ra
 ```{r p2}
 #Corra 1 modelo de regresión lineal y 2 modelos de Machine Learning vistos en la clase con la base de datos reducida,  para predecir el precio de las casas.
 
-train.lm <- train(form = ale_Price ~ ., #Fórmula
+train.lm <- train(form = Sale_Price ~ ., #Fórmula
   data = train, #Datos
   method = "lm", #Algoritmo 
-  trControl = trainControl(method = "cv", number = 10) #Method = cross validation, number=10 (k-fold) 
+  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
 )
 print(train.lm)
-ggplot(train.lm)
 test.lm  <- predict(train.lm, newdata=test) 
 error.lm <- test$Sale_Price-test.lm
+
 ```
 
 ##### KNN
@@ -385,7 +388,7 @@ error.lm <- test$Sale_Price-test.lm
 ### Ejecutar KNN
 train.knn <- train(Sale_Price ~ ., 
                    data=train, method="knn",  
-                   trControl = trainControl("cv", number=10),
+                   trControl = trainControl("cv", number=5),
                    preProcess = c("center","scale"),
                    tuneLength = 5 
 )
@@ -402,7 +405,7 @@ error.knn <- test$Sale_Price-test.knn
 ### Ejecutar Random Forest
 train.randomf <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
                        data=train, method="rf",  
-                       trControl = trainControl("cv", number=10),
+                       trControl = trainControl("cv", number=5),
                        preProcess = c("center","scale"),
                        tuneLength = 5 
 )

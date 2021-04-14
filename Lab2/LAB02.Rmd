@@ -332,6 +332,18 @@ Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan s
 # Construcción de la sub-base
 
 Casas <- Casas[,c("Street", "Lot_Shape", "Exter_Cond", "Central_Air", "Garage_Area", "Kitchen_Qual", "Year_Built", "Gr_Liv_Area", "Roof_Style", "Heating_QC")]
+
+# Para evitar problemas pasamos los atributos de tipo
+# categóricos a factores
+for (col in colnames(Casas)){
+  # Si no forma parte de los numéricos
+  if (!col %in% c("Garage_Area", "Gr_Liv_Area")){
+    Casas[[col]] <- as.factor(Casas[[col]])
+  }
+}
+
+# Vemos las descripciones de los atributos
+str(Casas)
 ```
 
 ```{r}

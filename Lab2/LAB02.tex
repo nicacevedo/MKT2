@@ -6,8 +6,8 @@
 ]{article}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -109,7 +109,7 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
@@ -432,7 +432,7 @@ casa) y \texttt{Heating\_QC}(Calidad y estado de la calefacción)
 \NormalTok{train.lm }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}\AttributeTok{form =}\NormalTok{ Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }\CommentTok{\#Fórmula}
   \AttributeTok{data =}\NormalTok{ train, }\CommentTok{\#Datos}
   \AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\CommentTok{\#Algoritmo }
-  \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{10}\NormalTok{) }\CommentTok{\#Method = cross validation, number=10 (k{-}fold) }
+  \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{5}\NormalTok{) }\CommentTok{\#Method = cross validation, number=10 (k{-}fold) }
 \NormalTok{)}
 
 \NormalTok{test.lm  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.lm , }\AttributeTok{newdata=}\NormalTok{test) }\CommentTok{\#Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)}
@@ -461,7 +461,7 @@ puntos que no contribuyen significativamente a la precisión predictiva
 \NormalTok{train.mars }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}\AttributeTok{form =}\NormalTok{ Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
                     \AttributeTok{data=}\NormalTok{train, }
                     \AttributeTok{method=}\StringTok{"earth"}\NormalTok{, }\CommentTok{\#MARS}
-                    \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                    \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{5}\NormalTok{),}
                     \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{), }\CommentTok{\#Pre{-}procesa datos. "center" resta el promedio de las variables, "scale" las divide por la desviación estandar. Esto ayuda para el tratamiento de outliers.}
                     \AttributeTok{tuneLength =} \DecValTok{5} \CommentTok{\#Indica que pruebe diferentes valores por default para el parámetro principal}
 \NormalTok{)}
@@ -476,20 +476,20 @@ puntos que no contribuyen significativamente a la precisión predictiva
 ##    4 predictor
 ## 
 ## Pre-processing: centered (11), scaled (11) 
-## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 1847, 1846, 1845, 1844, 1845, 1846, ... 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1641, 1641, 1642, 1639, 1641 
 ## Resampling results across tuning parameters:
 ## 
 ##   nprune  RMSE   Rsquared  MAE  
-##   2       56407  0.510     38929
-##   3       47313  0.655     32514
-##   5       46666  0.671     30947
-##   6       44557  0.700     29511
-##   8       44748  0.702     29549
+##   2       56457  0.508     38925
+##   3       47455  0.653     32511
+##   5       47031  0.666     30742
+##   6       45222  0.690     29631
+##   8       44632  0.698     29577
 ## 
 ## Tuning parameter 'degree' was held constant at a value of 1
 ## RMSE was used to select the optimal model using the smallest value.
-## The final values used for the model were nprune = 6 and degree = 1.
+## The final values used for the model were nprune = 8 and degree = 1.
 \end{verbatim}
 
 \begin{Shaded}
@@ -537,7 +537,7 @@ Si utilizamos ponderaciones \(w_k\) que no son iguales (ese caso es
 \DocumentationTok{\#\#\# Ejecutar KNN}
 \NormalTok{train.knn }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
                    \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"knn"}\NormalTok{,  }
-                   \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                   \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{5}\NormalTok{),}
                    \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
                    \AttributeTok{tuneLength =} \DecValTok{5} 
 \NormalTok{)}
@@ -553,16 +553,16 @@ Si utilizamos ponderaciones \(w_k\) que no son iguales (ese caso es
 ##    4 predictor
 ## 
 ## Pre-processing: centered (11), scaled (11) 
-## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 1846, 1847, 1846, 1845, 1846, 1845, ... 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1639, 1642, 1641, 1641, 1641 
 ## Resampling results across tuning parameters:
 ## 
 ##   k   RMSE   Rsquared  MAE  
-##    5  41168  0.740     27443
-##    7  40575  0.746     27071
-##    9  40271  0.749     26946
-##   11  40230  0.749     26801
-##   13  40483  0.746     26826
+##    5  41606  0.737     27524
+##    7  41355  0.737     27230
+##    9  40698  0.746     26965
+##   11  40571  0.747     26790
+##   13  40758  0.744     26969
 ## 
 ## RMSE was used to select the optimal model using the smallest value.
 ## The final value used for the model was k = 11.
@@ -606,7 +606,7 @@ cuadrados residuales) total.
 \DocumentationTok{\#\#\# Ejecutar CART (Classification and Regression Trees)}
 \NormalTok{train.cart }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
                     \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"rpart2"}\NormalTok{,  }
-                    \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                    \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{5}\NormalTok{),}
                     \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
                     \AttributeTok{tuneLength =} \DecValTok{5}
 \NormalTok{)}
@@ -621,16 +621,16 @@ cuadrados residuales) total.
 ##    4 predictor
 ## 
 ## Pre-processing: centered (11), scaled (11) 
-## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 1846, 1848, 1845, 1847, 1845, 1846, ... 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1641, 1641, 1641, 1640, 1641 
 ## Resampling results across tuning parameters:
 ## 
 ##   maxdepth  RMSE   Rsquared  MAE  
-##   1         64227  0.366     44315
-##   2         55454  0.526     38751
-##   3         53319  0.562     37587
-##   4         52069  0.583     36415
-##   5         45363  0.681     31887
+##   1         64280  0.362     44313
+##   2         55602  0.527     38800
+##   3         54264  0.550     38025
+##   4         52028  0.587     36498
+##   5         46730  0.668     32660
 ## 
 ## RMSE was used to select the optimal model using the smallest value.
 ## The final value used for the model was maxdepth = 5.
@@ -667,7 +667,7 @@ rendimiento predictivo.
 \DocumentationTok{\#\#\# Ejecutar Random Forest}
 \NormalTok{train.randomf }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
                        \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"rf"}\NormalTok{,  }
-                       \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{10}\NormalTok{),}
+                       \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{5}\NormalTok{),}
                        \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
                        \AttributeTok{tuneLength =} \DecValTok{5} 
 \NormalTok{)}
@@ -682,16 +682,16 @@ rendimiento predictivo.
 ##    4 predictor
 ## 
 ## Pre-processing: centered (11), scaled (11) 
-## Resampling: Cross-Validated (10 fold) 
-## Summary of sample sizes: 1845, 1846, 1847, 1845, 1846, 1846, ... 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1641, 1640, 1641, 1641, 1641 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  RMSE   Rsquared  MAE  
-##    2    47824  0.711     32036
-##    4    40078  0.761     26617
-##    6    38666  0.772     25460
-##    8    38962  0.769     25629
-##   11    39593  0.763     26043
+##    2    48138  0.706     32177
+##    4    40339  0.756     26781
+##    6    38848  0.767     25656
+##    8    39065  0.764     25935
+##   11    39689  0.757     26369
 ## 
 ## RMSE was used to select the optimal model using the smallest value.
 ## The final value used for the model was mtry = 6.
@@ -726,19 +726,19 @@ rendimiento predictivo.
 
 \begin{verbatim}
 ##        lm              mars             knn              cart       
-##  Min.   :    31   Min.   :   109   Min.   :     9   Min.   :    13  
-##  1st Qu.:  9891   1st Qu.:  9433   1st Qu.:  8000   1st Qu.: 10387  
-##  Median : 22802   Median : 20667   Median : 19077   Median : 23566  
-##  Mean   : 30386   Mean   : 28870   Mean   : 27700   Mean   : 32816  
-##  3rd Qu.: 40731   3rd Qu.: 38102   3rd Qu.: 36841   3rd Qu.: 43279  
-##  Max.   :475711   Max.   :439686   Max.   :306721   Max.   :276079  
+##  Min.   :    31   Min.   :   133   Min.   :     9   Min.   :    13  
+##  1st Qu.:  9891   1st Qu.: 10146   1st Qu.:  8000   1st Qu.: 10387  
+##  Median : 22802   Median : 21413   Median : 19077   Median : 23566  
+##  Mean   : 30386   Mean   : 28767   Mean   : 27700   Mean   : 32816  
+##  3rd Qu.: 40731   3rd Qu.: 37686   3rd Qu.: 36841   3rd Qu.: 43279  
+##  Max.   :475711   Max.   :444038   Max.   :306721   Max.   :276079  
 ##        rf        
-##  Min.   :   191  
-##  1st Qu.:  7625  
-##  Median : 17177  
-##  Mean   : 25016  
-##  3rd Qu.: 33002  
-##  Max.   :279007
+##  Min.   :    47  
+##  1st Qu.:  7455  
+##  Median : 17461  
+##  Mean   : 25058  
+##  3rd Qu.: 33158  
+##  Max.   :279300
 \end{verbatim}
 
 \begin{Shaded}
@@ -749,19 +749,19 @@ rendimiento predictivo.
 
 \begin{verbatim}
 ##        lm               mars              knn               cart        
-##  Min.   :-475711   Min.   :-439686   Min.   :-306721   Min.   :-235019  
-##  1st Qu.: -26428   1st Qu.: -22404   1st Qu.: -23082   1st Qu.: -30352  
-##  Median :  -3344   Median :  -2192   Median :  -3282   Median :  -4574  
-##  Mean   :  -3070   Mean   :  -2374   Mean   :  -2287   Mean   :  -3593  
-##  3rd Qu.:  18394   3rd Qu.:  17228   3rd Qu.:  14475   3rd Qu.:  18398  
-##  Max.   : 212784   Max.   : 213843   Max.   : 258964   Max.   : 276079  
+##  Min.   :-475711   Min.   :-444038   Min.   :-306721   Min.   :-235019  
+##  1st Qu.: -26428   1st Qu.: -24660   1st Qu.: -23082   1st Qu.: -30352  
+##  Median :  -3344   Median :  -2154   Median :  -3282   Median :  -4574  
+##  Mean   :  -3070   Mean   :  -2542   Mean   :  -2287   Mean   :  -3593  
+##  3rd Qu.:  18394   3rd Qu.:  18052   3rd Qu.:  14475   3rd Qu.:  18398  
+##  Max.   : 212784   Max.   : 207689   Max.   : 258964   Max.   : 276079  
 ##        rf         
-##  Min.   :-279007  
-##  1st Qu.: -21182  
-##  Median :  -3466  
-##  Mean   :  -2657  
-##  3rd Qu.:  11921  
-##  Max.   : 193396
+##  Min.   :-279300  
+##  1st Qu.: -21392  
+##  Median :  -4189  
+##  Mean   :  -2688  
+##  3rd Qu.:  11949  
+##  Max.   : 193366
 \end{verbatim}
 
 \begin{Shaded}
@@ -823,9 +823,42 @@ Kitchen\_Qual, Year\_Built, Gr\_Liv\_Area, Roof\_Style} y
 \begin{Highlighting}[]
 \CommentTok{\# Construcción de la sub{-}base}
 
-\NormalTok{Casas }\OtherTok{\textless{}{-}}\NormalTok{ Casas[,}\FunctionTok{c}\NormalTok{(}\StringTok{"Street"}\NormalTok{, }\StringTok{"Lot\_Shape"}\NormalTok{, }\StringTok{"Exter\_Cond"}\NormalTok{, }\StringTok{"Central\_Air"}\NormalTok{, }\StringTok{"Garage\_Area"}\NormalTok{, }\StringTok{"Kitchen\_Qual"}\NormalTok{, }\StringTok{"Year\_Built"}\NormalTok{, }\StringTok{"Gr\_Liv\_Area"}\NormalTok{, }\StringTok{"Roof\_Style"}\NormalTok{, }\StringTok{"Heating\_QC"}\NormalTok{)]}
+\NormalTok{Casas }\OtherTok{\textless{}{-}}\NormalTok{ Casas[,}\FunctionTok{c}\NormalTok{(}\StringTok{"Sale\_Price"}\NormalTok{, }\StringTok{"Street"}\NormalTok{, }\StringTok{"Lot\_Shape"}\NormalTok{, }\StringTok{"Exter\_Cond"}\NormalTok{, }\StringTok{"Central\_Air"}\NormalTok{, }\StringTok{"Garage\_Area"}\NormalTok{, }\StringTok{"Kitchen\_Qual"}\NormalTok{, }\StringTok{"Year\_Built"}\NormalTok{, }\StringTok{"Gr\_Liv\_Area"}\NormalTok{, }\StringTok{"Roof\_Style"}\NormalTok{, }\StringTok{"Heating\_QC"}\NormalTok{)]}
+
+\CommentTok{\# Para evitar problemas pasamos los atributos de tipo}
+\CommentTok{\# categóricos a factores}
+\ControlFlowTok{for}\NormalTok{ (col }\ControlFlowTok{in} \FunctionTok{colnames}\NormalTok{(Casas))\{}
+  \CommentTok{\# Si no forma parte de los numéricos }
+  \ControlFlowTok{if}\NormalTok{ (}\SpecialCharTok{!}\NormalTok{col }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"Garage\_Area"}\NormalTok{, }\StringTok{"Gr\_Liv\_Area"}\NormalTok{, }\StringTok{"Year\_Built"}\NormalTok{))\{}
+\NormalTok{    Casas[[col]] }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(Casas[[col]])}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\CommentTok{\# Pasamos la variable dependiente (Sales Prices) a numerica}
+\NormalTok{Casas}\SpecialCharTok{$}\NormalTok{Sale\_Price }\OtherTok{=} \FunctionTok{as.numeric}\NormalTok{(Casas}\SpecialCharTok{$}\NormalTok{Sale\_Price)}
+
+\CommentTok{\# Tampoco tiene sentido el año numéricamente, pero son demasiados factores para analizarlo como tal. Por ende, vamos a transformar este atrbibuto a la distancia entre el último año en la base con la columna en cuestión, con lo que tendremos una diferencia de años que sí tiene sentido numéricamente para comparar}
+\NormalTok{Casas}\SpecialCharTok{$}\NormalTok{Year\_Built }\OtherTok{\textless{}{-}} \FunctionTok{max}\NormalTok{(Casas}\SpecialCharTok{$}\NormalTok{Year\_Built) }\SpecialCharTok{{-}}\NormalTok{ Casas}\SpecialCharTok{$}\NormalTok{Year\_Built}
+
+\CommentTok{\# Vemos las descripciones de los atributos}
+\FunctionTok{str}\NormalTok{(Casas)}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    2930 obs. of  11 variables:
+##  $ Sale_Price  : num  635 139 451 724 538 561 630 544 704 536 ...
+##  $ Street      : Factor w/ 2 levels "Grvl","Pave": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ Lot_Shape   : Factor w/ 4 levels "Irregular","Moderately_Irregular",..: 4 3 4 3 4 4 3 4 4 3 ...
+##  $ Exter_Cond  : Factor w/ 5 levels "Excellent","Fair",..: 5 5 5 5 5 5 5 5 5 5 ...
+##  $ Central_Air : Factor w/ 2 levels "N","Y": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ Garage_Area : int  528 730 312 522 482 470 582 506 608 442 ...
+##  $ Kitchen_Qual: Factor w/ 5 levels "Excellent","Fair",..: 5 5 3 1 5 3 3 3 3 3 ...
+##  $ Year_Built  : int  50 49 52 42 13 12 9 18 15 11 ...
+##  $ Gr_Liv_Area : int  1656 896 1329 2110 1629 1604 1338 1280 1616 1804 ...
+##  $ Roof_Style  : Factor w/ 6 levels "Flat","Gable",..: 4 2 4 4 2 2 2 2 2 2 ...
+##  $ Heating_QC  : Factor w/ 5 levels "Excellent","Fair",..: 2 5 5 1 3 1 1 1 1 3 ...
+\end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -842,9 +875,209 @@ Kitchen\_Qual, Year\_Built, Gr\_Liv\_Area, Roof\_Style} y
 \hypertarget{pregunta-2}{%
 \subsubsection{Pregunta 2}\label{pregunta-2}}
 
+A continuación se emplean 3 modelos de predicción: regresión lineal, knn
+y random forest. Para estos se utiliza una base de entrenamiento con el
+70\% de la base de datos, con las que se obtendrán los parámetros de los
+modelos para posteriormente realizar una predicción del precio de venta
+sobre la base de testeo (30\% de los datos).
+
+\hypertarget{regresiuxf3n-lineal-1}{%
+\subparagraph{Regresión Lineal}\label{regresiuxf3n-lineal-1}}
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\#Corra 1 modelo de regresión lineal y 2 modelos de Machine Learning vistos en la clase con la base de datos reducida,  para predecir el precio de las casas.}
+
+\NormalTok{train.lm }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(}\AttributeTok{form =}\NormalTok{ Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\CommentTok{\#Fórmula}
+  \AttributeTok{data =}\NormalTok{ train, }\CommentTok{\#Datos}
+  \AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\CommentTok{\#Algoritmo }
+  \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\AttributeTok{method =} \StringTok{"cv"}\NormalTok{, }\AttributeTok{number =} \DecValTok{5}\NormalTok{) }\CommentTok{\#Method = cross validation, number=10 (k{-}fold) }
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in predict.lm(modelFit, newdata): prediction from a rank-deficient fit
+## may be misleading
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(train.lm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear Regression 
+## 
+## 2051 samples
+##   10 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1641, 1640, 1641, 1642, 1640 
+## Resampling results:
+## 
+##   RMSE  Rsquared  MAE 
+##   115   0.795     82.6
+## 
+## Tuning parameter 'intercept' was held constant at a value of TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.lm  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.lm, }\AttributeTok{newdata=}\NormalTok{test) }
+\NormalTok{error.lm }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.lm}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{knn}{%
+\subparagraph{KNN}\label{knn}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Ejecutar KNN}
+\NormalTok{train.knn }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }
+                   \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"knn"}\NormalTok{,  }
+                   \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{5}\NormalTok{),}
+                   \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
+                   \AttributeTok{tuneLength =} \DecValTok{5} 
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Kitchen_QualPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Kitchen_QualPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Kitchen_QualPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Kitchen_QualPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Kitchen_QualPoor
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(train.knn)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## k-Nearest Neighbors 
+## 
+## 2051 samples
+##   10 predictor
+## 
+## Pre-processing: centered (25), scaled (25) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1639, 1640, 1642, 1642, 1641 
+## Resampling results across tuning parameters:
+## 
+##   k   RMSE  Rsquared  MAE 
+##    5  120   0.773     89.0
+##    7  121   0.769     89.3
+##    9  121   0.768     89.6
+##   11  122   0.763     90.4
+##   13  122   0.764     90.6
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was k = 5.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(train.knn)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.knn  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.knn, }\AttributeTok{newdata=}\NormalTok{test) }
+\NormalTok{error.knn }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.knn}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{random-forest-1}{%
+\subparagraph{Random Forest}\label{random-forest-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Ejecutar Random Forest}
+\NormalTok{train.randomf }\OtherTok{\textless{}{-}} \FunctionTok{train}\NormalTok{(Sale\_Price }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Year\_Built}\SpecialCharTok{+}\NormalTok{Gr\_Liv\_Area}\SpecialCharTok{+}\NormalTok{Roof\_Style}\SpecialCharTok{+}\NormalTok{Heating\_QC, }
+                       \AttributeTok{data=}\NormalTok{train, }\AttributeTok{method=}\StringTok{"rf"}\NormalTok{,  }
+                       \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }\AttributeTok{number=}\DecValTok{5}\NormalTok{),}
+                       \AttributeTok{preProcess =} \FunctionTok{c}\NormalTok{(}\StringTok{"center"}\NormalTok{,}\StringTok{"scale"}\NormalTok{),}
+                       \AttributeTok{tuneLength =} \DecValTok{5} 
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Heating_QCPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Heating_QCPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Heating_QCPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Heating_QCPoor
+
+## Warning in preProcess.default(thresh = 0.95, k = 5, freqCut = 19, uniqueCut =
+## 10, : These variables have zero variances: Heating_QCPoor
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(train.randomf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Random Forest 
+## 
+## 2051 samples
+##    4 predictor
+## 
+## Pre-processing: centered (11), scaled (11) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 1641, 1641, 1640, 1641, 1641 
+## Resampling results across tuning parameters:
+## 
+##   mtry  RMSE  Rsquared  MAE  
+##    2    143   0.733     115.3
+##    4    119   0.782      91.2
+##    6    116   0.789      86.2
+##    8    117   0.783      86.3
+##   11    119   0.776      87.3
+## 
+## RMSE was used to select the optimal model using the smallest value.
+## The final value used for the model was mtry = 6.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(train.randomf)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{test.randomf  }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(train.randomf, }\AttributeTok{newdata=}\NormalTok{test) }
+\NormalTok{error.randomf }\OtherTok{\textless{}{-}}\NormalTok{ test}\SpecialCharTok{$}\NormalTok{Sale\_Price}\SpecialCharTok{{-}}\NormalTok{test.randomf}
 \end{Highlighting}
 \end{Shaded}
 
@@ -855,8 +1088,62 @@ Kitchen\_Qual, Year\_Built, Gr\_Liv\_Area, Roof\_Style} y
 \begin{Highlighting}[]
 \CommentTok{\# Comparación de Modelos: Compare los modelos a través de métricas presentadas en el laboratorio. }
 \CommentTok{\# ¿Cuál es el mejor modelo predictivo?}
+
+\NormalTok{sales.test }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{lm=}\NormalTok{test.lm, }\AttributeTok{knn=}\NormalTok{test.knn,  }\AttributeTok{rf=}\NormalTok{test.randomf, }\AttributeTok{sales=}\NormalTok{test}\SpecialCharTok{$}\NormalTok{Sale\_Price)}
+\NormalTok{error.test }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{lm=}\NormalTok{error.lm, }\AttributeTok{knn=}\NormalTok{error.knn, }\AttributeTok{rf=}\NormalTok{error.randomf)}
+
+\FunctionTok{summary}\NormalTok{(}\FunctionTok{abs}\NormalTok{(error.test))}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{verbatim}
+##        lm           knn            rf     
+##  Min.   :  1   Min.   :  0   Min.   :  0  
+##  1st Qu.: 29   1st Qu.: 26   1st Qu.: 30  
+##  Median : 65   Median : 61   Median : 63  
+##  Mean   : 80   Mean   : 82   Mean   : 84  
+##  3rd Qu.:110   3rd Qu.:118   3rd Qu.:120  
+##  Max.   :559   Max.   :510   Max.   :436
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(error.test)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        lm            knn             rf      
+##  Min.   :-559   Min.   :-445   Min.   :-436  
+##  1st Qu.: -72   1st Qu.: -66   1st Qu.: -69  
+##  Median : -10   Median :  -6   Median :  -7  
+##  Mean   :  -6   Mean   :  -3   Mean   :  -2  
+##  3rd Qu.:  55   3rd Qu.:  54   3rd Qu.:  59  
+##  Max.   : 468   Max.   : 510   Max.   : 410
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot}\NormalTok{(}\FunctionTok{abs}\NormalTok{(}\FunctionTok{subset}\NormalTok{(error.test))); }\FunctionTok{title}\NormalTok{(}\AttributeTok{main=}\StringTok{"ML models"}\NormalTok{, }\AttributeTok{sub=}\StringTok{"Forecasting Absolute Errors"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/p3-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{boxplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(error.test)); }\FunctionTok{title}\NormalTok{(}\AttributeTok{main=}\StringTok{"ML models"}\NormalTok{, }\AttributeTok{sub=}\StringTok{"Forecasting Errors"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{LAB02_files/figure-latex/p3-2.pdf}
+
+\textbf{¿Cuál es el mejor modelo predictivo?}
+
+Observando los errores absolutos se puede observar que si bien todos los
+valores son relativamente cercanos, el que presenta un menor error es el
+modelo de regresión lineal simple (MAE = 80), seguido por el modelo KNN
+(MAE = 82{]}), siendo el peor, pero con \textbf{muy baja diferencia}, el
+random forest (MAE = 84).
 
 \end{document}

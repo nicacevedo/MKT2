@@ -3,12 +3,12 @@ title: "Laboratorio 2 IN5602 - Semestre Otoño 2021"
 author: "Nicolás Acevedo, Constanza Bastías y Pablo Ubilla"
 date: "14 de abril de 2021"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     df_print: paged
     theme: simplex
     highlight: tango
-    toc: yes
-  pdf_document:
     toc: yes
 encoding: UTF-8
 ---
@@ -437,4 +437,4 @@ boxplot(subset(error.test)); title(main="ML models", sub="Forecasting Errors")
 
 **¿Cuál es el mejor modelo predictivo?**
 
-Observando los errores absolutos se puede observar que si bien todos los valores son relativamente cercanos, el que presenta un menor error es el modelo de regresión lineal simple (MAE = 80), seguido por el modelo KNN (MAE = 82]), siendo el peor, pero **muy poca diferencia**, el random forest (MAE = 84).
+Observando los errores absolutos se puede observar que si bien todos los valores son relativamente cercanos, el que presenta un menor error es el modelo de regresión lineal simple (MAE = 80), seguido por el modelo KNN (MAE = 82]), siendo el peor, pero con **muy baja diferencia**, el random forest (MAE = 84).

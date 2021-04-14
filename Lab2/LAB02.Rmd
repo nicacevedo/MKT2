@@ -336,14 +336,17 @@ Casas <- Casas[,c("Sale_Price", "Street", "Lot_Shape", "Exter_Cond", "Central_Ai
 # Para evitar problemas pasamos los atributos de tipo
 # categóricos a factores
 for (col in colnames(Casas)){
-  # Si no forma parte de los numéricos
-  if (!col %in% c("Garage_Area", "Gr_Liv_Area")){
+  # Si no forma parte de los numéricos 
+  if (!col %in% c("Garage_Area", "Gr_Liv_Area", "Year_Built")){
     Casas[[col]] <- as.factor(Casas[[col]])
   }
 }
 
-#Pasamos la variable dependiente (Sales Prices) a numerica
+# Pasamos la variable dependiente (Sales Prices) a numerica
 Casas$Sale_Price = as.numeric(Casas$Sale_Price)
+
+# Tampoco tiene sentido el año numéricamente, pero son demasiados factores para analizarlo como tal. Por ende, vamos a transformar este atrbibuto a la distancia entre el último año en la base con la columna en cuestión, con lo que tendremos una diferencia de años que sí tiene sentido numéricamente para comparar
+Casas$Year_Built <- max(Casas$Year_Built) - Casas$Year_Built
 
 # Vemos las descripciones de los atributos
 str(Casas)
@@ -427,7 +430,11 @@ error.test <- data.frame(lm=error.lm, knn=error.knn, rf=error.randomf)
 
 summary(abs(error.test))
 summary(error.test)
-boxplot(abs(subset(error.test, select=-lm))); title(main="ML models", sub="Forecasting Absolute Errors")
-boxplot(subset(error.test, select=-lm)); title(main="ML models", sub="Forecasting Errors")
+boxplot(abs(subset(error.test))); title(main="ML models", sub="Forecasting Absolute Errors")
+boxplot(subset(error.test)); title(main="ML models", sub="Forecasting Errors")
 
 ```
+
+**¿Cuál es el mejor modelo predictivo?**
+
+Observando los errores absolutos se puede observar que si bien todos los valores son relativamente cercanos, el que presenta un menor error es el modelo de regresión lineal simple (MAE = 80), seguido por el modelo KNN (MAE = 82]), siendo el peor, pero **muy poca diferencia**, el random forest (MAE = 84).

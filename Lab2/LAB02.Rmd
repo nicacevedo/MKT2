@@ -1,6 +1,6 @@
 ---
 title:  'Laboratorio 2 IN5602 - Semestre Otoño 2021'
-author: 'Nicolás Acevedo Villena'
+author: 'Nicolás Acevedo, Constanza Bastías y Pablo Ubilla'
 date:   '14 de abril de 2021'
 output:
   html_document:
@@ -316,17 +316,20 @@ boxplot(subset(error.test, select=-lm)); title(main="ML models", sub="Forecastin
 
 ### Pregunta 1
 
-Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan ser predictoras del precio de las casa. Se escogen entonces *Street, LotShape, ExterCond, CentralAir, GarageArea, KitchenQual,*
+Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan ser predictoras del precio de las casa. Se escogen entonces *Street, Lot_Shape, Exter_Cond, Central_Air, Garage_Area, Kitchen_Qual, Year_Built, Gr_Liv_Area, Roof_Style* y *Heating_QC*.
 
-¿ Por qué podrpian ser útiles *GarageArea,* ?
+¿ Por qué podrían ser útiles *Garage_Area, Kitchen_Qual* y *Exter_Cond*?
 
--   *GarageArea*: LEl sólo hecho de que una casa cuente con un garage suele implicar que la casa tenga un alto precio. Es necesario que esta sea de un tamaño considerable (en la mayoría de los casos en USA) para contar con un garage. En cuanto al área de este, mientras mayor es, significa
+-   *Garage_Area*: El sólo hecho de que una casa cuente con un garage suele implicar que la casa tenga un alto precio. Es necesario que esta sea de un tamaño considerable (en la mayoría de los casos en USA) para contar con un garage. En cuanto al área de este, mientras mayor es, significa que tiene capacidad para más vehículos (u otros objetos), lo que implica que la casa también debe ser mayor para poder dar el paso a un garage de mayor tamaño. Dicho esto, es esperable que a mayor área de garage, el precio de las casas sea mayor.
+
+-   *Kitchen_Qual*: *Este atributo es similar al anterior en el sentido de que una mayor calidad en la cocina implica que está apuntando a personas de mayores recursos, no a personas que sólo buscan una casa con cocina funcional, por lo que puede esperarce que a mayor calidad en la cocina, mayor sea el precio de la casa.*
+
+-   *Exter_Cond*: Si la condición actual de la parte exterior de la casa no es óptima, es esperable que los precios de las casas sean menores, mientras que en una condición óptima sean mayores, ya que está directamente relacioando con la calidad de lo que se está comprando y no se pagarán precios altos por algo de mala calidad.
 
 ```{r p1}
-#Escoja 10 variables continuas u categóricas (no con tantas categorías)
-#De esas 10, debe argumentar para al menos 3 de ellas por qué podrían ser predictoras del precio de la casa. 
-#Construya una base de datos reducida con "Casas <- Casas[,c(x1,x2,x3,...x10)]" 
-# x1,...,x10 son las posiciones de las variables en la base de datos Casas
+# Construcción de la sub-base
+
+Casas <- Casas[,c("Street", "Lot_Shape", "Exter_Cond", "Central_Air", "Garage_Area", "Kitchen_Qual", "Year_Built", "Gr_Liv_Area", "Roof_Style", "Heating_QC")]
 ```
 
 ### Pregunta 2

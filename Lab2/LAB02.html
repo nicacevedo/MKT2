@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Francisca Moraga" />
+<meta name="author" content="Nicolás Acevedo Villena" />
 
 
 <title>Laboratorio 2 IN5602 - Semestre Otoño 2021</title>
@@ -249,7 +249,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">Laboratorio 2 IN5602 - Semestre Otoño 2021</h1>
-<h4 class="author">Francisca Moraga</h4>
+<h4 class="author">Nicolás Acevedo Villena</h4>
 <h4 class="date">14 de abril de 2021</h4>
 
 </div>
@@ -337,7 +337,7 @@ pre code {
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">graphics.off</span>()           <span class="co">#Limpia los gráficos</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits =</span> <span class="dv">3</span>)  <span class="co">#Dígitos después del punto para observar (décimas, centésimas,...)</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)      <span class="co">#Fijar semilla de aleatoriedad</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">&quot;C:/Users/color/Downloads/Marketing/LAB2_IN5602&quot;</span>) <span class="co">#Fijar directorio de preferencia</span></span></code></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># setwd(&quot;C:/Users/color/Downloads/Marketing/LAB2_IN5602&quot;) #Fijar directorio de preferencia</span></span></code></pre></div>
 <div id="paquetes" class="section level3">
 <h3>Paquetes</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)     <span class="co">#Para leer CSV</span></span>
@@ -724,8 +724,13 @@ pre code {
 <h2>Preguntas</h2>
 <div id="pregunta-1" class="section level3">
 <h3>Pregunta 1</h3>
+<p>Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan ser predictoras del precio de las casa. Se escogen entonces <em>Street, LotShape, ExterCond, CentralAir, GarageArea, KitchenQual,</em></p>
+<p>¿ Por qué podrpian ser útiles <em>GarageArea,</em> ?</p>
+<ul>
+<li><em>GarageArea</em>: LEl sólo hecho de que una casa cuente con un garage suele implicar que la casa tenga un alto precio. Es necesario que esta sea de un tamaño considerable (en la mayoría de los casos en USA) para contar con un garage. En cuanto al área de este, mientras mayor es, significa</li>
+</ul>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Escoja 10 variables continuas u categóricas (no con tantas categorías)</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co">#De esas 10, debe argumentar para al menos 3 de ellas porque podrían ser predictoras del precio de la casa. </span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co">#De esas 10, debe argumentar para al menos 3 de ellas por qué podrían ser predictoras del precio de la casa. </span></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Construya una base de datos reducida con &quot;Casas &lt;- Casas[,c(x1,x2,x3,...x10)]&quot; </span></span>
 <span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># x1,...,x10 son las posiciones de las variables en la base de datos Casas</span></span></code></pre></div>
 </div>

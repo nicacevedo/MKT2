@@ -1,6 +1,6 @@
 ---
 title:  'Laboratorio 2 IN5602 - Semestre Otoño 2021'
-author: 'Francisca Moraga'
+author: 'Nicolás Acevedo Villena'
 date:   '14 de abril de 2021'
 output:
   html_document:
@@ -316,9 +316,15 @@ boxplot(subset(error.test, select=-lm)); title(main="ML models", sub="Forecastin
 
 ### Pregunta 1
 
+Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan ser predictoras del precio de las casa. Se escogen entonces *Street, LotShape, ExterCond, CentralAir, GarageArea, KitchenQual,*
+
+¿ Por qué podrpian ser útiles *GarageArea,* ?
+
+-   *GarageArea*: LEl sólo hecho de que una casa cuente con un garage suele implicar que la casa tenga un alto precio. Es necesario que esta sea de un tamaño considerable (en la mayoría de los casos en USA) para contar con un garage. En cuanto al área de este, mientras mayor es, significa
+
 ```{r p1}
 #Escoja 10 variables continuas u categóricas (no con tantas categorías)
-#De esas 10, debe argumentar para al menos 3 de ellas porque podrían ser predictoras del precio de la casa. 
+#De esas 10, debe argumentar para al menos 3 de ellas por qué podrían ser predictoras del precio de la casa. 
 #Construya una base de datos reducida con "Casas <- Casas[,c(x1,x2,x3,...x10)]" 
 # x1,...,x10 son las posiciones de las variables en la base de datos Casas
 ```

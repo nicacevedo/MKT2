@@ -6,8 +6,8 @@
 ]{article}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{iftex}
-\ifPDFTeX
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -109,7 +109,7 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\ifLuaTeX
+\ifluatex
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
@@ -824,6 +824,18 @@ Kitchen\_Qual, Year\_Built, Gr\_Liv\_Area, Roof\_Style} y
 \CommentTok{\# Construcción de la sub{-}base}
 
 \NormalTok{Casas }\OtherTok{\textless{}{-}}\NormalTok{ Casas[,}\FunctionTok{c}\NormalTok{(}\StringTok{"Street"}\NormalTok{, }\StringTok{"Lot\_Shape"}\NormalTok{, }\StringTok{"Exter\_Cond"}\NormalTok{, }\StringTok{"Central\_Air"}\NormalTok{, }\StringTok{"Garage\_Area"}\NormalTok{, }\StringTok{"Kitchen\_Qual"}\NormalTok{, }\StringTok{"Year\_Built"}\NormalTok{, }\StringTok{"Gr\_Liv\_Area"}\NormalTok{, }\StringTok{"Roof\_Style"}\NormalTok{, }\StringTok{"Heating\_QC"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# samples aleatorio}
+\NormalTok{index }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{nrow}\NormalTok{(Casas), }\AttributeTok{size=} \FunctionTok{nrow}\NormalTok{(Casas)}\SpecialCharTok{*}\FloatTok{0.7}\NormalTok{)}
+
+\CommentTok{\# entrenamiento 70\%}
+\NormalTok{train }\OtherTok{\textless{}{-}}\NormalTok{ Casas[index, ]}
+\CommentTok{\# test 30\%}
+\NormalTok{test  }\OtherTok{\textless{}{-}}\NormalTok{ Casas[}\SpecialCharTok{{-}}\NormalTok{index, ]}
 \end{Highlighting}
 \end{Shaded}
 

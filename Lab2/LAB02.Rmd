@@ -334,10 +334,70 @@ Para esta pregunta se escogen atributos 10 (variables explicativas) que puedan s
 Casas <- Casas[,c("Street", "Lot_Shape", "Exter_Cond", "Central_Air", "Garage_Area", "Kitchen_Qual", "Year_Built", "Gr_Liv_Area", "Roof_Style", "Heating_QC")]
 ```
 
+```{r}
+
+# samples aleatorio
+index <- sample(1:nrow(Casas), size= nrow(Casas)*0.7)
+
+# entrenamiento 70%
+train <- Casas[index, ]
+# test 30%
+test  <- Casas[-index, ]
+
+```
+
 ### Pregunta 2
+
+A continuación se emplean 3 modelos de predicción: regresión lineal, knn y random forest. Para estos se utiliza una base de entrenamiento con el 70% de la base de datos, con las que se obtendrán los parámetros de los modelos para posteriormente realizar una predicción del precio de venta sobre la base de testeo (30% de los datos).
+
+##### Regresión Lineal
 
 ```{r p2}
 #Corra 1 modelo de regresión lineal y 2 modelos de Machine Learning vistos en la clase con la base de datos reducida,  para predecir el precio de las casas.
+
+train.lm <- train(form = Sale_Price ~ ., #Fórmula
+  data = train, #Datos
+  method = "lm", #Algoritmo 
+  trControl = trainControl(method = "cv", number = 10) #Method = cross validation, number=10 (k-fold) 
+)
+print(train.lm)
+ggplot(train.lm)
+test.lm  <- predict(train.lm, newdata=test) 
+error.lm <- test$Sale_Price-test.lm
+```
+
+##### KNN
+
+```{r}
+
+### Ejecutar KNN
+train.knn <- train(Sale_Price ~ ., 
+                   data=train, method="knn",  
+                   trControl = trainControl("cv", number=10),
+                   preProcess = c("center","scale"),
+                   tuneLength = 5 
+)
+
+print(train.knn)
+ggplot(train.knn)
+test.knn  <- predict(train.knn, newdata=test) 
+error.knn <- test$Sale_Price-test.knn
+```
+
+##### Random Forest
+
+```{r}
+### Ejecutar Random Forest
+train.randomf <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
+                       data=train, method="rf",  
+                       trControl = trainControl("cv", number=10),
+                       preProcess = c("center","scale"),
+                       tuneLength = 5 
+)
+print(train.randomf)
+ggplot(train.randomf)
+test.randomf  <- predict(train.randomf, newdata=test) 
+error.randomf <- test$Sale_Price-test.randomf
 
 ```
 

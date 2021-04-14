@@ -1,0 +1,344 @@
+---
+title:  'Laboratorio 2 IN5602 - Semestre Otoño 2021'
+author: 'Francisca Moraga'
+date:   '14 de abril de 2021'
+output:
+  html_document:
+    df_print: paged
+    theme: simplex
+    highlight: tango
+    toc: yes
+encoding: UTF-8
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Machine Learning  
+
+Modelos que puedan automáticamente aprender sobre conjuntos de datos y su forma funcional. Se puede utiliar un conjunto determinado de características para entrenar un algoritmo y extraer información. Estos algoritmos pueden clasificarse según la cantidad y el tipo de supervisión durante el entrenamiento. Los dos tipos principales en los que se enfoca el curso son:
+
+1. Learners supervisados: construyen modelos predictivos. 
+2. Learners no supervisados: construyen modelos descriptivos.
+
+**¿Cuándo usar ML?**
+
+1. Foco en el pronóstico y no en el entendimiento de las relaciones de las variables.
+2. Cuando existen relaciones complejas y no lineales.
+3. Base de datos “grandes”
+
+## Aprendizaje supervisado
+
+El algoritmo intenta modelar las relaciones entre la variable objetivo (variable que se predice, $Y$) y los atributos (variables predictoras, $X's$). Por ejemplo: usar los atributos de una casa ($X's$) para predecir el precio de venta ($Y$)
+
+La mayoría de los problemas de aprendizaje supervisado pueden agruparse en regresión o clasificación.
+
+a) Cuando el objetivo es predecir un resultado numérico, nos referimos a un problema de regresión (no debe confundirse con el modelo de regresión lineal).
+b) Cuando el objetivo es predecir un resultado categórico, nos referimos a un problema de clasificación.  
+
+## Aprendizaje sin supervisión
+
+El objetivo es describir los datos, pero a el análisis se realiza sin una variable objetivo ($Y$). El aprendizaje no supervisado se ocupa de identificar grupos en un conjunto de datos. Los grupos pueden estar definidos por las unidades (clustering) o por las características.
+
+## División de los datos
+
+Para dividir los datos podemos usar muestreo aleatorio (Por lo general, se divide haciendo “80-20”o "70-30")
+
+- Data train: Estos datos se utilizan para desarrollar conjuntos de características, entrenar el algoritmo, comparar modelos.
+
+- Data test: Estos datos se utilizan para estimar una evaluación imparcial del rendimiento del modelo.
+
+# Desarollo del laboratorio {.tabset}
+
+## Enunciado
+
+Se tiene información sobre ventas de propiedades en EE.UU y se requiere utilizar los atributos de estas propiedades para predecir el precio de venta de la vivienda.
+
+- Tipo de problema: regresión supervisada ($Y$ es númerico)
+- Resultado de interés: `Sale_Price` (en dólares)
+- Características o variables explicativas $X$: 80
+- Observaciones: 2.930
+
+```{r start, message = FALSE, warning=FALSE}
+rm(list=ls())				 #Limpia todos los objetos creados en R
+graphics.off()			 #Limpia los gráficos
+options(digits = 3)  #Dígitos después del punto para observar (décimas, centésimas,...)
+set.seed(12345)      #Fijar semilla de aleatoriedad
+setwd("C:/Users/color/Downloads/Marketing/LAB2_IN5602") #Fijar directorio de preferencia
+```
+
+### Paquetes
+
+```{r paquetes útiles, message = FALSE, warning=FALSE}
+library(readr)     #Para leer CSV
+library(glmnet)    #Para ajustar modelo lineal
+library(corrplot)  #Para realizar correlogramas
+library(dplyr)     #Para manipulación de datos
+library(ggplot2)   #Para gráficos
+library(caret)     #Para validar y entrenar los modelos
+library(knitr) 
+```
+
+
+### Carga de datos
+
+```{r lectura base}
+Casas <- read.csv("Casas.csv")
+kable(Casas[1:5,1:9]) #kable crea una tabla head(Casas) sirve para visualiar la data
+
+```
+
+### División de los datos
+
+Vamos a escoger 70% entrenamiento y 30% para testeo:
+
+```{r división datos, message = FALSE, warning=FALSE}
+
+# Construimos un vector que esta formado por números de filas aleatoriamente
+index <- sample(1:nrow(Casas), size= nrow(Casas)*0.7)
+# Base de entrenamiento: del total de datos, tomamos las filas aletorizadas que tienen datos en index
+train <- Casas[index, ]
+# Anteponiendo el "-" escogemos las filas en de la base que no están en index 
+test  <- Casas[-index, ]
+```
+
+### EDA
+
+Antes de entrenar un modelo predictivo, o incluso antes de realizar cualquier cálculo con un nuevo conjunto de datos, es muy importante realizar una exploración descriptiva de los mismos. Este proceso permite entender mejor que información contiene cada variable, así como detectar posibles errores.
+
+#### Gráficos
+
+#### Variable de interés
+
+```{r histograma, message = FALSE, warning=FALSE}
+
+ggplot(data=Casas)+ #Se define un gráfico con ggplot()
+  aes(x=Sale_Price)+ #Solo le ingresamos el eje "x" para un histograma
+  geom_histogram(col="black", fill="green", alpha = 0.2) # Se define la forma del gráfico. "col" pinta el contorno, "fill" el entorno y "alpha" entrega transparencia 
+```
+
+```{r histograma 2, message = FALSE, warning=FALSE}
+
+ggplot(data=Casas)+
+  aes(x=log(Sale_Price))+
+  geom_histogram(col="black", fill="green", alpha=0.2)+
+  xlab("Log(Precio de venta)")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución log(Precio de venta)")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
+```
+ 
+#### Variables explicativas
+
+Escogemos algunas variables: `Year_Built` (Año en que se construyó la casa), `Roof_Style` (Tipo de techo), `Gr_Liv_Area` (espacio habitable total sobre el suelo de una casa) y `Heating_QC`(Calidad y estado de la calefacción)
+
+```{r tranf var, message = FALSE, warning=FALSE}
+#R no siempre interpreta bien la naturaleza de las variables: Roof_Style y Heating_QC son factores, pero están como character(string)
+
+#en train
+train$Roof_Style=as.factor(train$Roof_Style)
+train$Heating_QC=as.factor(train$Heating_QC)
+#en test
+test$Roof_Style=as.factor(test$Roof_Style)
+test$Heating_QC=as.factor(test$Heating_QC)
+
+```
+
+##### `Year_Built`
+
+```{r Gráfico de dispersión, message = FALSE, warning=FALSE}
+
+library(gridExtra) #Para unir gráficas
+g1 <- ggplot(Casas) +
+  aes(x=Year_Built, y=Sale_Price) +
+  geom_point(size=1, alpha=0.4) + #"size" aumenta el tamaño de los puntos, "alpha" da transparencia
+  geom_smooth(se=FALSE) + #Agregamos un ajuste no lineal sobre los puntos. "se" integra errores estándares
+  xlab("Año de construcción")
+
+
+g2 <- ggplot(Casas) +
+  aes(x=Year_Built, y=Sale_Price) +
+  geom_point(size = 1, alpha = .4) + 
+  geom_smooth(method = "lm", se = FALSE) + #Agregamos un ajuste lineal sobre los puntos.
+  scale_y_log10() + # "scale_y_log10" transforma el eje "y" a logaritmo.
+  xlab("Año de construcción") 
+
+grid.arrange(g1, g2, nrow = 1) #une las  gráficas. 
+```
+
+##### `Gr_Liv_Area` según `Heating_QC`
+
+```{r, message = FALSE, warning=FALSE}
+
+ggplot(Casas) +
+  aes(x=Gr_Liv_Area, y=Sale_Price, col=Heating_QC)+ #Se agrega una dimensión de colores "col".
+  geom_point(size=1, alpha=0.4) +
+  geom_smooth(se=FALSE, method="lm") +
+  xlab("Espacio habitable") 
+
+```
+
+##### `Roof_Style`
+
+```{r, message = FALSE, warning=FALSE}
+
+ggplot(Casas) +
+  aes(x=Roof_Style, y=log(Sale_Price)) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+```
+
+## Regresión Lineal
+
+```{r, message = FALSE, warning=FALSE}
+
+train.lm <- train(form = Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, #Fórmula
+  data = train, #Datos
+  method = "lm", #Algoritmo 
+  trControl = trainControl(method = "cv", number = 10) #Method = cross validation, number=10 (k-fold) 
+)
+
+test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm <- test$Sale_Price-test.lm #Calcular los errores de predicción (dato real - dato estimado)
+
+```
+
+## MARS
+
+Este algoritmo no asume una forma funcional de los datos, toma las variables $X$ y trata de "formar" funciones no lineales e interacciones que se ajusten a los datos. Las no linealidades e interacciones se van "ajustando" a una función escalonada o por tramos donde el objetivo es encontrar puntos de cortes o "knots" que se adecuan de mejor forma a los datos. Luego de haber de encontrado muchos "knots", el algoritmo realiza una "limpieza" donde se eliminan puntos que no contribuyen significativamente a la precisión predictiva (redundantes). Este proceso se le llama poda.
+
+![](3.png)
+
+```{r, message = FALSE, warning=FALSE}
+
+#Ejecutar MARS (Multivariate adaptive regression spline)
+train.mars <- train(form = Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
+                    data=train, 
+                    method="earth", #MARS
+                    trControl = trainControl("cv", number=10),
+                    preProcess = c("center","scale"), #Pre-procesa datos. "center" resta el promedio de las variables, "scale" las divide por la desviación estandar. Esto ayuda para el tratamiento de outliers.
+                    tuneLength = 5 #Indica que pruebe diferentes valores por default para el parámetro principal
+)
+print(train.mars)
+ggplot(train.mars)
+test.mars  <- predict(train.mars, newdata=test) #Vector de datos predichos 
+error.mars <- test$Sale_Price-test.mars #(dato real - dato estimado)
+```
+
+## K-Nearest Neighbors
+
+Es un algoritmo  en el que cada observación se predice en función de su "similitud" con otras observaciones y luego usa el valor de respuesta media de k observaciones como el resultado previsto. 
+Para medir "similitud" usamos métricas (distancias) en el espacio $\mathcal{R}^j$. Para dos observaciones $i$ y $n$, $J$ predictores, tenemos la métricas:
+
+$$\sqrt{\sum_{j=1}^J (X_{ij}-X_{nj})^2} \hspace{.5 cm} \text{(Métrica Eucliadiana)}$$
+
+$$\sum_{j=1}^J |X_{ij}-X_{nj}| \hspace{.5 cm} \text{(Métrica Manhattan)}$$
+
+$$\left(\sum_{j=1}^J |X_{ij}-X_{nj}|^{p}\right)^{1/p} \hspace{.5 cm} \text{(Métrica Minkowski)}$$
+Al encontrar los k-vecinos más cercanos, ponderamos sus resultados ($Y$): 
+
+$$\hat{Y}_i=w_1Y_{1,i}+...+w_kY_{k,i}$$
+
+Si utilizamos ponderaciones $w_k$ que no son iguales (ese caso es $w_k=1/k$), puntos cercanos deberían pesar más que puntos lejanos. 
+
+![](4.png)
+
+```{r, message = FALSE, warning=FALSE}
+
+### Ejecutar KNN
+train.knn <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
+                   data=train, method="knn",  
+                   trControl = trainControl("cv", number=10),
+                   preProcess = c("center","scale"),
+                   tuneLength = 5 
+)
+
+print(train.knn)
+ggplot(train.knn)
+test.knn  <- predict(train.knn, newdata=test) 
+error.knn <- test$Sale_Price-test.knn
+```
+
+## CART
+
+Modelo basado en árboles de regresión - algoritmo no paramétrico - se utiliza cuando hay múltiples regresores. Divide el espacio de las características ($X$) según particiones binarias dada alguna regla de condición. De esto van resultando regiones más pequeñas.
+
+El objetivo en cada nodo es encontrar la "mejor" característica ($X_j$) para dividir los datos restantes en una de dos regiones ($R_1$ y $R_2$) de manera que el error general entre la respuesta real ($Y$) y la constante predicha ($c$) se minimiza. Para problemas de regresión, la función objetivo a minimizar es el $SSE$ (suma de cuadrados residuales) total.
+
+$$SSE=\sum_{i\in R_1} (y_i-c_1)^2 + \sum_{i\in R_2} (y_i-c_2)^2 $$
+![](5.png)
+
+```{r, message = FALSE, warning=FALSE}
+
+### Ejecutar CART (Classification and Regression Trees)
+train.cart <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
+                    data=train, method="rpart2",  
+                    trControl = trainControl("cv", number=10),
+                    preProcess = c("center","scale"),
+                    tuneLength = 5
+)
+print(train.cart)
+ggplot(train.cart)
+test.cart  <- predict(train.cart, newdata=test)
+error.cart <- test$Sale_Price-test.cart 
+```
+
+## Random Forest
+
+Random Forest se construye utilizando los principios fundamentales de los árboles de regresión y el bagging. Este úlimo, genera múltiples muestras de los datos y las agrega a los múltiples árboles de regresión. Pero al construir estos árboles de decisión se debe elegir una muestra aleatoria de predictores$X$ (llamados $mtry$).Esta agregación reduce la variación del procedimiento general y da como resultado un mejor rendimiento predictivo.
+
+```{r, message = FALSE, warning=FALSE}
+
+### Ejecutar Random Forest
+train.randomf <- train(Sale_Price ~ Year_Built+Gr_Liv_Area+Roof_Style+Heating_QC, 
+                       data=train, method="rf",  
+                       trControl = trainControl("cv", number=10),
+                       preProcess = c("center","scale"),
+                       tuneLength = 5 
+)
+print(train.randomf)
+ggplot(train.randomf)
+test.randomf  <- predict(train.randomf, newdata=test) 
+error.randomf <- test$Sale_Price-test.randomf
+```
+
+## Comparación de modelos
+
+```{r, message = FALSE, warning=FALSE}
+
+sales.test <- data.frame(lm=test.lm, mars=unname(test.mars),  knn=test.knn,  cart=test.cart,  rf=test.randomf, sales=test$Sale_Price)
+error.test <- data.frame(lm=error.lm, mars=unname(error.mars), knn=error.knn, cart=error.cart, rf=error.randomf)
+
+summary(abs(error.test))
+summary(error.test)
+boxplot(abs(subset(error.test, select=-lm))); title(main="ML models", sub="Forecasting Absolute Errors")
+boxplot(subset(error.test, select=-lm)); title(main="ML models", sub="Forecasting Errors")
+
+```
+
+## Preguntas
+
+### Pregunta 1
+
+```{r p1}
+#Escoja 10 variables continuas u categóricas (no con tantas categorías)
+#De esas 10, debe argumentar para al menos 3 de ellas porque podrían ser predictoras del precio de la casa. 
+#Construya una base de datos reducida con "Casas <- Casas[,c(x1,x2,x3,...x10)]" 
+# x1,...,x10 son las posiciones de las variables en la base de datos Casas
+```
+
+### Pregunta 2
+
+```{r p2}
+#Corra 1 modelo de regresión lineal y 2 modelos de Machine Learning vistos en la clase con la base de datos reducida,  para predecir el precio de las casas.
+
+```
+
+### Pregunta 3
+
+```{r p3}
+# Comparación de Modelos: Compare los modelos a través de métricas presentadas en el laboratorio. 
+# ¿Cuál es el mejor modelo predictivo?
+
+```

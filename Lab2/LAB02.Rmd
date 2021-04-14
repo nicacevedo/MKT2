@@ -1,8 +1,10 @@
 ---
-title:  'Laboratorio 2 IN5602 - Semestre Otoño 2021'
-author: 'Nicolás Acevedo, Constanza Bastías y Pablo Ubilla'
-date:   '14 de abril de 2021'
+title: "Laboratorio 2 IN5602 - Semestre Otoño 2021"
+author: "Nicolás Acevedo, Constanza Bastías y Pablo Ubilla"
+date: "14 de abril de 2021"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     df_print: paged
     theme: simplex

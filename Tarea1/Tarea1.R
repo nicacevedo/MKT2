@@ -7,7 +7,10 @@ library(dplyr)
 library(knitr) #llamamos a la librería que nos permite visualizar contenido en Rmarkdown
 library(readr)
 library(lubridate)
-supermarket_sales <- read_csv("supermarket_sales.csv")
+library(ggplot2)
+library(lattice) # Reg???
+library(caret) # regresiones????
+supermarket_sales <- read_csv("./Tarea1/supermarket_sales.csv")
 View(supermarket_sales)
 
 #cambiarle el nombre a la base para que sea mas corto y mas facil de trabajar
@@ -36,6 +39,9 @@ df <- df[with(df, order(df$Date)), ]
 TablaA = data.frame(table(df$Semana)) 
 colnames(TablaA) <- c("Semana","Clientes")
 
+
+#3. Agregamos el día de la semana
+df$Day <- as.factor(weekdays(df$Date))
 View(df)
 TablaA
 
@@ -54,19 +60,35 @@ ggplot(data=df)+ #Se define un gráfico con ggplot()
   aes(x=Rating)+ #Solo le ingresamos el eje "x" para un histograma
   geom_histogram(col="black", fill="green", alpha = 0.2) # Se define la forma del gráfico. "col" pinta el contorno, "fill" el entorno y "alpha" entrega transparencia 
 
-
 #2. Histograma Unit price
 ggplot(data=df)+
-  aes(x=log(`Unit price`))+
+  aes(x=Total)+
   geom_histogram(col="black", fill="green", alpha=0.2)+
-  xlab("Log(Precio unitario)")+ #Etiqueta para el eje x
+  xlab("Precio unitario")+ #Etiqueta para el eje x
   ylab("Frecuencia")+ #Etiqueta para el eje y
-  ggtitle("Distribución log(Precio unitario)")+ #Título del gráfico
+  ggtitle("Distribución Precio unitario")+ #Título del gráfico
   theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
 
-#3. Histograma Branch
+#2.2. Histograma Unit price
+ggplot(data=df)+
+  aes(x=log(Total))+
+  geom_histogram(col="black", fill="green", alpha=0.2)+
+  xlab("Precio unitario")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Precio unitario")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
+
+
+#3. Scatterplot Branch
 ggplot(df) +
-  aes(x=log(`Unit price`), y=Rating, col=Branch)+ #Se agrega una dimensión de colores "col".
+  aes(x=Total, y=Rating, col=Branch)+ #Se agrega una dimensión de colores "col".
+  geom_point(size=1, alpha=0.4) +
+  geom_smooth(se=FALSE, method="lm") +
+  xlab("Precio unitario") 
+
+#3.2. Scatterplot Branch
+ggplot(df) +
+  aes(x=log(Total), y=Rating, col=Day)+ #Se agrega una dimensión de colores "col".
   geom_point(size=1, alpha=0.4) +
   geom_smooth(se=FALSE, method="lm") +
   xlab("Precio unitario") 
@@ -76,8 +98,90 @@ ggplot(df) +
   aes(x=Branch, y=Rating) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
+#5. Boxplot Branch
+ggplot(df) +
+  aes(x=Branch, y=log(Total)) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+# Obs: Vemos que los precios son similares, pero que van subiendo un poco de Branch en Branch en cuando 
+# la media. En cambio, en Rating, se ve una clara baja de este en la Branch B.
+
+#6. Boxplot Branch
+ggplot(df) +
+  aes(x=Day, y=Rating) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#7. Boxplot Branch
+ggplot(df) +
+  aes(x=Day, y=`Unit price`) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#8. Boxplot Branch
+ggplot(df) +
+  aes(x=Semana, y=`Unit price`) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#9. Boxplot Branch
+ggplot(df) +
+  aes(x=Semana, y=Rating) +
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
+
+# genero
+#10. Boxplot Branch
+ggplot(df) +
+  aes(x=Gender, y=`Unit price`) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#11. Boxplot Branch
+ggplot(df) +
+  aes(x=Gender, y=Rating) +
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
+
+# Payment
+#12. Boxplot Branch
+ggplot(df) +
+  aes(x=Payment, y=`Unit price`) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#13. Boxplot Branch
+ggplot(df) +
+  aes(x=Payment, y=Rating) +
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
+
+# Customer type
+#14. Boxplot Branch
+ggplot(df) +
+  aes(x=`Customer type`, y=`Unit price`) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#15. Boxplot Branch
+ggplot(df) +
+  aes(x=`Customer type`, y=Rating) +
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
+
+# Customer type
+#16. Boxplot Branch
+ggplot(df) +
+  aes(x=`Customer type`, y=`Unit price`) +
+  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+
+#17. Boxplot Branch
+ggplot(df) +
+  aes(x=`Customer type`, y=Rating) +
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
 #REGRESIONES
+#0. Regresion lineal sin diferenciar por tienda
+train.lm <- train(form = Rating ~ Total + Branch + `Customer type` + Gender + `Product line` + Payment + Day, #Fórmula
+                  data = train, #Datos
+                  method = "lm", #Algoritmo 
+                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
+)
+test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
+summary(train.lm)
+print(paste('Error de predicción: ', mean(abs(error.lm))))
+
 #1. Regresion lineal sin diferenciar por tienda
 train.lm <- train(form = Rating ~ `Unit price`+ Branch + Gender + Semana, #Fórmula
                   data = train, #Datos
@@ -87,6 +191,7 @@ train.lm <- train(form = Rating ~ `Unit price`+ Branch + Gender + Semana, #Fórm
 
 test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.lm1 <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
+
 summary(train.lm)
 
 

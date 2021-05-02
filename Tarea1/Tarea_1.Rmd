@@ -1,0 +1,194 @@
+<div style="text-align: right"> **Universidad de Chile**</div>
+<div style="text-align: right"> **Ingeniería Industrial**</div>
+<div style="text-align: right"> **IN5602**: Marketing II</div>
+<div style="text-align: right">**Prof**: Marcel Goic</div>
+<div style="text-align: right">**Auxs**: R. Cerda, JP. Coddou, G.Mora, F. Moraga, A .Muñoz</div>
+
+
+---
+title:  'Tarea 1 - Semestre Otoño 2021'
+author: 'Nombres'
+date:   '05 de mayo de 2021'
+output:
+  html_document:
+    df_print: paged
+    theme: simplex
+    highlight: tango
+    toc: no
+encoding: UTF-8
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# {.tabset}
+## Enunciado
+El canal moderno de supermercados ha crecido sostenidamente en todo el mundo y especialmente en los países en desarrollo. En esta tarea exploraremos el comportamiento de compras en una cadena de supermercados en Asia. Para estos efectos, “Supermerca2” ha provisto con información de ventas para tres de sus sucursales (A), (B) y (C) las cuales tienen sedes en las ciudades de Yangon, Mandalay y Naypyidaw respectivamente, en el lejano país de Birmania. “Supermerca2” vende productos de todo tipo, desde accesorios de moda hasta artículos de hogar y estilo de vida. Adicionalmente, la cadena posee un club de lealtad en que los clientes frecuentes pueden registrar sus compras al momento de la compra y así acceder a beneficios posteriormente. 
+
+Entre otras preguntas, “Supermerca2” está interesado en entender la satisfacción de sus clientes y así poder decidir sobre qué clientes enfocar los esfuerzos de ventas. En particular, en esta tarea nos concentraremos en entender qué factores afectan el Rating de un cliente, que corresponde a un puntaje en una escala de 10 puntos que indica el grado de satisfacción en la experiencia de compra. El estudio de la satisfacción de los clientes es relevante ya que por un lado nos permite identificar si ciertas salas del supermercado podrían estar entregando un servicio insatisfactorio y por otro nos entrega una señal temprana para saber la probabilidad de que un cliente haga una compra a futuro. En este sentido, la evaluación de la calidad de servicio podría ser informativa respecto al comportamiento de compra futuro.
+
+Para el análisis dispone de una base de datos con una muestra de 1000 compras. El conjunto de datos es uno de los históricos de ventas de la empresa en donde se han registrado IDs de diferentes facturas en sus 3 sucursales durante las horas del día en que atienden. Además, se tienen registros del género del cliente, el precio y la cantidad del producto comprado, la forma de pago, entre otras.
+
+La base de datos está disponible en <https://www.kaggle.com/aungpyaeap/supermarket-sales>, donde además puede acceder a un diccionario de datos con una descripción de cada una de las variables disponibles en la base de datos.
+
+#### **Preguntas**
+
+1. (0 puntos) Explore los datos para entender la satisfacción de los clientes y qué variables podrían ayudar a predecir cuando un cliente está más satisfecho.
+
+2. (2.0 puntos) Usando los aprendizajes derivados de la exploración de datos, use un enfoque de regresión lineal para examinar cuantitativamente qué factores determinan la satisfacción al momento de realizar una compra.
+
+  + a) Proponga al menos dos especificaciones alternativas para el objetivo propuesto. Justifique muy brevemente por que las variables que está incluyendo en el modelo tienen sentido desde el punto de vista del negocio. Justifique además el nivel de agregación escogido y los índices considerados en el modelo.
+
+  + b) Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
+
+3. (1.0 puntos) Use al menos dos de los modelos de aprendizaje de máquinas que vimos en clases (MARS, kNN, regression tree, random forest) para generar un pronóstico de Rating de un cliente al realizar una compra y compare la capacidad de estos modelos con respecto a los de regresión lineal.
+
+4. (0.5 puntos) Compare las fortalezas y debilidades de los modelos anteriores, evalúe de acuerdo a algunas de las métricas que vimos en clases y discuta qué modelo recomendaría usar.
+
+5. (2.0 puntos) En esta parte, se compararán los grados de satisfacción entre las distintas salas de la cadena de supermercados. Para lo siguiente usted deberá clasificar cada evaluación de la calidad de servicios de acuerdo a si el cliente está o no satisfecho. Para eso puede considerar que un cliente está satisfecho si tiene un Rating mayor o igual a los 7 puntos. Con esto:
+
+  + a) Estimar un modelo de decisión homogéneo para cada sucursal y compare sus
+ resultados entre sucursales. Discuta brevemente sus resultados.
+
+  + b) Estimar un modelo de decisión heterogéneo para cada sucursal y compare sus
+ resultados entre sucursales. Discuta brevemente sus resultados.
+
++ _Observación: Recuerde que la variable utilizada es entera._
+
+6. (0.5 puntos) Resuma sus aprendizajes principales en un máximo de 4 tablas o figuras. Redacte de manera concisa sus resultados tal como los reportaría al departamento comercial interesado en aprender del comportamiento de clientes. Agregue cualquier conclusión o idea que le parezca relevante de comunicar.
+
+#### **Reglas del juego** 
+
+- Las tareas buscan replicar parcialmente las labores a las que se enfrentarían en el análisis de datos en una organización para el apoyo en la toma de decisiones. Por esto, se han propuesto preguntas relativamente abiertas que requieren que ustedes discutan y decidan cual es el mejor enfoque de solución. Les pedimos que se involucren tempranamente en el desarrollo de la tarea para tener una discusión enriquecedora. 
+
+- Todas las dudas, comentarios y errores publicarlos exclusivamente en el foro de u-cursos. De esta forma todos se benefician de las respuestas ofrecidas. 
+
+- Consideramos que es muy importante que logren escribir un informe conciso con una redacción acorde de un informe técnico profesional, los análisis y las conclusiones que obtengan de cada pregunta es en específico lo que debe declararse. La presentación y comunicación de resultados es parte integral de la tarea y por tanto será evaluada cuidadosamente. 
+
+- La tarea se desarrolla en grupos de máximo 3 integrantes. No hay excepciones. El entregable principal es un único markdown separado en tres tabs (a través de la opción .tabset). En el primer tab incluya todo el desarrollo de la tarea adecuadamente comentado. El segundo tab incluya el resumen de sus resultado de acuerdo a lo pedido en la pregunta 6. Este segundo tab es el que usarán en caso de que les corresponda presentar sus resultados. Considere el tercer tab como de anexos y puede incluir aquí cualquier resultado complementario. Para entregar sus resultados suba vía u-cursos un único archivo comprimido llamado t1-A1-A2-A3.zip, donde A1, A2 y A3 es el primer apellido de los integrantes del grupo. Incluya tanto el archivo .html de salida del markdown como los códigos fuentes que permitan reproducir sus resultados. 
+
+- Para la pregunta 6 consideramos que 4 figuras son suficientes para resumir los aprendizajes más relevantes, pero si están convencidos de que agregar una figura adicional es absolutamente necesaria, ¡adelante! 
+
+- La fecha de entrega de la tarea es el día miércoles 5 de Mayo a las 09:00 hrs, sin excepciones y no habrá plazo extra para la entrega. Si por algún motivo de fuerza mayor se ve imposibilitado de entregar la tarea en el plazo estipulado, deberá escribir directamente al profesor explicando su situación. El profesor decidirá el curso de acción de acuerdo a los méritos del caso. 
+
+- Recuerde que tenemos contempladas dos sesiones de presentaciones de las tareas. La primera sesión, a realizarse el día jueves 29 de Abril, está destinada a que compartan sus avances y podamos identificar de manera conjunta cuáles podrían ser dificultades técnicas que requieran orientación adicional. La segunda sesión, a realizarse el día jueves 6 de Mayo, está destinada para que expongan los resultados más relevantes de su trabajo y resuman sus principales aprendizajes, para que tanto los compañeros como el equipo docente puedan proveer retroalimentación. Todos los grupos deben estar disponibles para presentar en ambas ocasiones, pero si hay grupos voluntarios se les dará preferencia. Las presentaciones tendrán una duración máxima de 10 minutos y no es necesario que preparen material adicional. Esperamos que la salida del markdown sea lo suficientemente explicativa para comunicar sus resultados. 
+
+- El equipo docente considera que la copia de tareas atenta en contra de tu aprendizaje y por tanto aplicará todas las medidas que estén a su disposición para desincentivar esta mala práctica. 
+
+## Preliminares
+
+Escribe acá todos los comandos que necesitas ejecutar antes de abordar las preguntas de la tarea (carga de librerías, lectura de datos, limpieza de la data, transformación de variables y todo lo que necesites)
+
+#### Preparación Tarea
+
+```{r P}
+#Exploración de datos
+
+```
+
+## Desarrollo
+
+Documenta acá el desarrollo de tu tarea por pregunta.
+
+#### Pregunta 1
+
+(0 puntos) Explore los datos para entender la satisfacción de los clientes y qué variables podrían ayudar a predecir cuando un cliente está más satisfecho.
+```{r P1}
+#Exploración de datos
+
+```
+
+#### Pregunta 2
+
+(2.0 puntos) Usando los aprendizajes derivados de la exploración de datos, use un enfoque de regresión lineal para examinar cuantitativamente qué factores determinan la satisfacción al momento de realizar una compra.
+
+**a)** Proponga al menos dos especificaciones alternativas para el objetivo propuesto. Justifique muy brevemente por que las variables que está incluyendo en el modelo tienen sentido desde el punto de vista del negocio. Justifique además el nivel de agregación escogido y los índices considerados en el modelo.
+
+```{r P2_a}
+#Regresiones regulares
+
+```
+
+**b)** Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
+
+```{r P2_b}
+#Regresión autoselección
+
+```
+
+#### Pregunta 3
+
+(1.0 puntos)Use al menos dos de los modelos de aprendizaje de máquinas que vimos en clases (MARS, kNN, regression tree, random forest) para generar un pronóstico de Rating de un cliente al realizar una compra y compare la capacidad de estos modelos con respecto a los de regresión lineal.
+
+```{r P3}
+#Modelo de aprendizaje de máquinas
+
+```
+
+#### Pregunta 4
+
+(0.5 puntos) Compare las fortalezas y debilidades de los modelos anteriores, evalúe de acuerdo a algunas de las métricas que vimos en clases y discuta qué modelo recomendaría usar.
+
+```{r P4}
+#Comparación modelos y recomendación
+
+```
+
+#### Pregunta 5
+
+(2.0 puntos) En esta parte, se compararán los grados de satisfacción entre las distintas salas de la cadena de supermercados. Para lo siguiente usted deberá clasificar cada evaluación de la calidad de servicios de acuerdo a si el cliente está o no satisfecho. Para eso puede considerar que un cliente está satisfecho si tiene un Rating mayor o igual a los 7 puntos. Con esto:
+
+**a)**Estimar un modelo de decisión homogéneo para cada sucursal y compare sus
+ resultados entre sucursales. Discuta brevemente sus resultados.
+
+
+```{r P5_a}
+#Modelo Homogéneo con variables explicativas
+
+```
+
+**b)**Estimar un modelo de decisión heterogéneo para cada sucursal y compare sus
+ resultados entre sucursales. Discuta brevemente sus resultados.
+
+ 
+```{r p5_b}
+#Modelo Heterogéno con variables explicativas
+```
+ 
+## Resumen y Conclusiones
+
+Documenta acá el resumen y las conclusiones principales (esto te servirá para la presentación del jueves 6)
+
+#### Pregunta 6
+
+```{r P6}
+#Resumen y conclusiones
+
+```
+
+## Anexos
+
+Documenta acá cualquier otro adicional que consideres útil tener de referencia. 
+
+#### Pregunta X
+
+```{r PX}
+
+```
+
+#### Pregunta Y
+
+```{r PY}
+
+```
+
+#### Pregunta Z
+
+```{r PZ}
+
+```
+
+

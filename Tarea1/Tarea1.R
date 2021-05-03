@@ -8,8 +8,9 @@ library(knitr) #llamamos a la librería que nos permite visualizar contenido en 
 library(readr)
 library(lubridate)
 library(ggplot2)
-library(lattice) # Reg???
-library(caret) # regresiones????
+library(lattice) 
+library(caret) 
+library(Hmisc) # todos los histogramas ??
 supermarket_sales <- read_csv("./Tarea1/supermarket_sales.csv")
 View(supermarket_sales)
 
@@ -35,13 +36,10 @@ df$Semana <- cut(df$Date, breaks = "1 week", labels = FALSE)
 df$Semana = as.factor(df$Semana)
 df <- df[with(df, order(df$Date)), ] 
 
-#2. agrupar por semana
-TablaA = data.frame(table(df$Semana)) 
-colnames(TablaA) <- c("Semana","Clientes")
+
 
 
 #3. Agregamos el día de la semana
-df$Day <- as.factor(weekdays(df$Date))
 View(df)
 TablaA
 
@@ -55,6 +53,11 @@ test  <- df[-index, ]
 
 
 #EDA
+#0. Histograma de todas las variables
+hist.data.frame(df[,-c(1,11)])
+
+
+
 #1. Histograma variable de interes
 ggplot(data=df)+ #Se define un gráfico con ggplot()
   aes(x=Rating)+ #Solo le ingresamos el eje "x" para un histograma

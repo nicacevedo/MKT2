@@ -26,7 +26,7 @@ x <- rnorm(1000)
 hist(x)
 ```
 
-Al hacer clic en el botón **Knit**, se generará un documento que incluye tanto el contenido como la salida de cualquier fragmento de código R incorporado dentro del documento. Para instalar y cargar markdowns, necesitamos los siguientes comandos. 
+Al hacer clic en el botón **Knit**, se generará un documento que incluye tanto el contenido como la salida de cualquier fragmento de código R incorporado dentro del documento. Para instalar y cargar markdowns, necesitamos los siguientes comandos.
 
 ```{r instalation, eval = FALSE}
 install.packages("rmarkdown")
@@ -45,34 +45,31 @@ A continuación, se presentan las herramientas base para poder utilizar Markdown
 
 #### 1. Encabezados y listas.
 
-Existen 6 niveles para definir los encabezados y se utilizan con el caracter "#". Por ejemplo, un texto antecedido de "#####" generará un titulo de cuarto nivel: 
+Existen 6 niveles para definir los encabezados y se utilizan con el caracter "\#". Por ejemplo, un texto antecedido de "\#\#\#\#\#" generará un titulo de cuarto nivel:
 
 ##### este es el nivel 5
 
 Así dependiendo de la importancia o del orden puedes variar el tamaño de los títulos.
 
-Para generar listas desordenadas, lo único que deben hacer es agregar un "-" antes de la oración o palabra(+ y *, son otras opciones válidas).
+Para generar listas desordenadas, lo único que deben hacer es agregar un "-" antes de la oración o palabra(+ y \*, son otras opciones válidas).
 
-* En esta linea podemos ver como se genera la lista
-+ Otra linea
-* Asterisco tambien funciona
+-   En esta linea podemos ver como se genera la lista
+-   Otra linea
+-   Asterisco tambien funciona
 
 Para listas ordenadas, agregar número y un espacio, luego la oración
 
-1. No me gusta el humor boomer del profesor.
-2. Pero si me caen muy bien los auxiliares.
-3. Voy a aprender mucho en este curso. 
+1.  No me gusta el humor boomer del profesor.
+2.  Pero si me caen muy bien los auxiliares.
+3.  Voy a aprender mucho en este curso.
 
 #### 2. Citas, espaciado, negritas y otros herramientas.
 
-Si quieres realizar una cita , solo deben agregar el comando ">" y esta se llevara a cabo.
-> en este línea se puede observar el formato de una cita
+Si quieres realizar una cita , solo deben agregar el comando "\>" y esta se llevara a cabo. \> en este línea se puede observar el formato de una cita
 
-Para generar una separación basta con escribir tres guiones bajo.
-___
+Para generar una separación basta con escribir tres guiones bajo. \_\_\_
 
-Para incluir negritas o cursivas, basta con rodear el texto con asteriscos(uno para cursiva, dos negrita y tres ambos).
-*Este curso lo van a pasar todos los estudiantes que constantemente asistan a las clases auxiliares y hagan a consciencia los Laboratorios*
+Para incluir negritas o cursivas, basta con rodear el texto con asteriscos(uno para cursiva, dos negrita y tres ambos). *Este curso lo van a pasar todos los estudiantes que constantemente asistan a las clases auxiliares y hagan a consciencia los Laboratorios*
 
 Si quieren ponerse creativos, también pueden incluir enlaces. Si quieres agregar un enlace, debes poner entre llaves cuadradas el string que será en hipervínculo y entre llaves redondas el enlace.
 
@@ -83,25 +80,23 @@ Si quieren ponerse creativos, también pueden incluir enlaces. Si quieres agrega
 Dependiendo de que se busque hacer, hay distintas maneras de usar códigos. Si es una línea, 4 espacios en blanco bastan
 
     Esto es código
-    
+
 Sin embargo lo más típico es usar bloques (o chunks) de código:
 
-"```{r nombre_del_bloque}"
+"\`\`\`{r nombre_del_bloque}"
 
+"\`\`\`"
 
-"```"
+En casi todos los ejemplos vamos a usar bloques. El *nombre_del_bloque* es opcional, pero ayuda a ordenar tu codigo. Los bloques admiten varias opciones para que se muestre/no se muestre, se ejecute/no se ejecute o no muetre las salidas intermedias. Por el momento vamos a partir con las opciones por defecto que muestra y ejecuta todo.
 
-En casi todos los ejemplos vamos a usar bloques. El *nombre_del_bloque* es opcional, pero ayuda a ordenar tu codigo. Los bloques admiten varias opciones para que se muestre/no se muestre, se ejecute/no se ejecute o no muetre las salidas intermedias. Por el momento vamos a partir con las opciones por defecto que muestra y ejecuta todo. 
-
-+ Para transformar ver el output de tu archivo markdown presiona ctrl+shift+k
-+ Save with encoding: UTF-8, para evitar tener problemas con los acentos
+-   Para transformar ver el output de tu archivo markdown presiona ctrl+shift+k
+-   Save with encoding: UTF-8, para evitar tener problemas con los acentos
 
 ## R Programing
 
 ### Antes de comenzar a Programar
 
 Antes de comenzar debemos setear el directorio de trabajo (ie. donde están los archivos, bases y documentos a utilizar.). Además, le puede ser util limpiar el espacio de trabjo y fijar decimales.
-
 
 ```{r start, eval = FALSE}
 
@@ -114,7 +109,7 @@ options(digits = 5)   # Número de dígitos a utilizar
 setwd("C:/Users/mgoic/Docencia/IN5602/2020-02/labs")  # fijen el directorio de trabjo que les acomode
 ```
 
-###* Variables Numéricas
+\#\#\#\* Variables Numéricas
 
 ```{r}
 var1 = 5+1
@@ -122,6 +117,7 @@ print(var1)
 ```
 
 Otro ejemplo:
+
 ```{r}
 a = 4
 b = 8
@@ -140,7 +136,8 @@ for (i in 1:10){
 }
 ```
 
-sentencias condicionales.  
+sentencias condicionales.
+
 ```{r}
 a=6
 b=5
@@ -151,6 +148,7 @@ if (a>b){
 ```
 
 #### definición de funciones
+
 ```{r funciondelauxALCUADRADO}
 funciondelauxALCUADRADO <- function(a){
   c = a**a
@@ -160,6 +158,7 @@ funciondelauxALCUADRADO(2)
 ```
 
 #### Dataframes
+
 ```{r}
 set.seed(27)
 y = 11:20
@@ -182,9 +181,9 @@ subset(mi_df, w=="Grupo 2")
 
 ## Preguntas
 
-##### Pregunta 1 
+##### Pregunta 1
 
-Use la función *rnorm()* para definir un dataframe con columnas $x_1$ y $x_2$ de tamaño 30. Use la misma función para definir tambien una columna de errores normales $\epsilon$. Notar que puede incluir en la función *rnorm()* la media y desviación estándar que desea en sus vectores. Para este caso use la que prefiera, si no le entrega ninguna a la función, por defecto creará datos con media 0 y desviación estándar 1. 
+Use la función *rnorm()* para definir un dataframe con columnas $x_1$ y $x_2$ de tamaño 30. Use la misma función para definir tambien una columna de errores normales $\epsilon$. Notar que puede incluir en la función *rnorm()* la media y desviación estándar que desea en sus vectores. Para este caso use la que prefiera, si no le entrega ninguna a la función, por defecto creará datos con media 0 y desviación estándar 1.
 
 ```{r p1a}
 
@@ -202,7 +201,7 @@ e  <- rnorm(30)
 df <- data.frame(x1, x2, e)
 ```
 
-Elija ahora tres valores cualquiera de $b_0$, $b_1$ y $b_2$ y defina la columna $y$ como $y = b_0 + b_1 x_1 + b_2 x_2 + \varepsilon$. 
+Elija ahora tres valores cualquiera de $b_0$, $b_1$ y $b_2$ y defina la columna $y$ como $y = b_0 + b_1 x_1 + b_2 x_2 + \varepsilon$.
 
 ```{r p1b}
 # Definir b0, b1 y b2
@@ -216,7 +215,8 @@ df$y <- b0 + b1*df$x1 + b2*df$x2 + df$e
 
 ##### Pregunta 2
 
-Use el comando *lm()* para correr un modelo de regresión $y = b_0 + b_1 x_1 + b_2 x_2 + \varepsilon$. 
+Use el comando *lm()* para correr un modelo de regresión $y = b_0 + b_1 x_1 + b_2 x_2 + \varepsilon$.
+
 ```{r p2a}
 # myreg <- lm()
 myreg <- lm(y ~ x1 + x2, df)
@@ -258,7 +258,7 @@ Podemos observar que con 30 observaciones los coeficientes de la regresión dan 
 
 ##### Pregunta 3
 
-Explore brevemente la documentación de la función *lm()* para ver cómo puede rescatar los valores predichos por el modelo de regresión para cada valor de $x_1$ y $x_2$. Llámele *ypred* a este vector y use la función *plot()* para generar un scatter plot de y vs ypred.  
+Explore brevemente la documentación de la función *lm()* para ver cómo puede rescatar los valores predichos por el modelo de regresión para cada valor de $x_1$ y $x_2$. Llámele *ypred* a este vector y use la función *plot()* para generar un scatter plot de y vs ypred.
 
 ```{r preg3}
 
@@ -269,4 +269,3 @@ plot(df$y, ypred,main="Real Value v/s Prediction",xlab="y",ylab="y predicted", a
 Comente brevemente cómo interpreta los resultados.
 
 Podemos ver que la clara realción entre el valor real y el predicho, ya que la muestra es lo fuficientemente grande para que los coeficientes fueran casi los reales, lo que nos deja sólo con el error asociado a la "aleatoriedad" (que en nuestro caso es el $\epsilon$) alejándonos un poco del valor real. Aún así, la predicción es bastante cercana a la realidad y obtenemos una figura bastante parecida a una función identidad.
-

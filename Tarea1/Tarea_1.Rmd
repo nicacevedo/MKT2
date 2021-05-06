@@ -283,6 +283,16 @@ ggplot(df) +
 
 ```
 
+```{r}
+library(dplyr)
+df_numeric <- select_if(df, is.numeric)
+corr <- cor(df_numeric)
+corr
+
+corr2 <- rcorr(as.matrix(df_numeric))
+corr2
+```
+
 ## Desarrollo
 
 Documenta acá el desarrollo de tu tarea por pregunta.

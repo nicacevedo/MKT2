@@ -52,7 +52,7 @@ train <- df[index, ]
 test  <- df[-index, ]
 
 
-#EDA
+# EDA ####
 #0. Histograma de todas las variables
 hist.data.frame(df[,-c(1,11)])
 
@@ -173,9 +173,13 @@ ggplot(df) +
   aes(x=`Customer type`, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
-#REGRESIONES
+
+
+
+
+# REGRESIONES #################################################################
 #0. Regresion lineal sin diferenciar por tienda
-train.lm <- train(form = Rating ~ Total + Branch + `Customer type` + Gender + `Product line` + Payment + Day, #Fórmula
+train.lm <- train(form = Rating ~ (Total + Branch + `Customer type` + Gender + `Product line` + Payment )^2, #Fórmula
                   data = train, #Datos
                   method = "lm", #Algoritmo 
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
@@ -185,7 +189,9 @@ error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real 
 summary(train.lm)
 print(paste('Error de predicción: ', mean(abs(error.lm))))
 
-#1. Regresion lineal sin diferenciar por tienda
+
+
+#1. Regresion lineal sin diferenciar por tienda (con menos variables)
 train.lm <- train(form = Rating ~ `Unit price`+ Branch + Gender + Semana, #Fórmula
                   data = train, #Datos
                   method = "lm", #Algoritmo 
@@ -194,35 +200,40 @@ train.lm <- train(form = Rating ~ `Unit price`+ Branch + Gender + Semana, #Fórm
 
 test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.lm1 <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
-
 summary(train.lm)
 
 
 #2. Regresion lineal diferenciando por tienda
-allstores = unique(train$Branch)
+allstores = unique(train$Branch) # Valores únicos de cada tienda
 
-nobs = nrow(train)
-nbranches = length(allstores)
-regcoeff = array(NA, dim=c(nbranches,3))
+nobs = nrow(train)  # filas del set de training
+nbranches = length(allstores) # n de tiendas
 
+atributos_interes <- c('Total','Gender')
+#regcoeff = array(NA, dim=c(nbranches,length(atributos_interes))) # matriz auxiliar vacía para los coefs de las 3 tiendas
+regcoeff = array(NA, dim=c(nbranches,11))
+# Loop en las tiendas
 for (i in 1:nbranches){
-  
-  sfilter = train$Branch == allstores[i]
-  
-  Rating2 = train$Rating[sfilter]
-  Uprice = train$`Unit price`[sfilter]
-  Gender2 = train$Gender[sfilter]
-  Semana2 = train$Semana[sfilter]
+ 
+  sub_train <- train[(train$Branch==allstores[i]),]
+
   
   
-  regrmodel = lm(Rating2 ~ Uprice + Gender2 + Semana2)
-  regcoeff[i,] = regrmodel$coeff
+  #regrmodel = lm(Rating2 ~ Uprice + Gender2 + Semana2)
+  reg_model <- lm(Rating ~Total + `Customer type` + Gender + `Product line` + Payment, data = sub_train)
+  
+  #print(summary(reg_model))
+ # print(reg_model$coeff)
+  #regcoeff[i,] = reg_model$coeff
+  
+  sub_test <- test[test$Branch==allstores[i],]
+  reg_model_test.lm  <- predict(reg_model , newdata=sub_test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+  error.lm2 <- (sub_test$Rating -  reg_model_test.lm) #Calcular los errores de predicción (dato real - dato estimado)
+  summary(reg_model)
+  print(paste('Branch:', allstores[i],'/tError:',mean(abs(error.lm2))))
 }
 
-regrmodel_test.lm  <- predict(regrmodel , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-error.lm2 <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
-summary(regrmodel)
-summary(regcoeff)
+
 
 
 # 3. LASSO
@@ -232,7 +243,7 @@ y <- as.matrix(train[,c(19)])
 lassomodel = glmnet(x, y, alpha=1, lambda=0.05)
 
 # 4. Ridge
-ridgemodel = glmnet(x, y, alpha=0, lambda=0.05)
+ridgemodel = glmnet(x, y, alpha=2, lambda=0.05)
 
 #5. ML --> KNN
 train.knn <- train(Rating ~ `Unit price`+ Branch + Gender + Semana, 

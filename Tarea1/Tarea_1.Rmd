@@ -211,7 +211,7 @@ ggplot(df) +
 
 #5. Boxplot Branch
 ggplot(df) +
-  aes(x=Branch, y=log(Total)) +
+  aes(x=Branch, y=Total) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
 # Obs: Vemos que los precios son similares, pero que van subiendo un poco de Branch en Branch en cuando 
@@ -314,28 +314,80 @@ train.lm <- train(form = Rating ~ Total + Branch + `Customer type` + Gender + `P
 test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
 summary(train.lm)
-print(paste('Error de predicción: ', mean(abs(error.lm))))
+print
+```
+
+Separamos ahora la regresión por tiendas/branches:
+
+```{r}
+
+#2. Regresion lineal diferenciando por tienda
+allstores = unique(train$Branch) # Valores únicos de cada tienda
+
+nobs = nrow(train)  # filas del set de training
+nbranches = length(allstores) # n de tiendas
+
+atributos_interes <- c('Total','Gender')
+#regcoeff = array(NA, dim=c(nbranches,length(atributos_interes))) # matriz auxiliar vacía para los coefs de las 3 tiendas
+regcoeff = array(NA, dim=c(nbranches,11))
+# Loop en las tiendas
+for (i in 1:nbranches){
+ 
+  sub_train <- train[(train$Branch==allstores[i]),]
+
+  
+  
+  #regrmodel = lm(Rating2 ~ Uprice + Gender2 + Semana2)
+  reg_model <- lm(Rating ~Total + `Customer type` + Gender + `Product line` + Payment, data = sub_train)
+  
+  #print(summary(reg_model))
+ # print(reg_model$coeff)
+  #regcoeff[i,] = reg_model$coeff
+  
+  sub_test <- test[test$Branch==allstores[i],]
+  reg_model_test.lm  <- predict(reg_model , newdata=sub_test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+  error.lm2 <- (sub_test$Rating -  reg_model_test.lm) #Calcular los errores de predicción (dato real - dato estimado)
+  summary(reg_model)
+  print(paste('Branch:', allstores[i],'\tError:',mean(abs(error.lm2))))
+}
 ```
 
 ```{r}
-# Lasso
 
-train.lm <- train(form = Rating ~ Day + Quantity + `Unit price`, #Fórmula
-                  data = train, #Datos
-                  method = "earth", #Algoritmo 
-                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
-)
-test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
-
-print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
 
 **b)** Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
 
 ```{r P2_b}
 #Regresión autoselección
+# Lasso
 
+train.lasso <- train(form = Rating ~ Day + Quantity + `Unit price`, #Fórmula
+                  data = train, #Datos
+                  method = "glmnet", #Algoritmo 
+                  tuneGrid = expand.grid(alpha = 1, lambda = 1),
+                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
+)
+test.lasso  <- predict(train.lasso , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lasso <- test$Rating-test.lasso #Calcular los errores de predicción (dato real - dato estimado)
+
+print(paste('Error de predicción: ', mean(abs(error.lasso))))
+```
+
+```{r}
+#Regresión autoselección
+# Risge
+
+train.rr <- train(form = Rating ~ Day + Quantity + `Unit price`, #Fórmula
+                  data = train, #Datos
+                  method = "glmnet", #Algoritmo 
+                  tuneGrid = expand.grid(alpha = 0, lambda = 1),
+                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
+)
+test.rr <- predict(train.rr , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.rr <- test$Rating-test.rr #Calcular los errores de predicción (dato real - dato estimado)
+
+print(paste('Error de predicción: ', mean(abs(error.rr))))
 ```
 
 #### Pregunta 3
@@ -345,6 +397,35 @@ print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```{r P3}
 #Modelo de aprendizaje de máquinas
 
+#5. ML --> KNN
+train.knn <- train(Rating ~ `Unit price`+ Branch + Gender + Semana, 
+                   data=train, method="knn",  
+                   trControl = trainControl("cv", number=5),
+                   preProcess = c("center","scale"),
+                   tuneLength = 10
+)
+
+print(train.knn)
+ggplot(train.knn)
+test.knn  <- predict(train.knn, newdata=test) 
+error.knn <- test$Rating-test.knn
+print(paste('Error de predicción: ', mean(abs(error.knn))))
+```
+
+```{r}
+
+# 6. ML --> Random forest
+train.randomf <- train(Rating ~ `Unit price`+ Branch + Gender + Semana, 
+                       data=train, method="rf",  
+                       trControl = trainControl("cv", number=5),
+                       preProcess = c("center","scale"),
+                       tuneLength = 5 
+)
+print(train.randomf)
+ggplot(train.randomf)
+test.randomf  <- predict(train.randomf, newdata=test) 
+error.randomf <- test$Rating-test.randomf
+print(paste('Error de predicción: ', mean(abs(error.randomf))))
 ```
 
 #### Pregunta 4
@@ -364,6 +445,26 @@ print(paste('Error de predicción: ', mean(abs(error.lm))))
 
 ```{r P5_a}
 #Modelo Homogéneo con variables explicativas
+train$Satisfecho <- as.factor(train$Rating >= 7)
+test$Satisfecho <- as.factor(test$Rating >= 7)
+head(test)
+```
+
+```{r}
+#Regresión autoselección
+# Lasso
+
+train.lasso <- train(form = Satisfecho ~  Day + Quantity + `Unit price`, #Fórmula
+                  data = train, #Datos
+                  method = "glmnet", #Algoritmo 
+                  family = 'binom',
+                  #tuneGrid = expand.grid(alpha = 1, lambda = 1),
+                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
+)
+test.lasso  <- predict(train.lasso , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lasso <- as.numeric(test$Satisfecho)-as.numeric(test.lasso) #Calcular los errores de predicción (dato real - dato estimado)
+#print(error.lasso)
+print(paste('Error de predicción: ', mean(abs(error.lasso))))
 
 ```
 

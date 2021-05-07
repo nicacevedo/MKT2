@@ -133,14 +133,30 @@ df$Payment = as.factor(df$Payment)
 #Pasar Date a tipo fecha
 df$Date = as.Date(df$Date, tryFormats = c("%m/%d/%Y"))
 
+# Obtenemos las horas de cada Time
+df$Hour <- as.numeric(hour(df$Time))
+
+# Obtenemos cada mes (como factor)
+df$Month <- as.factor(month(df$Date))
+
+# Agregamos el día de la semana
+df$Day <- as.factor(weekdays(df$Date))
+
+# Fracciones del día en mañana/almuerzo/tarde/noche
+df$Frac_Day = as.factor(ifelse(df$Hour <= 11,1, 
+                               ifelse(df$Hour<=15,2,
+                                      ifelse(df$Hour<=17,3,4)
+                                                       )
+                               )
+                        )
+
+# Devolvemos a factor las horas
+df$Hour <- as.factor(hour(df$Time))
 
 #1. clasificamos por semana c/fecha
 df$Semana <- cut(df$Date, breaks = "1 week", labels = FALSE)
 df$Semana = as.factor(df$Semana)
 df <- df[with(df, order(df$Date)), ] 
-
-# Agregamos el día de la semana
-df$Day <- as.factor(weekdays(df$Date))
 
 # Agregamos hora del día (mañana, tarde, noche)
 
@@ -312,11 +328,13 @@ Documenta acá el desarrollo de tu tarea por pregunta.
 
 **a)** Proponga al menos dos especificaciones alternativas para el objetivo propuesto. Justifique muy brevemente por que las variables que está incluyendo en el modelo tienen sentido desde el punto de vista del negocio. Justifique además el nivel de agregación escogido y los índices considerados en el modelo.
 
+0.  En primera instancia vamos a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base
+
 ```{r P2_a}
 #Regresiones regulares
 
 #0. Regresion lineal sin diferenciar por tienda
-train.lm <- train(form = Rating ~ Total + Branch + `Customer type` + Gender + `Product line` + Payment + Day, #Fórmula
+train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + + Quantity + `Unit price`*Quantity + Payment + Month + Day + Hour, #Fórmula
                   data = train, #Datos
                   method = "lm", #Algoritmo 
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
@@ -324,7 +342,41 @@ train.lm <- train(form = Rating ~ Total + Branch + `Customer type` + Gender + `P
 test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
 summary(train.lm)
-print
+print(paste('Error de predicción: ', mean(abs(error.lm))))
+```
+
+```{r}
+#Regresiones con intervalos
+
+#0.2 Regresion lineal con intervalos
+train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + + Quantity + `Unit price`*Quantity + Payment + Month + Day + Frac_Day, #Fórmula
+                  data = train, #Datos
+                  method = "lm", #Algoritmo 
+                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
+)
+test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
+summary(train.lm)
+print(paste('Error de predicción: ', mean(abs(error.lm))))
+```
+
+0.2 Intervalos temporales (Separar día en 3, Separar mes quizás en 4 semanas),
+
+0.3 Regresión con interacciones
+
+```{r P2_a 2}
+#Regresiones regulares
+
+#0.2 Regresion lineal 
+train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + + Quantity + Payment + Date + Time, #Fórmula
+                  data = train, #Datos
+                  method = "lm", #Algoritmo 
+                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=5 (k-fold) 
+)
+test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
+summary(train.lm)
+print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
 
 Separamos ahora la regresión por tiendas/branches:

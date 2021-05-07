@@ -41,7 +41,7 @@ df <- df[with(df, order(df$Date)), ]
 
 #3. Agregamos el día de la semana
 View(df)
-TablaA
+
 
 #Divsion de los datos
 # samples aleatorio

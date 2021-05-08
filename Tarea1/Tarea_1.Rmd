@@ -116,7 +116,6 @@ library(lubridate)
 library(ggplot2)
 library(lattice) 
 library(caret) 
-library(Hmisc) 
 ```
 
 ```{r echo=FALSE}
@@ -725,7 +724,12 @@ for (i in 1:nbranches){
   
   
   #regrmodel = lm(Rating2 ~ Uprice + Gender2 + Semana2)
-  reg_model <- lm(Rating ~Total + `Customer type` + Gender + `Product line` + Payment, data = sub_train)
+  reg_model <- lm(Rating ~
+                     `Customer type` * Month  + 
+                    Gender  * Payment * `Product line` + 
+                    `Unit price`+ Quantity + 
+                    Hour + Day + Week, #Fórmula, 
+                  data = sub_train)
   
   #print(summary(reg_model))
  # print(reg_model$coeff)
@@ -834,7 +838,7 @@ train.knn.prediction <- train(Rating ~
                       Unit.price*Quantity, #Fórmula
                    data=train.knn, 
                    method="knn",  
-                   trControl = trainControl("cv", number=5),
+                   trControl = trainControl("cv", number=10),
                    preProcess = c("center","scale"),
                    tuneLength = 10
 )

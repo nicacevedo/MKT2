@@ -141,8 +141,7 @@ df$Hour <- as.numeric(hour(df$Time))
 df$Month <- as.factor(month(df$Date))
 
 # Agregamos el día de la semana (ordenados)
-df$Day <- factor(weekdays(df$Date), levels = c("Monday", 
-    "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+df$Day <- factor(weekdays(df$Date))
 
 # Fracciones del día en mañana/almuerzo/tarde/noche
 df$Frac_Day = as.factor(ifelse(df$Hour <= 11,1, ifelse(df$Hour<=15,2,ifelse(df$Hour<=17,3,4))))
@@ -652,7 +651,7 @@ Documenta acá el desarrollo de tu tarea por pregunta.
 #Regresiones regulares
 
 #0. Regresion lineal sin diferenciar por tienda
-train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + + Quantity + `Unit price`*Quantity + Payment + Month + Day + Hour, #Fórmula
+train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` +  Quantity + `Unit price`*Quantity + Payment + Month + Day + Hour, #Fórmula
                   data = train, #Datos
                   method = "lm", #Algoritmo 
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
@@ -887,14 +886,17 @@ print(paste('Error de predicción: ', mean(abs(error.randomf))))
 
 ```{r P5_a}
 #Modelo Homogéneo con variables explicativas
+
+#Dividimos a los clientes en satisfechos/insatisfechos 
 train$Satisfecho <- as.factor(train$Rating >= 7)
 test$Satisfecho <- as.factor(test$Rating >= 7)
+
 head(test)
 ```
 
 ```{r}
 #Regresión autoselección
-# Lasso
+# Logit-ish
 
 train.lasso <- train(form = Satisfecho ~  Day + Quantity + `Unit price`, #Fórmula
                   data = train, #Datos
@@ -908,6 +910,48 @@ error.lasso <- as.numeric(test$Satisfecho)-as.numeric(test.lasso) #Calcular los 
 #print(error.lasso)
 print(paste('Error de predicción: ', mean(abs(error.lasso))))
 
+```
+Preparamos los datos
+```{r}
+
+##Creación tabla entrenamiento
+TablaE = data.frame(table(train$Satisfecho)) #creamos un fichero de datos desde una tabla con la función data.frame() sobre la función table()
+colnames(TablaE) <- c("Nivel Satisfaccion","Usuarios") #cambiamos los nombres de las variables del fichero de datos para identificarlas mejor
+
+##Creación tabla entrenamiento
+TablaT = data.frame(table(test$Satisfecho))
+colnames(TablaT) <- c("Nivel Satisfaccion","Usuarios") 
+
+kable(TablaE)
+kable(TablaT)
+
+```
+
+Modelo de decisión homogéneo para cada sucursal
+```{r}
+ll.bb <-function(theta){
+  myalpha = exp(theta[1])
+  mybeta  = exp(theta[2])
+  pr = array(NA, dim=nrow(train))
+  for(i in 1:nrow(train)){
+    pr[i] = with(train, choose(ms[i],xs[i])*beta(myalpha+xs[i],mybeta+ms[i]-xs[i]) / beta(myalpha,mybeta))
+  }
+  return(-sum(log(pr)))
+}
+
+theta.start = rep(0.666,2)
+cat("Maximizing likelihood beta binomial ... \n")
+mle.bb = optim(par=theta.start, fn=ll.bb, hessian=TRUE, method="BFGS", control = list(maxit=30000, trace=TRUE, REPORT=10))
+myalpha = exp(mle.bb$par[1])
+mybeta  = exp(mle.bb$par[2])
+print(c(myalpha, mybeta))
+
+# compute conditional expectations
+ep = array(NA, dim=nrow(train))
+for(i in 1:nrow(train)){
+  ep[i] = with(train, (myalpha+xs[i])/(myalpha+mybeta+ms[i]))
+  if (ep[i] > 0.00207) cat("sent to segment", i, "\n")
+}
 ```
 
 **b)**Estimar un modelo de decisión heterogéneo para cada sucursal y compare sus resultados entre sucursales. Discuta brevemente sus resultados.

@@ -175,6 +175,32 @@ ggplot(df) +
 
 
 
+#. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
+
+pl <- 'Home and lifestyle'
+ggplot(df[df$`Product line`==pl,]) +
+  
+  aes(x=Month:Branch, y=Rating, col=`Customer type`) +
+  
+  geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
+  
+  theme(axis.text.x = element_text(angle = 30)) +
+  ggtitle(paste('Product line:',pl))
+  
+
+
+
+
+ggplot(df) +
+  
+  aes(x=Month:`Customer type`:Branch, y=Rating, col=`Product line`) +
+  
+  geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
+  
+  theme(axis.text.x = element_text(angle = 30))
+
+
+
 
 
 # REGRESIONES #################################################################

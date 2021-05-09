@@ -146,27 +146,19 @@ df$Day <- factor(weekdays(df$Date))
 # Fracciones del día en mañana/almuerzo/tarde/noche
 df$Frac_Day = as.factor(ifelse(df$Hour <= 11,1, ifelse(df$Hour<=15,2,ifelse(df$Hour<=17,3,4))))
 
-########################
-# Intervalos Temporales
-########################
-
 # Devolvemos a factor las horas
 df$Hour <- as.factor(hour(df$Time))
-
-
-
 
 # Creamos semanas de 7 días
 df$Week <- as.factor(ceiling(day(df$Date)/7))
 df[df$Week == 5,'Week'] <- '4'
 
-# clasificamos por semana c/fecha
+# Dividimos por semana
 df$Semana <- cut(df$Date, breaks = "1 week", labels = FALSE)
 df$Semana = as.factor(df$Semana)
 df <- df[with(df, order(df$Date)), ] 
 
 
-# Agregamos hora del día (mañana, tarde, noche)
 
 
 ```
@@ -183,12 +175,17 @@ test  <- df[-index, ]
 
 ```
 
-```{r P}
+
+## Desarrollo
+
+Documenta acá el desarrollo de tu tarea por pregunta.
+
+#### Pregunta 1
+
+(0 puntos) Explore los datos para entender la satisfacción de los clientes y qué variables podrían ayudar a predecir cuando un cliente está más satisfecho.
+
+```{r P1}
 #Exploración de datos
-
-#0. Histograma de todas las variables
-#hist.data.frame(df[,-c(1,11)])
-
 
 #1. Histograma variable de interes
 ggplot(data=df)+ #Se define un gráfico con ggplot()
@@ -204,7 +201,7 @@ ggplot(data=df)+
   ggtitle("Distribución Precio unitario")+ #Título del gráfico
   theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
 
-#2.2. Histograma Unit price
+#3. Histograma Unit price usando log()
 ggplot(data=df)+
   aes(x=log(Total))+
   geom_histogram(col="black", fill="green", alpha=0.2)+
@@ -213,82 +210,92 @@ ggplot(data=df)+
   ggtitle("Distribución Precio unitario")+ #Título del gráfico
   theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
 
-#
-# Bidimensionales
-#
+
+###################
+## observaciones ##
+###################
+
+#En general se ve que las variables de la base de datos por si solas, no explican la variable de interés Rating
+
+````
 
 
+EDA BIDEMSIONAL
 
-#4. Boxplot Branch
+```{r}
+#4. Boxplot Branch vs Rating
 ggplot(df) +
   aes(x=Branch, y=Rating) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
 
-
-# Obs: Vemos que los precios son similares, pero que van subiendo un poco de Branch en Branch en cuando 
+# OBS: Vemos que los precios son similares, pero que van subiendo un poco de Branch en Branch en cuando 
 # la media. En cambio, en Rating, se ve una clara baja de este en la Branch B.
 
-#6. Boxplot Branch
+#6. Boxplot Day vs Rating
 ggplot(df) +
   aes(x=Day, y=Rating) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#7. Boxplot Branch
+#OBS: se ven ciertos cambios en el rating según el día
+
+#7. Boxplot Day vs Unit price
 ggplot(df) +
   aes(x=Day, y=`Unit price`) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#8. Boxplot Branch
+#8. Boxplot Semana vs Unit price
 ggplot(df) +
   aes(x=Semana, y=`Unit price`) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#9. Boxplot Branch
+#9. Boxplot Semana vs Rating
 ggplot(df) +
   aes(x=Semana, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
-# genero
+#OBS: se ven ciertos cambios en el rating según la semana
+
 #10. Boxplot Branch
 ggplot(df) +
   aes(x=Gender, y=`Unit price`) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#11. Boxplot Branch
+#11. Boxplot Gender vs Rating
 ggplot(df) +
   aes(x=Gender, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
-# Payment
-#12. Boxplot Branch
+#OBS: no hay cambios notables
+
+#12. Boxplot Payment vs Unit price
 ggplot(df) +
   aes(x=Payment, y=`Unit price`) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#13. Boxplot Branch
+#13. Boxplot Payment vs Rating
 ggplot(df) +
   aes(x=Payment, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
-# Customer type
-#14. Boxplot Branch
+#OBS: pocos cambios
+
+#14. Boxplot Customer type vs Unit price
 ggplot(df) +
   aes(x=`Customer type`, y=`Unit price`) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#15. Boxplot Branch
+#15. Boxplot Customer type vs Rating
 ggplot(df) +
   aes(x=`Customer type`, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
-# Customer type
-#16. Boxplot Branch
+#16. Boxplot Customer type vs Unit price
 ggplot(df) +
   aes(x=`Customer type`, y=`Unit price`) +
   geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
-#17. Boxplot Branch
+#17. Boxplot Customer type vs Rating
 ggplot(df) +
   aes(x=`Customer type`, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
@@ -306,40 +313,43 @@ EDA Tridimensional
 #---------------------------------------------------------------------
 # Branch v/s Rating
 
-#. Boxplot Branch v/s Rating r/ Gender
+#18. Boxplot Branch v/s Rating r/ Gender
 ggplot(df) +
   aes(x=Branch, y=Rating, col=Gender) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
+#OBS: hay variaciones entre calificaciones por genero según la tienda
 
-#. Boxplot Branch v/s Rating r/ `Customer type`
+#19. Boxplot Branch v/s Rating r/ `Customer type`
 ggplot(df) +
   aes(x=Branch, y=Rating, col=`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
 
-#. Boxplot Branch v/s Rating r/ `Product Line`
+#20. Boxplot Branch v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=Branch, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
+#OBS: hay variaciones entre las calificaciones según el tipo de producto y tienda
 
-#. Boxplot Branch v/s Rating r/ Payment
+#21. Boxplot Branch v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Branch, y=Rating, col=Payment) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
+#OBS: hay ciertas variaciones pero no tan importantes
 
 #---------------------------------------------------------------------
 # Gender v/s Rating
 
-#. Boxplot Gender v/s Rating r/ `Customer type`
+#22. Boxplot Gender v/s Rating r/ `Customer type`
 ggplot(df) +
   aes(x=Gender, y=Rating, col=`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
 
-#. Boxplot Gender v/s Rating r/ `Product Line`
+#23. Boxplot Gender v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=Gender, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
 
-#. Boxplot Gender v/s Rating r/ Payment
+#24. Boxplot Gender v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Gender, y=Rating, col=Payment) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
@@ -347,12 +357,12 @@ ggplot(df) +
 #---------------------------------------------------------------------
 # `Customer type` v/s Rating
 
-#. Boxplot `Customer type` v/s Rating r/ `Product Line`
+#25. Boxplot `Customer type` v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=`Customer type`, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
 
-#. Boxplot `Customer type` v/s Rating r/ Payment
+#26. Boxplot `Customer type` v/s Rating r/ Payment
 ggplot(df) +
   aes(x=`Customer type`, y=Rating, col=Payment) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico
@@ -360,7 +370,7 @@ ggplot(df) +
 #---------------------------------------------------------------------
 # `Product Line` v/s Rating
 
-#. Boxplot `Product line`  v/s Rating r/ Payment
+#27. Boxplot `Product line`  v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Payment, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
@@ -373,24 +383,24 @@ ggplot(df) +
 
 # Tiempo agregado
 
-#. Boxplot Branch v/s Rating r/ Day
+#28. Boxplot Branch v/s Rating r/ Day
 ggplot(df) +
   aes(x=Day, y=Rating, col=Branch) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
-#. Boxplot Branch v/s Rating r/ Week
+#29. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Week, y=Rating, col=Branch) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
 # Tiempo contínuo 
 
-#. Boxplot Branch v/s Rating r/ Week
+#30. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Semana, y=Rating, col=Branch) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
-#. Boxplot Branch v/s Rating r/ Week
+#31. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Month, y=Rating, col=Branch) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
@@ -401,19 +411,19 @@ ggplot(df) +
 
 #---------------------------------------------------------------------
 
-#. Scatterplot Unit Price v/s Rating r/ Gender
+#32. Scatterplot Unit Price v/s Rating r/ Gender
 ggplot(df) +
   aes(x=`Unit price`, y=Rating, col=Gender)+ #Se agrega una dimensión de colores "col".
   geom_point(size=1, alpha=0.4) +
   geom_smooth(se=FALSE, method="lm") 
 
-#. Scatterplot Unit Price v/s Rating r/ Gender
+#33. Scatterplot Unit Price v/s Rating r/ Gender
 ggplot(df) +
   aes(x=`Unit price`, y=Rating, col=Gender)+ #Se agrega una dimensión de colores "col".
   geom_point(size=1, alpha=0.4) +
   geom_smooth(se=FALSE, method="lm") 
 #
-##. Scatterplot Branch
+##34. Scatterplot Branch
 #ggplot(df) +
 #  aes(x=log(Total), y=Rating, col=Day)+ #Se agrega una dimensión de colores "col".
 #  geom_point(size=1, alpha=0.4) +
@@ -431,19 +441,19 @@ EDA Cuadrimensional
 #---------------------------------------------------------------------
 # Branch:Gender v/s Rating
 
-#. Boxplot Branch:Gender v/s Rating r/ `Customer type`
+#35. Boxplot Branch:Gender v/s Rating r/ `Customer type`
 ggplot(df) +
   aes(x=Branch:Gender, y=Rating, col=`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
   theme(axis.text.x = element_text(angle = 30))
 
-#. Boxplot Branch v/s Rating r/ `Product Line`
+#36. Boxplot Branch v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=Branch:Gender, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
   theme(axis.text.x = element_text(angle = 30))
 
-#. Boxplot Branch v/s Rating r/ Payment
+#37. Boxplot Branch v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Branch:Gender, y=Rating, col=Payment) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -452,13 +462,13 @@ ggplot(df) +
 
 # Branch:`Customer type` v/s Rating
 
-#. Boxplot Branch:`Customer type` v/s Rating r/ `Product Line`
+#38. Boxplot Branch:`Customer type` v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=`Customer type`:Branch, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
   theme(axis.text.x = element_text(angle = 30))
 
-#. Boxplot Branch:`Customer type` v/s Rating r/ Payment
+#39. Boxplot Branch:`Customer type` v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Branch:`Customer type`, y=Rating, col=Payment) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -466,7 +476,7 @@ ggplot(df) +
 
 # Branch:Payment v/s Rating
 
-#. Boxplot Branch:Payment v/s Rating r/ `Product Line`
+#40. Boxplot Branch:Payment v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=Branch:Payment, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -475,13 +485,13 @@ ggplot(df) +
 #---------------------------------------------------------------------
 # Gender:`Customer type` v/s Rating
 
-#. Boxplot Gender:`Customer type` v/s Rating r/ `Product line`
+#41. Boxplot Gender:`Customer type` v/s Rating r/ `Product line`
 ggplot(df) +
   aes(x=Gender:`Customer type`, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
   theme(axis.text.x = element_text(angle = 30))
 
-#. Boxplot Gender:`Customer type` v/s Rating r/ Payment
+#42. Boxplot Gender:`Customer type` v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Payment:Gender, y=Rating, col=`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -489,7 +499,7 @@ ggplot(df) +
 
 # Gender:Payment v/s Rating
 
-#. Boxplot Gender:Payment v/s Rating r/ `Product line`
+#43. Boxplot Gender:Payment v/s Rating r/ `Product line`
 ggplot(df) +
   aes(x=Payment:Gender, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -499,7 +509,7 @@ ggplot(df) +
 
 # `Customer type`:Payment v/s Rating
 
-#. Boxplot `Customer type`:Payment v/s Rating r/ `Product line`
+#44. Boxplot `Customer type`:Payment v/s Rating r/ `Product line`
 ggplot(df) +
   aes(x=`Customer type`:Payment, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -515,24 +525,24 @@ ggplot(df) +
 
 # Tiempo agregado
 
-#. Boxplot Branch:`Customer type` v/s Rating r/ Day
+#45. Boxplot Branch:`Customer type` v/s Rating r/ Day
 ggplot(df) +
   aes(x=Day, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
-#. Boxplot Branch v/s Rating r/ Week
+#46. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Week, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
 # Tiempo contínuo 
 
-#. Boxplot Branch v/s Rating r/ Week
+#47. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Semana, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
-#. Boxplot Branch v/s Rating r/ Week
+#48. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Month, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
@@ -541,24 +551,24 @@ ggplot(df) +
 
 # Tiempo agregado
 
-#. Boxplot Branch:`Customer type` v/s Rating r/ Day
+#49. Boxplot Branch:`Customer type` v/s Rating r/ Day
 ggplot(df) +
   aes(x=Day, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
-#. Boxplot Branch v/s Rating r/ Week
+#50. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Week, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
 # Tiempo contínuo 
 
-#. Boxplot Branch v/s Rating r/ Week
+#51. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Semana, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
-#. Boxplot Branch v/s Rating r/ Week
+#52. Boxplot Branch v/s Rating r/ Week
 ggplot(df) +
   aes(x=Month, y=Rating, col=Branch:`Customer type`) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
@@ -567,12 +577,11 @@ ggplot(df) +
 
 
 ```
-
 EDA Quintimensional
 
 ```{r}
 
-#. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
+#53. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
 
 ggplot(df) +
 
@@ -589,13 +598,13 @@ theme(axis.text.x = element_text(angle = 30))
 #---------------------------------------------------------------------
 # Branch:Gender:`Customer type` v/s Rating
 
-#. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
+#54. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=Branch:Gender:`Customer type`, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
   theme(axis.text.x = element_text(angle = 30))
 
-#. Boxplot Branch:Gender:`Customer type` v/s Rating r/ Payment
+#55. Boxplot Branch:Gender:`Customer type` v/s Rating r/ Payment
 ggplot(df) +
   aes(x=Branch:Gender:`Customer type`, y=Rating, col=Payment) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -604,7 +613,7 @@ ggplot(df) +
 
 # Branch:Gender:Payment v/s Rating
 
-#. Boxplot Branch:Gender:Payment v/s Rating r/ `Product Line`
+#56. Boxplot Branch:Gender:Payment v/s Rating r/ `Product Line`
 ggplot(df) +
   aes(x=Branch:Gender:Payment, y=Rating, col=`Product line`) +
   geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
@@ -615,7 +624,7 @@ ggplot(df) +
 
 
 ```
-
+Vemos las correlaciones
 ```{r}
 library(dplyr)
 df_numeric <- select_if(df, is.numeric)
@@ -626,18 +635,6 @@ corr2 <- rcorr(as.matrix(df_numeric))
 corr2
 ```
 
-## Desarrollo
-
-Documenta acá el desarrollo de tu tarea por pregunta.
-
-#### Pregunta 1
-
-(0 puntos) Explore los datos para entender la satisfacción de los clientes y qué variables podrían ayudar a predecir cuando un cliente está más satisfecho.
-
-```{r P1}
-#Exploración de datos
-
-```
 
 #### Pregunta 2
 
@@ -645,12 +642,23 @@ Documenta acá el desarrollo de tu tarea por pregunta.
 
 **a)** Proponga al menos dos especificaciones alternativas para el objetivo propuesto. Justifique muy brevemente por que las variables que está incluyendo en el modelo tienen sentido desde el punto de vista del negocio. Justifique además el nivel de agregación escogido y los índices considerados en el modelo.
 
-0.  En primera instancia vamos a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base
+1. En primera instancia vamos a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base. 
+
+Customer type: se esperaría que haya cambios según se es miembro o no
+Gender: se esperaría un efecto según se es H/M
+Product line: podría haber cambios en el rating por la línea de producto
+Unit price: se esperaría que mientras más caro un producto, menor rating
+Quantity: a mayor cantidad, menor rating
+Unit price*Quantity: (distinto al total pues no incluye TAX), se esperaría que a mayor valor, menor rating
+Month: dependiendo del mez, podría cambiar el rating (por ejemplo si es marzo)
+Day: ciertos días podría variar el rating (ej. un lunes donde es comienzo de semana, podría bajar la nota dados los estados de ánimo)
+Hour: ciertas horas del día, podrían variar el rating.
+
+Se puede ver que la variable de interés no se explica muy bien por las variables independientes de este modelo, lo cual tiene sentido según el EDA realizado en la parte anterior.
 
 ```{r P2_a}
-#Regresiones regulares
+#Regresion lineal sin diferenciar por tienda
 
-#0. Regresion lineal sin diferenciar por tienda
 train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` +  Quantity + `Unit price`*Quantity + Payment + Month + Day + Hour, #Fórmula
                   data = train, #Datos
                   method = "lm", #Algoritmo 
@@ -662,7 +670,7 @@ summary(train.lm)
 print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
 
-0.2 Intervalos temporales (Separar día en 3, Separar mes quizás en 4 semanas),
+2. Agregamos a la regresión la variable Week
 
 ```{r}
 #Regresiones con intervalos
@@ -674,15 +682,15 @@ train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product l
                   na.action = na.pass, # Ignorar NA
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
 )
-test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+test.lm2  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
 summary(train.lm)
 print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
 
-0.3 Regresión con interacciones de categóricas no temporales ni product line porque está muy grande xd
+3. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA variaciones notables en la variable de interés.
 
-```{r P2_a 0.3}
+```{r P2_a }
 #Regresiones con intervalos
 
 #0.2 Regresion lineal con intervalos temporales
@@ -696,13 +704,13 @@ train.lm <- train(form = Rating ~
                   na.action = na.pass, # Ignorar NA
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
 )
-test.lm  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
+test.lm3  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm2 <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
 summary(train.lm)
 print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
 
-Separamos ahora la regresión por tiendas/branches:
+4. Separamos ahora la regresión por tiendas/branches, pues puede explicarse el rating según la tienda, teniendo efectos independientes. Además, se agrega las interacciones anteriores.
 
 ```{r}
 
@@ -735,19 +743,19 @@ for (i in 1:nbranches){
   #regcoeff[i,] = reg_model$coeff
   
   sub_test <- test[test$Branch==allstores[i],]
-  reg_model_test.lm  <- predict(reg_model , newdata=sub_test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-  error.lm2 <- (sub_test$Rating -  reg_model_test.lm) #Calcular los errores de predicción (dato real - dato estimado)
+  test.lm3  <- predict(reg_model , newdata=sub_test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+  error.lm3 <- (sub_test$Rating -  test.lm3) #Calcular los errores de predicción (dato real - dato estimado)
   summary(reg_model)
-  print(paste('Branch:', allstores[i],'\tError:',mean(abs(error.lm2))))
+  print(paste('Branch:', allstores[i],'\tError:',mean(abs(error.lm3))))
 }
 ```
 
-```{r}
 
-```
 
 **b)** Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
 
+
+1. Se usa LASSO, para seleccionar las varibles más importantes de la regresión anterior.
 ```{r P2_b}
 #Regresión autoselección
 # Lasso
@@ -768,7 +776,7 @@ error.lasso <- test$Rating-test.lasso #Calcular los errores de predicción (dato
 print(paste('Error de predicción: ', mean(abs(error.lasso))))
 ```
 
-Al parecer sobran las numéricas xdxd
+2. Se usa Ridge 
 
 ```{r}
 #Regresión autoselección
@@ -789,6 +797,18 @@ error.rr <- test$Rating-test.rr #Calcular los errores de predicción (dato real 
 
 print(paste('Error de predicción: ', mean(abs(error.rr))))
 ```
+
+A continuación, se comparan los modelos anteriores (regresiones lineales y selección automática)
+```{r}
+rating.test <- data.frame(lm1=test.lm, lm2=test.lm2, lm3=test.lm3, lasso=test.lasso, ridge=test.rr, rating=test$Rating)
+error.test <- data.frame(lm1=error.lm, lm2=error.lm2, lm3=error.lm3, lasso=error.lasso, ridge=error.rr)
+
+summary(abs(error.test))
+summary(error.test)
+boxplot(abs(subset(error.test))); title(main="RL + Autom models", sub="Forecasting Absolute Errors")
+boxplot(subset(error.test)); title(main="RL + Autom models", sub="Forecasting Errors")
+```
+
 
 #### Pregunta 3
 

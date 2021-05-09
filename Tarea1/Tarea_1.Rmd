@@ -102,11 +102,12 @@ La base de datos está disponible en <https://www.kaggle.com/aungpyaeap/supermar
 Escribe acá todos los comandos que necesitas ejecutar antes de abordar las preguntas de la tarea (carga de librerías, lectura de datos, limpieza de la data, transformación de variables y todo lo que necesites)
 
 #### Preparación Tarea
+1. Se cargan las librerías a utilizar, y se prepara el ambiente de R
 
 ```{r echo=FALSE}
-rm(list=ls())   # Limpiamos todos los objetos creados en R. la función ls() indica los nombres de todos los objetos y rm() los remueve.
-graphics.off() # Limpiamos los gráficos en el ambiente Plots (esquina inferior derecha)
-set.seed(12345) #Fijamos una semilla de aleatoriedad. Se debe realizar si se toman muestras aleatorias o se generan datos aleatorios. 
+rm(list=ls())   # Limpiamos todos los objetos creados en R.
+graphics.off() # Limpiamos los gráficos en el ambiente Plots 
+set.seed(12345) #Fijamos una semilla de aleatoriedad. 
 
 # Cargamos librerias útiles
 library(dplyr)
@@ -117,13 +118,13 @@ library(ggplot2)
 library(lattice) 
 library(caret) 
 ```
-
+2. Se transformar las variables necesarias
 ```{r echo=FALSE}
 # Cargar Bases de Datos
 supermarket_sales <- read_csv("./supermarket_sales.csv")
 df <- supermarket_sales
 
-#transformar a categoricas
+# Transformar a categoricas
 df$Branch = as.factor(df$Branch)
 df$City = as.factor(df$City)
 df$`Customer type`= as.factor(df$`Customer type`)
@@ -131,7 +132,7 @@ df$Gender =as.factor(df$Gender)
 df$`Product line` = as.factor(df$`Product line`)
 df$Payment = as.factor(df$Payment)
 
-#Pasar Date a tipo fecha
+# Pasar Date a tipo fecha
 df$Date = as.Date(df$Date, tryFormats = c("%m/%d/%Y"))
 
 # Obtenemos las horas de cada Time
@@ -146,14 +147,14 @@ df$Day <- factor(weekdays(df$Date))
 # Fracciones del día en mañana/almuerzo/tarde/noche
 df$Frac_Day = as.factor(ifelse(df$Hour <= 11,1, ifelse(df$Hour<=15,2,ifelse(df$Hour<=17,3,4))))
 
-# Devolvemos a factor las horas
+# Devolvemos a factor las horas (esto pues para el paso anterior se necesitaban en numeric)
 df$Hour <- as.factor(hour(df$Time))
 
-# Creamos semanas de 7 días
+# Creamos semanas de 7 días (cada mes con 4 semanas)
 df$Week <- as.factor(ceiling(day(df$Date)/7))
 df[df$Week == 5,'Week'] <- '4'
 
-# Dividimos por semana
+# Dividimos por semana (se cuentan las semanas de la primera fecha de la BD a la última)
 df$Semana <- cut(df$Date, breaks = "1 week", labels = FALSE)
 df$Semana = as.factor(df$Semana)
 df <- df[with(df, order(df$Date)), ] 
@@ -162,7 +163,7 @@ df <- df[with(df, order(df$Date)), ]
 
 
 ```
-
+3. Se divide la base de datos en entrenamiento (train) y testeo (test) utilizando 80/20%
 ```{r echo=FALSE}
 #Divsion de los datos
 
@@ -183,6 +184,10 @@ Documenta acá el desarrollo de tu tarea por pregunta.
 #### Pregunta 1
 
 (0 puntos) Explore los datos para entender la satisfacción de los clientes y qué variables podrían ayudar a predecir cuando un cliente está más satisfecho.
+
+A continuación se realizan distitnos EDA, el primero sólo viendo cómo se comportan los datos de la base de datos (df), el segundo (bidimensional) se ve la relación entre las variables dadas , y los siguientes interaccionando variables, o bien con las creadas en la parte anterior.
+
+##### 1. Exploración de datos
 
 ```{r P1}
 #Exploración de datos
@@ -210,17 +215,12 @@ ggplot(data=df)+
   ggtitle("Distribución Precio unitario")+ #Título del gráfico
   theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
 
-
-###################
-## observaciones ##
-###################
-
-#En general se ve que las variables de la base de datos por si solas, no explican la variable de interés Rating
-
 ````
 
 
-EDA BIDEMSIONAL
+
+##### 2. EDA BIDEMSIONAL
+A continuación se ven las relaciones entre la variable de interés (Rating) y el resto de las variables de la base que pudiesen explicar (una a una).
 
 ```{r}
 #4. Boxplot Branch vs Rating
@@ -301,9 +301,23 @@ ggplot(df) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
 ```
+En general se ve que las variables de la base de datos por si solas, no explican la variable de interés Rating, para corroborar, se evalúan las correlaciones:
 
-EDA Tridimensional
+```{r}
+library(dplyr)
+df_numeric <- select_if(df, is.numeric)
+corr <- cor(df_numeric)
+corr
 
+corr2 <- rcorr(as.matrix(df_numeric))
+corr2
+
+```
+
+
+
+##### 3. EDA Tridimensional
+A continuación, se evalúa cómo se explicaría la variable de interés tomando distintas variables de la base, así, se ve cómo afectan dos variables a Rating según su clase (categóricas, de tiempo, ...)
 ```{r}
 
 #
@@ -430,8 +444,10 @@ ggplot(df) +
 #  geom_smooth(se=FALSE, method="lm") +
 #  xlab("Precio unitario") 
 ```
+De este análisis, ya se pueden observar ciertas interacciones entre variables que pudiesen explicar el Rating
 
-EDA Cuadrimensional
+##### 4. EDA Cuadrimensional
+Similar a la parte anterior, se evlíua cómo afectan tres variables a Rating.
 
 ```{r}
 #
@@ -577,7 +593,8 @@ ggplot(df) +
 
 
 ```
-EDA Quintimensional
+##### 5. EDA Quintimensional
+Tal como en la parte anterior, se evalúa cómo afectan cierto número de variables a Rating, en este caso cinco.
 
 ```{r}
 
@@ -624,16 +641,10 @@ ggplot(df) +
 
 
 ```
-Vemos las correlaciones
-```{r}
-library(dplyr)
-df_numeric <- select_if(df, is.numeric)
-corr <- cor(df_numeric)
-corr
 
-corr2 <- rcorr(as.matrix(df_numeric))
-corr2
-```
+
+
+
 
 
 #### Pregunta 2
@@ -642,10 +653,10 @@ corr2
 
 **a)** Proponga al menos dos especificaciones alternativas para el objetivo propuesto. Justifique muy brevemente por que las variables que está incluyendo en el modelo tienen sentido desde el punto de vista del negocio. Justifique además el nivel de agregación escogido y los índices considerados en el modelo.
 
-1. En primera instancia vamos a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base. 
+#####1. En primera instancia se va a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base. Esto es, no incluir dos varibles independientes tal que una se pueda explicar por la otra.
 
-Customer type: se esperaría que haya cambios según se es miembro o no
-Gender: se esperaría un efecto según se es H/M
+Customer type: se esperaría que haya cambios según se es miembro o no (ej. si es miembro puede ser más exigente a la hora de evaluar la tienda)
+Gender: se esperaría un efecto según se es H/M (ej. cierto género es más exigente a la hora de evaluar)
 Product line: podría haber cambios en el rating por la línea de producto
 Unit price: se esperaría que mientras más caro un producto, menor rating
 Quantity: a mayor cantidad, menor rating
@@ -654,7 +665,7 @@ Month: dependiendo del mez, podría cambiar el rating (por ejemplo si es marzo)
 Day: ciertos días podría variar el rating (ej. un lunes donde es comienzo de semana, podría bajar la nota dados los estados de ánimo)
 Hour: ciertas horas del día, podrían variar el rating.
 
-Se puede ver que la variable de interés no se explica muy bien por las variables independientes de este modelo, lo cual tiene sentido según el EDA realizado en la parte anterior.
+En cuanto al nivel de agregación, interesa ver cómo se ve afectado el Rating según fechas (mes, día, ...)
 
 ```{r P2_a}
 #Regresion lineal sin diferenciar por tienda
@@ -669,32 +680,36 @@ error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real 
 summary(train.lm)
 print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
+Se puede ver que la variable de interés no se explica muy bien por las variables independientes de este modelo, lo cual tiene sentido según el EDA bidimensional realizado en la parte anterior.
 
-2. Agregamos a la regresión la variable Week
+#####2. Agregamos a la regresión la variable Week, donde podría haber un efecto al pasar el tiempo en semanas.
 
 ```{r}
-#Regresiones con intervalos
 
-#0.2 Regresion lineal con intervalos temporales
-train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + Quantity + `Unit price`*Quantity + Payment + Month + Week + Day + Hour, #Fórmula
+#2. Regresion lineal con intervalos temporales
+train.lm2 <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + Quantity + `Unit price`*Quantity + Payment + Month + Week + Day + Hour, #Fórmula
                   data = train, #Datos
                   method = "lm", #Algoritmo
                   na.action = na.pass, # Ignorar NA
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
 )
-test.lm2  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
-summary(train.lm)
-print(paste('Error de predicción: ', mean(abs(error.lm))))
+test.lm2  <- predict(train.lm2 , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm2 <- test$Rating-test.lm2 #Calcular los errores de predicción (dato real - dato estimado)
+summary(train.lm2)
+print(paste('Error de predicción: ', mean(abs(error.lm2))))
 ```
+Se puede observar que este modelo tampoco explica de la forma deseada la variable de interés (poca significancia), sin embargo, disminuye el error de predicción.
 
-3. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA variaciones notables en la variable de interés.
+
+#####3. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA cuadrimensional ciertas variaciones notables en la variable de interés.
+a. Branch x Customer type x Month: en el gráfico N°48, se vieron variaciones según este tipo de variables, por ejemplo, según tienda, varía el Rating, lo mismo para tipo de cliente, y que estos efectos también varían según el mes.
+
+b. Gender x Payment x Product line: también se pueden ver variaciones interesantes en el gráfico N°43
 
 ```{r P2_a }
-#Regresiones con intervalos
 
-#0.2 Regresion lineal con intervalos temporales
-train.lm <- train(form = Rating ~ 
+#3.Regresion lineal con intervalos temporales
+train.lm3 <- train(form = Rating ~ 
                     Branch * `Customer type` * Month  + 
                     Gender  * Payment * `Product line` + 
                     `Unit price`+ Quantity + 
@@ -704,17 +719,19 @@ train.lm <- train(form = Rating ~
                   na.action = na.pass, # Ignorar NA
                   trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
 )
-test.lm3  <- predict(train.lm , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-error.lm2 <- test$Rating-test.lm #Calcular los errores de predicción (dato real - dato estimado)
-summary(train.lm)
-print(paste('Error de predicción: ', mean(abs(error.lm))))
+test.lm3  <- predict(train.lm3 , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.lm3 <- test$Rating-test.lm3 #Calcular los errores de predicción (dato real - dato estimado)
+summary(train.lm3)
+print(paste('Error de predicción: ', mean(abs(error.lm3))))
 ```
+Disminuye el error de predicción, sin embargo, hay poca siginificancia en las variables.
 
-4. Separamos ahora la regresión por tiendas/branches, pues puede explicarse el rating según la tienda, teniendo efectos independientes. Además, se agrega las interacciones anteriores.
+
+#####4. Separamos ahora la regresión por tiendas/branches, pues puede explicarse el rating según la tienda, teniendo efectos independientes. Además, se agrega las interacciones anteriores.
 
 ```{r}
 
-#2. Regresion lineal diferenciando por tienda
+#4. Regresion lineal diferenciando por tienda 
 allstores = unique(train$Branch) # Valores únicos de cada tienda
 
 nobs = nrow(train)  # filas del set de training
@@ -743,19 +760,19 @@ for (i in 1:nbranches){
   #regcoeff[i,] = reg_model$coeff
   
   sub_test <- test[test$Branch==allstores[i],]
-  test.lm3  <- predict(reg_model , newdata=sub_test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-  error.lm3 <- (sub_test$Rating -  test.lm3) #Calcular los errores de predicción (dato real - dato estimado)
+  test.lm4  <- predict(reg_model , newdata=sub_test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+  error.lm4 <- (sub_test$Rating -  test.lm4) #Calcular los errores de predicción (dato real - dato estimado)
   summary(reg_model)
-  print(paste('Branch:', allstores[i],'\tError:',mean(abs(error.lm3))))
+  print(paste('Branch:', allstores[i],'\tError:',mean(abs(error.lm4))))
 }
 ```
-
+Se puede observar distitnos errores de predicción según tienda.
 
 
 **b)** Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
 
 
-1. Se usa LASSO, para seleccionar las varibles más importantes de la regresión anterior.
+1. Se usa LASSO para seleccionar las varibles más importantes de la regresión anterior.
 ```{r P2_b}
 #Regresión autoselección
 # Lasso
@@ -775,8 +792,9 @@ error.lasso <- test$Rating-test.lasso #Calcular los errores de predicción (dato
 
 print(paste('Error de predicción: ', mean(abs(error.lasso))))
 ```
+Se observa una baja en el error de predicción.
 
-2. Se usa Ridge 
+2. Se usa Ridge. 
 
 ```{r}
 #Regresión autoselección
@@ -797,7 +815,11 @@ error.rr <- test$Rating-test.rr #Calcular los errores de predicción (dato real 
 
 print(paste('Error de predicción: ', mean(abs(error.rr))))
 ```
+Aumenta el error de predicción en comparación a LASSO.
 
+
+
+##### Comparación de resultados
 A continuación, se comparan los modelos anteriores (regresiones lineales y selección automática)
 ```{r}
 rating.test <- data.frame(lm1=test.lm, lm2=test.lm2, lm3=test.lm3, lasso=test.lasso, ridge=test.rr, rating=test$Rating)
@@ -808,13 +830,13 @@ summary(error.test)
 boxplot(abs(subset(error.test))); title(main="RL + Autom models", sub="Forecasting Absolute Errors")
 boxplot(subset(error.test)); title(main="RL + Autom models", sub="Forecasting Errors")
 ```
-
+Dado lo anterior, LASSO pareciera ser el mejor método.
 
 #### Pregunta 3
 
 (1.0 puntos)Use al menos dos de los modelos de aprendizaje de máquinas que vimos en clases (MARS, kNN, regression tree, random forest) para generar un pronóstico de Rating de un cliente al realizar una compra y compare la capacidad de estos modelos con respecto a los de regresión lineal.
 
-*Como KNN es un método que depende de una métrica de distancia (default euclidiana), entonces no podemos llegar y comparar los atributos numéricos con los categóricos, necesitamos hacerlos comparables a ambos para que no dependa todo sólo de los numéricos. En este caso. podríamos simplemente normalizar con el método de Min-Max:*
+Como KNN es un método que depende de una métrica de distancia (default euclidiana), entonces no se puede simplemente comparar los atributos numéricos con los categóricos, se necesita hacerlos comparables a ambos para que no dependa todo sólo de los numéricos. En este caso, se puede normalizar con el método de Min-Max:
 
 ```{r echo=FALSE}
 
@@ -844,13 +866,11 @@ test.knn$Quantity  <- min.max(test$Quantity)
 
 head(train.knn)
 ```
-
+##### 1. KNN
 ```{r P3, Warning=FALSE}
 #Modelo de aprendizaje de máquinas
-
-
-#5. ML --> KNN
-train.knn.prediction <- train(Rating ~ 
+#1. ML --> KNN
+train.knn.prediction<- train(Rating ~ 
                       Branch * Customer.type* Month  +
                       Gender  * Payment * Product.line +
                       Hour + Day + Week + 
@@ -869,9 +889,10 @@ error.knn <- test.knn$Rating-test.knn.prediction
 print(paste('Error de predicción: ', mean(abs(error.knn))))
 ```
 
+##### 2. Random Forest
 ```{r}
 
-# 6. ML --> Random forest
+#2. ML --> Random forest
 train.randomf <- train(Rating ~ 
                         Branch * `Customer type` * Month  +
                         Gender  * Payment * `Product line` +
@@ -893,8 +914,35 @@ print(paste('Error de predicción: ', mean(abs(error.randomf))))
 
 (0.5 puntos) Compare las fortalezas y debilidades de los modelos anteriores, evalúe de acuerdo a algunas de las métricas que vimos en clases y discuta qué modelo recomendaría usar.
 
+
+Para comparar, se utilizaran las métricas RMSE y MAE. Los resultados se resumen en la siguiente tabla:
 ```{r P4}
 #Comparación modelos y recomendación
+library(Metrics) #paquete para funciones de métricas
+
+Metricas=data.frame(Modelo=c("lm1","lm2","lm3","LASSO","Ridge","KNN","Random Forest"), RMSE=NA, MAE=NA)
+
+
+#RMSE
+Metricas[1,2] = rmse(train$Rating,test.lm) #lm1
+Metricas[2,2] = rmse(train$Rating,test.lm2) #lm2
+Metricas[3,2] = rmse(train$Rating,test.lm3) #lm3
+Metricas[4,2] = rmse(train$Rating,test.lasso) #lasso
+Metricas[5,2] = rmse(train$Rating,test.rr) #ridge
+Metricas[6,2] = "1.741664"#knn
+Metricas[7,2] = "1.726167" #rf
+
+
+#MAPE 
+Metricas[1,3] = mae(train$Rating,test.lm) #lm1
+Metricas[2,3] = mae(train$Rating,test.lm2) #lm2
+Metricas[3,3] = mae(train$Rating,test.lm3) #lm3
+Metricas[4,3] = mae(train$Rating,test.lasso) #lasso
+Metricas[5,3] = mae(train$Rating,test.rr) #ridge
+Metricas[6,3] = "1.482653" #knn
+Metricas[7,3] = "1.477667" #rf
+
+kable(Metricas)
 
 ```
 

@@ -102,7 +102,8 @@ La base de datos está disponible en <https://www.kaggle.com/aungpyaeap/supermar
 Escribe acá todos los comandos que necesitas ejecutar antes de abordar las preguntas de la tarea (carga de librerías, lectura de datos, limpieza de la data, transformación de variables y todo lo que necesites)
 
 #### Preparación Tarea
-1. Se cargan las librerías a utilizar, y se prepara el ambiente de R
+
+1.  Se cargan las librerías a utilizar, y se prepara el ambiente de R
 
 ```{r echo=FALSE}
 rm(list=ls())   # Limpiamos todos los objetos creados en R.
@@ -117,8 +118,12 @@ library(lubridate)
 library(ggplot2)
 library(lattice) 
 library(caret) 
+library(Hmisc)
+library(Metrics) #paquete para funciones de métricas
 ```
-2. Se transformar las variables necesarias
+
+2.  Se transformar las variables necesarias
+
 ```{r echo=FALSE}
 # Cargar Bases de Datos
 supermarket_sales <- read_csv("./supermarket_sales.csv")
@@ -159,11 +164,10 @@ df$Semana <- cut(df$Date, breaks = "1 week", labels = FALSE)
 df$Semana = as.factor(df$Semana)
 df <- df[with(df, order(df$Date)), ] 
 
-
-
-
 ```
-3. Se divide la base de datos en entrenamiento (train) y testeo (test) utilizando 80/20%
+
+3.  Se divide la base de datos en entrenamiento (train) y testeo (test) utilizando 80/20%
+
 ```{r echo=FALSE}
 #Divsion de los datos
 
@@ -175,7 +179,6 @@ train <- df[index, ]
 test  <- df[-index, ]
 
 ```
-
 
 ## Desarrollo
 
@@ -189,13 +192,31 @@ A continuación se realizan distitnos EDA, el primero sólo viendo cómo se comp
 
 ##### 1. Exploración de datos
 
+En primera instancia, se debe notar que hay ciertas variables en la base de datos que son redundantes o que no aportan nada de información en cuanto a la variabilidad de la variable de interés, como lo es caso de:
+
+-   `City`: Aporta la misma información que `Branch`, por lo que es redundante (sólo 1 tienda por ciudad).
+
+-   `Gross margin percentage`: Se mantiene constante también en toda la base.
+
+-   `Total`: Se define como `Unit price`\*`Quantity`(1+0.05) = `Total`, por lo que es es reduante una vez que tenemos la información de las otras dos (sin tomar en cuenta la que es constante, ya que es sólo un ponderador fijo).
+
+-   `Cogs`: Se define casi de manera idéntica a `Total`, ya que tiene los mismos valores que `Unit price`\*`Quantity`, por lo que también es redundante.
+
+-   `Tax`: Es una proporción (5%) de las variables de precio y cantidad nuevamente, por lo que es redundante.
+
+-   `Gross income`: Es idéntico a `Tax`; es reduntante.
+
+Con respecto al resto de los atributos/variables (estime conveniente el nombre a su gusto o juicios) en la base, se revisa si existe alguna relación entre las distribuciones de las variables numéricas de la base de datos, para detectar tanto anomalías en estas o algún otro factor que se pueda observar de esta manera. De forma adicional, se realiza una transformación logarítmica de la variable `Unit price` para ver si se obtiene algo:
+
 ```{r P1}
 #Exploración de datos
 
 #1. Histograma variable de interes
 ggplot(data=df)+ #Se define un gráfico con ggplot()
   aes(x=Rating)+ #Solo le ingresamos el eje "x" para un histograma
-  geom_histogram(col="black", fill="green", alpha = 0.2) # Se define la forma del gráfico. "col" pinta el contorno, "fill" el entorno y "alpha" entrega transparencia 
+  geom_histogram(col="black", fill="green", alpha = 0.2)+ # Se define la forma del gráfico. "col" pinta el contorno, "fill" el entorno y "alpha" entrega transparencia
+  ggtitle("Distribución de Rating") +#Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
 
 #2. Histograma Unit price
 ggplot(data=df)+
@@ -210,23 +231,33 @@ ggplot(data=df)+
 ggplot(data=df)+
   aes(x=log(Total))+
   geom_histogram(col="black", fill="green", alpha=0.2)+
-  xlab("Precio unitario")+ #Etiqueta para el eje x
+  xlab("log(Precio unitario)")+ #Etiqueta para el eje x
   ylab("Frecuencia")+ #Etiqueta para el eje y
-  ggtitle("Distribución Precio unitario")+ #Título del gráfico
+  ggtitle("Distribución Precio unitario Logarítmico")+ #Título del gráfico
   theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
 
-````
+#4. Histograma de Quantity
+ggplot(data=df)+
+  aes(x=Quantity)+
+  geom_histogram(col="black", fill="green", alpha=0.2)+
+  xlab("Quantity")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Quantity")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5)) #centra el título en el gráfico. Lo ajusta en la posición horizontal (hjust = 0.5)
 
+```
 
+Se ve que no existe ninguna relación aparente entre las distribuciones de estas variables numéricas. Sin embargo, relaciones entre ellas o con otros atributos podrían tener incidencia en la variable de interés, por lo que no se van a obviar en primera instancia.
 
 ##### 2. EDA BIDEMSIONAL
-A continuación se ven las relaciones entre la variable de interés (Rating) y el resto de las variables de la base que pudiesen explicar (una a una).
+
+Ahora se analizarán los efectos de las variables independientes de maner gráfica, con sólo una variable explicativa por plot. El análisis a continuación sólo se hará con las variables categóricas:
 
 ```{r}
-#4. Boxplot Branch vs Rating
+#5. Boxplot Branch vs Rating
 ggplot(df) +
   aes(x=Branch, y=Rating) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
 
 # OBS: Vemos que los precios son similares, pero que van subiendo un poco de Branch en Branch en cuando 
@@ -235,19 +266,9 @@ ggplot(df) +
 #6. Boxplot Day vs Rating
 ggplot(df) +
   aes(x=Day, y=Rating) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
 #OBS: se ven ciertos cambios en el rating según el día
-
-#7. Boxplot Day vs Unit price
-ggplot(df) +
-  aes(x=Day, y=`Unit price`) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
-
-#8. Boxplot Semana vs Unit price
-ggplot(df) +
-  aes(x=Semana, y=`Unit price`) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
 #9. Boxplot Semana vs Rating
 ggplot(df) +
@@ -256,22 +277,12 @@ ggplot(df) +
 
 #OBS: se ven ciertos cambios en el rating según la semana
 
-#10. Boxplot Branch
-ggplot(df) +
-  aes(x=Gender, y=`Unit price`) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
-
 #11. Boxplot Gender vs Rating
 ggplot(df) +
   aes(x=Gender, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
 #OBS: no hay cambios notables
-
-#12. Boxplot Payment vs Unit price
-ggplot(df) +
-  aes(x=Payment, y=`Unit price`) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
 #13. Boxplot Payment vs Rating
 ggplot(df) +
@@ -280,20 +291,10 @@ ggplot(df) +
 
 #OBS: pocos cambios
 
-#14. Boxplot Customer type vs Unit price
-ggplot(df) +
-  aes(x=`Customer type`, y=`Unit price`) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
-
 #15. Boxplot Customer type vs Rating
 ggplot(df) +
   aes(x=`Customer type`, y=Rating) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
-
-#16. Boxplot Customer type vs Unit price
-ggplot(df) +
-  aes(x=`Customer type`, y=`Unit price`) +
-  geom_boxplot(alpha=0.4, fill="black") #cambiamos el tipo de gráfico
 
 #17. Boxplot Customer type vs Rating
 ggplot(df) +
@@ -301,10 +302,30 @@ ggplot(df) +
   geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
 
 ```
-En general se ve que las variables de la base de datos por si solas, no explican la variable de interés Rating, para corroborar, se evalúan las correlaciones:
+
+Se puede observar que casi ninguna variable categórica parece tener un efecto por sí sola sobre la variable de inerés. Lo único destacable que podemos rescatar es la baja en el `Rating` que parece presentar la `Branch` B en primera instancia.
+
+Ahora se realiza un último análisis con las variables numéricas:
 
 ```{r}
-library(dplyr)
+
+#17.1. Scatter Unir price vs Rating
+ggplot(df) +
+  aes(x=`Unit price`, y=Rating) +
+  geom_point(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
+
+#17.2. Boxplot Quantity type vs Rating
+ggplot(df) +
+  aes(x=Quantity, y=Rating, group=Quantity) +
+  geom_boxplot(alpha=0.4, fill="blue") #cambiamos el tipo de gráfico
+```
+
+Claramente se puede evidenciar que no existe relación alguna entre la variable de interés y el precio unitario por sí solo, ya que el scatterplot es prácticamente al azar. En cuanto a la cantidad de productos, tampoco se puede llegar a una conclusión, ya que no hay mayores cambios además de un leve aumento en las cantidades medias-altas, pero podría no ser un efecto.
+
+Para corroborar completamente, se confirma por última vez con una matriz de correlaciones:
+
+```{r}
+
 df_numeric <- select_if(df, is.numeric)
 corr <- cor(df_numeric)
 corr
@@ -314,10 +335,12 @@ corr2
 
 ```
 
-
+Nuevamente se ve que no existe relación alguna con las variables independientes numéricas de manera separada con respecto a la variable de interés. Las correlaciones son prácticamente 0 (y tampoco son significativas).
 
 ##### 3. EDA Tridimensional
-A continuación, se evalúa cómo se explicaría la variable de interés tomando distintas variables de la base, así, se ve cómo afectan dos variables a Rating según su clase (categóricas, de tiempo, ...)
+
+A continuación, se analizarán efectos conjuntos (con más de una variable independiente) sobre la variable de interés, tomando distintas combinaciones de la base:
+
 ```{r}
 
 #
@@ -433,21 +456,23 @@ ggplot(df) +
 
 #33. Scatterplot Unit Price v/s Rating r/ Gender
 ggplot(df) +
-  aes(x=`Unit price`, y=Rating, col=Gender)+ #Se agrega una dimensión de colores "col".
+    aes(x=`Unit price`, y=Rating, col=`Product line`)+ #Se agrega una dimensión de colores "col".
+    geom_point(size=1, alpha=0.4) +
+  geom_smooth(se=FALSE, method="lm")
+
+#33. Scatterplot Unit Price v/s Rating r/ Gender
+ggplot(df) +
+  aes(x=`Unit price`, y=Rating, col=Branch)+ #Se agrega una dimensión de colores "col".
   geom_point(size=1, alpha=0.4) +
   geom_smooth(se=FALSE, method="lm") 
-#
-##34. Scatterplot Branch
-#ggplot(df) +
-#  aes(x=log(Total), y=Rating, col=Day)+ #Se agrega una dimensión de colores "col".
-#  geom_point(size=1, alpha=0.4) +
-#  geom_smooth(se=FALSE, method="lm") +
-#  xlab("Precio unitario") 
+
 ```
-De este análisis, ya se pueden observar ciertas interacciones entre variables que pudiesen explicar el Rating
+
+De este análisis, ya se pueden observar ciertas interacciones entre variables que pudiesen explicar el Rating, como lo es en el caso del género y la línea de los productos, donde se puede ver que el género femenino presenta mayor variación de Rating entre líneas, mientras que el género masculino parace mantenerse constante entre ellas. En cuanto al tiempo, también se ven cambios en durante periodos, pero no podemos decir que haya efecto de momento.
 
 ##### 4. EDA Cuadrimensional
-Similar a la parte anterior, se evlíua cómo afectan tres variables a Rating.
+
+Similar a la parte anterior, se evlíua cómo afectan tres variables a Rating. Esto para ver efectos aún más complejos entre variables explicativas que afecten al Rating:
 
 ```{r}
 #
@@ -590,62 +615,11 @@ ggplot(df) +
   geom_boxplot(alpha=0.4, fill='white') #cambiamos el tipo de gráfico 
 
 
-
-
-```
-##### 5. EDA Quintimensional
-Tal como en la parte anterior, se evalúa cómo afectan cierto número de variables a Rating, en este caso cinco.
-
-```{r}
-
-#53. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
-
-ggplot(df) +
-
-aes(x=`Customer type`:Branch:Month, y=Rating, col=`Product line`) +
-
-geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
-
-theme(axis.text.x = element_text(angle = 30))
-
-#
-# Quintimensional
-#
-
-#---------------------------------------------------------------------
-# Branch:Gender:`Customer type` v/s Rating
-
-#54. Boxplot Branch:Gender:`Customer type` v/s Rating r/ `Product Line`
-ggplot(df) +
-  aes(x=Branch:Gender:`Customer type`, y=Rating, col=`Product line`) +
-  geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
-  theme(axis.text.x = element_text(angle = 30))
-
-#55. Boxplot Branch:Gender:`Customer type` v/s Rating r/ Payment
-ggplot(df) +
-  aes(x=Branch:Gender:`Customer type`, y=Rating, col=Payment) +
-  geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
-  theme(axis.text.x = element_text(angle = 30))
-
-
-# Branch:Gender:Payment v/s Rating
-
-#56. Boxplot Branch:Gender:Payment v/s Rating r/ `Product Line`
-ggplot(df) +
-  aes(x=Branch:Gender:Payment, y=Rating, col=`Product line`) +
-  geom_boxplot(alpha=0.4, fill='white') + #cambiamos el tipo de gráfico
-  theme(axis.text.x = element_text(angle = 30))
-
-#---------------------------------------------------------------------
-
-
-
 ```
 
+Se pueden ver efectos aún más notorios partiendo de los resultados interesantes anteriores. La combinación de variables Género/Pago/línea de producto parece tener mucha variación en el Rating, por lo que se tendrá presente en el resto del desarrollo.
 
-
-
-
+En cuanto a otras, se puede destacar Branch/Tipo de cliente/ Porduct line también tiene bastante variabilidad en Rating.
 
 #### Pregunta 2
 
@@ -653,21 +627,29 @@ ggplot(df) +
 
 **a)** Proponga al menos dos especificaciones alternativas para el objetivo propuesto. Justifique muy brevemente por que las variables que está incluyendo en el modelo tienen sentido desde el punto de vista del negocio. Justifique además el nivel de agregación escogido y los índices considerados en el modelo.
 
-#####1. En primera instancia se va a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base. Esto es, no incluir dos varibles independientes tal que una se pueda explicar por la otra.
+1\. En primera instancia se va a correr una regresión sólo con las variables que no guardan relación con el resto, tal cual vienen en la base. Esto es, no incluir dos varibles independientes tal que una se pueda explicar por la otra.
 
-Customer type: se esperaría que haya cambios según se es miembro o no (ej. si es miembro puede ser más exigente a la hora de evaluar la tienda)
-Gender: se esperaría un efecto según se es H/M (ej. cierto género es más exigente a la hora de evaluar)
-Product line: podría haber cambios en el rating por la línea de producto
-Unit price: se esperaría que mientras más caro un producto, menor rating
-Quantity: a mayor cantidad, menor rating
-Unit price*Quantity: (distinto al total pues no incluye TAX), se esperaría que a mayor valor, menor rating
-Month: dependiendo del mez, podría cambiar el rating (por ejemplo si es marzo)
-Day: ciertos días podría variar el rating (ej. un lunes donde es comienzo de semana, podría bajar la nota dados los estados de ánimo)
-Hour: ciertas horas del día, podrían variar el rating.
+-   Customer type: se esperaría que haya cambios según se es miembro o no (ej. si es miembro puede ser más exigente a la hora de evaluar la tienda)
+
+-   Gender: se esperaría un efecto según se es H/M (ej. cierto género es más exigente a la hora de evaluar)
+
+-   Product line: podría haber cambios en el rating por la línea de producto
+
+-   Unit price: se esperaría que mientras más caro un producto, menor rating
+
+-   Quantity: a mayor cantidad, menor rating
+
+-   Unit price\*Quantity: (Contiene información de Cogs), se esperaría que a mayor valor, menor rating
+
+-   Month: dependiendo del mez, podría cambiar el rating (por ejemplo si es marzo)
+
+-   Day: ciertos días podría variar el rating (ej. un lunes donde es comienzo de semana, podría bajar la nota dados los estados de ánimo)
+
+-   Hour: ciertas horas del día, podrían variar el rating.
 
 En cuanto al nivel de agregación, interesa ver cómo se ve afectado el Rating según fechas (mes, día, ...)
 
-```{r P2_a}
+```{r P2_a reg1, warning=FALSE}
 #Regresion lineal sin diferenciar por tienda
 
 train.lm <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` +  Quantity + `Unit price`*Quantity + Payment + Month + Day + Hour, #Fórmula
@@ -680,11 +662,12 @@ error.lm <- test$Rating-test.lm #Calcular los errores de predicción (dato real 
 summary(train.lm)
 print(paste('Error de predicción: ', mean(abs(error.lm))))
 ```
+
 Se puede ver que la variable de interés no se explica muy bien por las variables independientes de este modelo, lo cual tiene sentido según el EDA bidimensional realizado en la parte anterior.
 
-#####2. Agregamos a la regresión la variable Week, donde podría haber un efecto al pasar el tiempo en semanas.
+2\. Agregamos a la regresión la variable Week, donde podría haber un efecto al pasar el tiempo en semanas.
 
-```{r}
+```{r p2_a reg2, warning=FALSE}
 
 #2. Regresion lineal con intervalos temporales
 train.lm2 <- train(form = Rating ~ Branch + `Customer type` + Gender + `Product line` + `Unit price` + Quantity + `Unit price`*Quantity + Payment + Month + Week + Day + Hour, #Fórmula
@@ -698,15 +681,14 @@ error.lm2 <- test$Rating-test.lm2 #Calcular los errores de predicción (dato rea
 summary(train.lm2)
 print(paste('Error de predicción: ', mean(abs(error.lm2))))
 ```
+
 Se puede observar que este modelo tampoco explica de la forma deseada la variable de interés (poca significancia), sin embargo, disminuye el error de predicción.
 
+3\. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA cuadrimensional ciertas variaciones notables en la variable de interés. a. Branch x Customer type x Month: en el gráfico N°48, se vieron variaciones según este tipo de variables, por ejemplo, según tienda, varía el Rating, lo mismo para tipo de cliente, y que estos efectos también varían según el mes.
 
-#####3. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA cuadrimensional ciertas variaciones notables en la variable de interés.
-a. Branch x Customer type x Month: en el gráfico N°48, se vieron variaciones según este tipo de variables, por ejemplo, según tienda, varía el Rating, lo mismo para tipo de cliente, y que estos efectos también varían según el mes.
+b.  Gender x Payment x Product line: también se pueden ver variaciones interesantes en el gráfico N°43
 
-b. Gender x Payment x Product line: también se pueden ver variaciones interesantes en el gráfico N°43
-
-```{r P2_a }
+```{r P2_a reg3, warning=FALSE}
 
 #3.Regresion lineal con intervalos temporales
 train.lm3 <- train(form = Rating ~ 
@@ -724,12 +706,12 @@ error.lm3 <- test$Rating-test.lm3 #Calcular los errores de predicción (dato rea
 summary(train.lm3)
 print(paste('Error de predicción: ', mean(abs(error.lm3))))
 ```
+
 Disminuye el error de predicción, sin embargo, hay poca siginificancia en las variables.
 
+4\. Separamos ahora la regresión por tiendas/branches, pues puede explicarse el rating según la tienda, teniendo efectos independientes. Además, se agrega las interacciones anteriores.
 
-#####4. Separamos ahora la regresión por tiendas/branches, pues puede explicarse el rating según la tienda, teniendo efectos independientes. Además, se agrega las interacciones anteriores.
-
-```{r}
+```{r p2_a reg4, warning=FALSE}
 
 #4. Regresion lineal diferenciando por tienda 
 allstores = unique(train$Branch) # Valores únicos de cada tienda
@@ -766,14 +748,14 @@ for (i in 1:nbranches){
   print(paste('Branch:', allstores[i],'\tError:',mean(abs(error.lm4))))
 }
 ```
-Se puede observar distitnos errores de predicción según tienda.
 
+Se puede observar distitnos errores de predicción según tienda.
 
 **b)** Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
 
+1.  Se usa LASSO para seleccionar las varibles más importantes de la regresión anterior, ya que va a castigar a los coeficientes que tengan mayor error llevando algunos a 0.
 
-1. Se usa LASSO para seleccionar las varibles más importantes de la regresión anterior.
-```{r P2_b}
+```{r P2_b lasso, warning=FALSE}
 #Regresión autoselección
 # Lasso
 
@@ -790,15 +772,16 @@ train.lasso <- train(form = Rating ~
 test.lasso  <- predict(train.lasso , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.lasso <- test$Rating-test.lasso #Calcular los errores de predicción (dato real - dato estimado)
 
-print(paste('Error de predicción: ', mean(abs(error.lasso))))
+print(paste('Error de predicción: ', mae(train$Rating,test.lasso)))
 ```
-Se observa una baja en el error de predicción.
 
-2. Se usa Ridge. 
+Se observa una baja en el error de predicción, por lo que funciona la selección de variables.
 
-```{r}
-#Regresión autoselección
-# Risge
+2.  Se usa Regression Ridge para tener una segunda métrica de selección; sin embargo, esta en realidad no selecciona variables, si no que le baja la magnitud a variables que aporten menos a la disminución de error
+
+```{r P2_b rr}
+# Regresión NO-autoselección
+# Ridge
 
 train.rr <- train(form = Rating ~ 
                       Branch * `Customer type` * Month  +
@@ -813,28 +796,53 @@ train.rr <- train(form = Rating ~
 test.rr <- predict(train.rr , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
 error.rr <- test$Rating-test.rr #Calcular los errores de predicción (dato real - dato estimado)
 
-print(paste('Error de predicción: ', mean(abs(error.rr))))
+print(paste('Error de predicción: ', mae(train$Rating,test.rr)))
 ```
+
 Aumenta el error de predicción en comparación a LASSO.
 
+Dado lo anterior, LASSO pareciera ser el mejor método. Es decir, pareciera que eliminar variables innecesarias (o seleccionar las mejores) parece ser lo mejor, lo que tiene bastante sentido, ya que se incluyeron interacciones que podrían no aportar nada entre las combinaciones.
 
+Como sólo se eleccionaron variables con LASSO, se necesita un segundo método de selección de variables para completar el análisis pedido. Usamos entonces la Stepwise Regression (Backward):
 
-##### Comparación de resultados
+```{r p2_b step-back, warning=FALSE}
+
+#Regresión autoselección
+# stepwise backward
+
+train.swb <- train(form = Rating ~ 
+                      Branch * `Customer type` * Month  +
+                      Gender  * Payment * `Product line` +
+                      Hour + Day + Week +
+                      `Unit price`*Quantity, #Fórmula
+                  data = train, #Datos
+                  method = "leapBackward", #Algoritmo 
+                  tuneGrid = data.frame(nvmax = 1:15),
+                  trControl = trainControl(method = "cv", number = 5)#Method = cross validation, number=10 (k-fold) 
+)
+test.swb <- predict(train.swb , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
+error.swb <- test$Rating-test.swb #Calcular los errores de predicción (dato real - dato estimado)
+
+print(paste('Error de predicción: ', mae(train$Rating,test.swb)))
+```
+
+### Comparación de resultados
+
 A continuación, se comparan los modelos anteriores (regresiones lineales y selección automática)
-```{r}
-rating.test <- data.frame(lm1=test.lm, lm2=test.lm2, lm3=test.lm3, lasso=test.lasso, ridge=test.rr, rating=test$Rating)
-error.test <- data.frame(lm1=error.lm, lm2=error.lm2, lm3=error.lm3, lasso=error.lasso, ridge=error.rr)
+
+```{r p2_b comparacion}
+rating.test <- data.frame(lm1=test.lm, lm2=test.lm2, lm3=test.lm3, lasso=test.lasso, ridge=test.rr, step.back=test.swb, rating=test$Rating)
+error.test <- data.frame(lm1=error.lm, lm2=error.lm2, lm3=error.lm3, lasso=error.lasso, ridge=error.rr, step.back=error.swb)
 
 summary(abs(error.test))
 summary(error.test)
 boxplot(abs(subset(error.test))); title(main="RL + Autom models", sub="Forecasting Absolute Errors")
 boxplot(subset(error.test)); title(main="RL + Autom models", sub="Forecasting Errors")
 ```
-Dado lo anterior, LASSO pareciera ser el mejor método.
 
 #### Pregunta 3
 
-(1.0 puntos)Use al menos dos de los modelos de aprendizaje de máquinas que vimos en clases (MARS, kNN, regression tree, random forest) para generar un pronóstico de Rating de un cliente al realizar una compra y compare la capacidad de estos modelos con respecto a los de regresión lineal.
+(1.0 puntos) Use al menos dos de los modelos de aprendizaje de máquinas que vimos en clases (MARS, kNN, regression tree, random forest) para generar un pronóstico de Rating de un cliente al realizar una compra y compare la capacidad de estos modelos con respecto a los de regresión lineal.
 
 Como KNN es un método que depende de una métrica de distancia (default euclidiana), entonces no se puede simplemente comparar los atributos numéricos con los categóricos, se necesita hacerlos comparables a ambos para que no dependa todo sólo de los numéricos. En este caso, se puede normalizar con el método de Min-Max:
 
@@ -866,8 +874,10 @@ test.knn$Quantity  <- min.max(test$Quantity)
 
 head(train.knn)
 ```
+
 ##### 1. KNN
-```{r P3, Warning=FALSE}
+
+```{r P3 knn, warning=FALSE}
 #Modelo de aprendizaje de máquinas
 #1. ML --> KNN
 train.knn.prediction<- train(Rating ~ 
@@ -886,11 +896,12 @@ print(train.knn.prediction)
 ggplot(train.knn.prediction)
 test.knn.prediction  <- predict(train.knn.prediction, newdata=test.knn) 
 error.knn <- test.knn$Rating-test.knn.prediction
-print(paste('Error de predicción: ', mean(abs(error.knn))))
+print(paste('Error de predicción: ', mae(train$Rating,test.knn.prediction)))
 ```
 
 ##### 2. Random Forest
-```{r}
+
+```{r P3 rf, warning=FALSE}
 
 #2. ML --> Random forest
 train.randomf <- train(Rating ~ 
@@ -907,18 +918,17 @@ print(train.randomf)
 ggplot(train.randomf)
 test.randomf  <- predict(train.randomf, newdata=test) 
 error.randomf <- test$Rating-test.randomf
-print(paste('Error de predicción: ', mean(abs(error.randomf))))
+print(paste('Error de predicción: ', mae(train$Rating,test.randomf)))
 ```
 
 #### Pregunta 4
 
 (0.5 puntos) Compare las fortalezas y debilidades de los modelos anteriores, evalúe de acuerdo a algunas de las métricas que vimos en clases y discuta qué modelo recomendaría usar.
 
-
 Para comparar, se utilizaran las métricas RMSE y MAE. Los resultados se resumen en la siguiente tabla:
+
 ```{r P4}
 #Comparación modelos y recomendación
-library(Metrics) #paquete para funciones de métricas
 
 Metricas=data.frame(Modelo=c("lm1","lm2","lm3","LASSO","Ridge","KNN","Random Forest"), RMSE=NA, MAE=NA)
 
@@ -929,8 +939,8 @@ Metricas[2,2] = rmse(train$Rating,test.lm2) #lm2
 Metricas[3,2] = rmse(train$Rating,test.lm3) #lm3
 Metricas[4,2] = rmse(train$Rating,test.lasso) #lasso
 Metricas[5,2] = rmse(train$Rating,test.rr) #ridge
-Metricas[6,2] = "1.741664"#knn
-Metricas[7,2] = "1.726167" #rf
+Metricas[6,2] = rmse(train.knn$Rating,test.knn.prediction)#knn
+Metricas[7,2] = rmse(train$Rating,test.randomf) #rf
 
 
 #MAPE 
@@ -939,11 +949,18 @@ Metricas[2,3] = mae(train$Rating,test.lm2) #lm2
 Metricas[3,3] = mae(train$Rating,test.lm3) #lm3
 Metricas[4,3] = mae(train$Rating,test.lasso) #lasso
 Metricas[5,3] = mae(train$Rating,test.rr) #ridge
-Metricas[6,3] = "1.482653" #knn
-Metricas[7,3] = "1.477667" #rf
+Metricas[6,3] = mae(train.knn$Rating,test.knn.prediction) #knn
+Metricas[7,3] = mae(train$Rating,test.randomf) #rf
 
 kable(Metricas)
 
+# Dataframe para Boxplots
+
+rating.test <- data.frame(lm1=test.lm, lm2=test.lm2, lm3=test.lm3, lasso=test.lasso, ridge=test.rr, step.back=test.swb, knn=test.knn.prediction, rf=test.randomf, rating=test$Rating)
+error.test <- data.frame(lm1=error.lm, lm2=error.lm2, lm3=error.lm3, lasso=error.lasso, ridge=error.rr, step.back=error.swb, knn=error.knn, rf=error.randomf)
+
+boxplot(abs(subset(error.test))); title(main="RL + Autom models", sub="Forecasting Absolute Errors")
+boxplot(subset(error.test)); title(main="RL + Autom models", sub="Forecasting Errors")
 ```
 
 #### Pregunta 5
@@ -952,85 +969,29 @@ kable(Metricas)
 
 **a)**Estimar un modelo de decisión homogéneo para cada sucursal y compare sus resultados entre sucursales. Discuta brevemente sus resultados.
 
-```{r P5_a}
-#Modelo Homogéneo con variables explicativas
-
-#Dividimos a los clientes en satisfechos/insatisfechos 
-train$Satisfecho <- as.factor(train$Rating >= 7)
-test$Satisfecho <- as.factor(test$Rating >= 7)
-
-head(test)
-```
-
-```{r}
-#Regresión autoselección
-# Logit-ish
-
-train.lasso <- train(form = Satisfecho ~  Day + Quantity + `Unit price`, #Fórmula
-                  data = train, #Datos
-                  method = "glmnet", #Algoritmo 
-                  family = 'binom',
-                  #tuneGrid = expand.grid(alpha = 1, lambda = 1),
-                  trControl = trainControl(method = "cv", number = 5) #Method = cross validation, number=10 (k-fold) 
-)
-test.lasso  <- predict(train.lasso , newdata=test) #Vector de datos predichos. Recibe una base de datos (newdata) y un modelo entrenado (train.lm)
-error.lasso <- as.numeric(test$Satisfecho)-as.numeric(test.lasso) #Calcular los errores de predicción (dato real - dato estimado)
-#print(error.lasso)
-print(paste('Error de predicción: ', mean(abs(error.lasso))))
-
-```
-Preparamos los datos
-```{r}
-
-##Creación tabla entrenamiento
-TablaE = data.frame(table(train$Satisfecho)) #creamos un fichero de datos desde una tabla con la función data.frame() sobre la función table()
-colnames(TablaE) <- c("Nivel Satisfaccion","Usuarios") #cambiamos los nombres de las variables del fichero de datos para identificarlas mejor
-
-##Creación tabla entrenamiento
-TablaT = data.frame(table(test$Satisfecho))
-colnames(TablaT) <- c("Nivel Satisfaccion","Usuarios") 
-
-kable(TablaE)
-kable(TablaT)
-
-```
-
-Modelo de decisión homogéneo para cada sucursal
-```{r}
-ll.bb <-function(theta){
-  myalpha = exp(theta[1])
-  mybeta  = exp(theta[2])
-  pr = array(NA, dim=nrow(train))
-  for(i in 1:nrow(train)){
-    pr[i] = with(train, choose(ms[i],xs[i])*beta(myalpha+xs[i],mybeta+ms[i]-xs[i]) / beta(myalpha,mybeta))
-  }
-  return(-sum(log(pr)))
-}
-
-theta.start = rep(0.666,2)
-cat("Maximizing likelihood beta binomial ... \n")
-mle.bb = optim(par=theta.start, fn=ll.bb, hessian=TRUE, method="BFGS", control = list(maxit=30000, trace=TRUE, REPORT=10))
-myalpha = exp(mle.bb$par[1])
-mybeta  = exp(mle.bb$par[2])
-print(c(myalpha, mybeta))
-
-# compute conditional expectations
-ep = array(NA, dim=nrow(train))
-for(i in 1:nrow(train)){
-  ep[i] = with(train, (myalpha+xs[i])/(myalpha+mybeta+ms[i]))
-  if (ep[i] > 0.00207) cat("sent to segment", i, "\n")
-}
-```
+Esta sección se encuentra en el HTML a partir del desrrollo en Python/Jupyter Notebook, por lo que se debe seguir el desarrollo desde allá.
 
 **b)**Estimar un modelo de decisión heterogéneo para cada sucursal y compare sus resultados entre sucursales. Discuta brevemente sus resultados.
 
-```{r p5_b}
-#Modelo Heterogéno con variables explicativas
-```
+Esta sección se encuentra en el HTML a partir del desrrollo en Python/Jupyter Notebook, por lo que se debe seguir el desarrollo desde allá.
 
 ## Resumen y Conclusiones
 
 Documenta acá el resumen y las conclusiones principales (esto te servirá para la presentación del jueves 6)
+
+-   Las variables por sí solas pueden no explicar fenómenos complejos como la decisión de qué nivel de satisfacción se tiene con una atención. Muchas cosas afectan en conjunto.
+
+-   La regresión lineal no siempre es la solución. Otros modelos pueden explicar fenómenos complejos de mejor manera. Sin embargo, es el único modelo con el que podemos hacer inferencia estadística
+
+-   Es necesario comprender más a fondo cada uno de los modelos para poder ocuparlos de ejor manera y discernir en qué situación ocupar cada uno y cómo trabajar los datos de manera que se adapte de la mejor manera a cada modelo y estos entreguen resultados relevantes
+
+-   Los métodos de selección tuvieron mejor rendimiento en general, lo que puede deberse a fenómenos que no podemos ver a simple vista, sino que guardan relación con cad aposbile variable y las interacciones
+
+-   Si bien nada predice demasiado bien, una mejora de 1% puede significar tomar medida que beneficien a la marca/lo que sea
+
+-   La inferencia bayesiana se adapta de muy buena manera, tanto con una distribución de interés directa como con una distribución posterior y un prior de distribución de los mismos parámetros (pavlo rellena)
+
+-   
 
 #### Pregunta 6
 

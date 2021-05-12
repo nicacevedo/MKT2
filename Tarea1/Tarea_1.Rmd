@@ -936,7 +936,7 @@ Para comparar, se utilizaran las métricas RMSE y MAE. Los resultados se resumen
 ```{r P4}
 #Comparación modelos y recomendación
 
-Metricas=data.frame(Modelo=c("lm1","lm2","lm3","LASSO","Ridge","KNN","Random Forest"), RMSE=NA, MAE=NA)
+Metricas=data.frame(Modelo=c("lm1","lm2","lm3","LASSO","Ridge","Stepwise (backward)", "KNN","Random Forest"), RMSE=NA, MAE=NA)
 
 
 #RMSE
@@ -945,8 +945,9 @@ Metricas[2,2] = rmse(train$Rating,test.lm2) #lm2
 Metricas[3,2] = rmse(train$Rating,test.lm3) #lm3
 Metricas[4,2] = rmse(train$Rating,test.lasso) #lasso
 Metricas[5,2] = rmse(train$Rating,test.rr) #ridge
-Metricas[6,2] = rmse(train.knn$Rating,test.knn.prediction)#knn
-Metricas[7,2] = rmse(train$Rating,test.randomf) #rf
+Metricas[6,2] = rmse(train$Rating,test.swb) #swb
+Metricas[7,2] = rmse(train.knn$Rating,test.knn.prediction)#knn
+Metricas[8,2] = rmse(train$Rating,test.randomf) #rf
 
 
 #MAPE 
@@ -955,8 +956,10 @@ Metricas[2,3] = mae(train$Rating,test.lm2) #lm2
 Metricas[3,3] = mae(train$Rating,test.lm3) #lm3
 Metricas[4,3] = mae(train$Rating,test.lasso) #lasso
 Metricas[5,3] = mae(train$Rating,test.rr) #ridge
-Metricas[6,3] = mae(train.knn$Rating,test.knn.prediction) #knn
-Metricas[7,3] = mae(train$Rating,test.randomf) #rf
+Metricas[6,2] = mae(train$Rating,test.swb) #swb
+Metricas[7,2] = mae(train.knn$Rating,test.knn.prediction)#knn
+Metricas[8,2] = mae(train$Rating,test.randomf) #rf
+
 
 kable(Metricas)
 
@@ -968,6 +971,8 @@ error.test <- data.frame(lm1=error.lm, lm2=error.lm2, lm3=error.lm3, lasso=error
 boxplot(abs(subset(error.test))); title(main="RL + Autom models", sub="Forecasting Absolute Errors")
 boxplot(subset(error.test)); title(main="RL + Autom models", sub="Forecasting Errors")
 ```
+
+
 En cuanto a las fortalezas y debilidades de cada modelo, se tiene que para los de regresión lineal, si bien son los únicos que permiten obtener inferencia estadística, hay que probar varios modelos hasta encontrar uno óptimo, lo cual en este caso no resultaría eficiente pues se vio que lo que explica el modelos son interacciones entre variables, por lo que habría que indagar e invertir bastante tiempo.
 
 Por otro lado, los modelos de Machine Learning, si bien toman un conjunto de datos y los trabajan para realizar una predicción óptima, en este caso no resultaron mejor que los de selección automática. Esto se puede deber a la cantidad de datos con los que se trabajó (que si fuesen más, los métodos de ML podrían funcionar mejor).En particular, para el caso de Knn es un algoritmo sencillo que se basa escencialmente en la distancia entre observaciones. Algunas desventajas radican en que hay que ajustar los datos para que las distancias sean comparables y que no entrega información de cómo se relacionan las variables, siendo un modelo principalmente enfocado en la predicción. Para el caso de Random Forest también se tiene un modelo sencillo, donde no se necesita ajustar los datos, pues se basa en un sampleo aleatorio de árboles de decisión. Un problema de Random Forest radica en el tiempo computacional que implica el sampleo aleatorio de estos árboles.
@@ -993,6 +998,7 @@ Esta sección se encuentra en el HTML a partir del desrrollo en Python/Jupyter N
 Documenta acá el resumen y las conclusiones principales (esto te servirá para la presentación del jueves 6)
 
 #### Pregunta 6
+
 
 Finalmente, dado el estudio de modelos desarrollado, se puede concluir, primero, que las variables por sí solas pueden no explicar fenómenos complejos como la decisión de qué nivel de satisfacción se tiene con una atención, pues distintos factores pueden afectar en conjunto. Esto se vio en el EDA inicial y también en las primeras regresiones lineales donde se evluaba cómo una variable independiente podía explicar el Rating, sin embargo, se vio poca significancia y correlación.
 

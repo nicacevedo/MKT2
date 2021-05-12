@@ -21,7 +21,7 @@
 ---
 title:  'Tarea 1 - Semestre Otoño 2021'
 author: 'Nicolás Acevedo, Constanza Bastías, Pablo Ubilla'
-date:   '05 de mayo de 2021'
+date:   '12 de mayo de 2021'
 output:
   html_document:
     df_print: paged

@@ -1010,9 +1010,17 @@ Por otro lado, para un caso de estudio futuro, sería mejor comprender más a fo
 
 También se puede concluir que si bien nada predice con un 100% de precisión, una mejora de, por ejemplo, un 1%, puede significar un beneficio para la cadena de supermercados. Esto es, dentro de todos los modelos estudiados, elegir aquel que tuvo mejor rendimiento y que pueda mejorar los resultados de la marca.
 
-Por último, .......
+Por último, en cuanto a los modelos de decisión (homogeneo y heterogeneo), se observa que las distribuciones sobre los $\theta$ correspondientes a cada Branch dependen bastante poco de la segmentación, al tener parámetros $\alpha$ y $\beta$ muy altos. En general se ve que hay poca certeza a la hora de ver si un cliente está satisfecho, donde la probabilidad en los modelos estudiados siempre se estima cercana a 0.5. Esto daría a entender que es muy difícil hacer inferencias sobre el comportamiento de los distintos clientes, pero si se pueden hacer inferencias del comportamiento agregado de los clientes y segmentos, donde se espera que la fracción de clientes satisfechos esté cercano al 50%.
 
--   La inferencia bayesiana se adapta de muy buena manera, tanto con una distribución de interés directa como con una distribución posterior y un prior de distribución de los mismos parámetros (pavlo rellena)
+
+\begin{table}[]
+\begin{tabular}{llll}
+         & $\alpha$ & $\beta$  & $E(\theta)$ \\ \hline
+Branch A & 568.640  & 485.328  & 0.54        \\
+Branch B & 519.556  & 530.852  & 0.495       \\
+Branch C & 581.162  & 473.7344 & 0.55       
+\end{tabular}
+\end{table}
 
  
 

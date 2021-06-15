@@ -1,0 +1,155 @@
+<div style="text-align: right"> **Universidad de Chile**</div>
+<div style="text-align: right"> **Ingeniería Industrial**</div>
+<div style="text-align: right"> **IN5602**: Marketing II</div>
+<div style="text-align: right">**Prof**: Marcel Goic</div>
+<div style="text-align: right">**Auxs**: R. Cerda, JP. Coddou, G.Mora, F. Moraga, A .Muñoz</div>
+
+---
+title:  'Tarea 2 - Semestre Otoño 2021'
+author: 'Nombres'
+date:   '2 de junio de 2021'
+output:
+  html_document:
+    df_print: paged
+    theme: simplex
+    highlight: tango
+    toc: no
+encoding: UTF-8
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# {.tabset}
+## Enunciado: OtakuFest
+
+Un canal televisivo ha observado desde las sombras cómo el Animé ha aumentado su popularidad de manera exponencial durante el último tiempo, por lo que se dispone a realizar su próxima apuesta por la animación japonesa y busca elegir qué serie comenzar a emitir. Para ello esta auspiciando el famoso festival "OtakuFest" lugar al que asisten tanto fans de la cultura japonesa, como los denominados *Expertos*, personas capaces de pasar más de 24 horas seguidas frente a una pantalla a disfrutar de una serie acompañados de su infaltable dosis de maruchan. Los Expertos han estado observando 4 tipos distintos de anime durante el último tiempo: 1.Hunter x Hunter, 2.Dragon Ball, 3.Naruto y 4.My Hero Academia. En el final del evento, los expertos votaron para escoger al animé de su preferencia dentro de las elecciones para decidir el ganador , el cual será finalmente transmitido en el canal televisivo. 
+
+Los resultados de la votación están incluidos en la base de datos "Anime.csv", la cual posee una estructura de panel, en la cual cada fila representa un capítulo de la serie correspondiente, con sus respectivas características. La variable "Elección" toma el valor 1 si es que el Experto votó por dicho capítulo y 0 si no. El experto debe realizar su votación comparando el n-ésimo capítulo de cada serie y elegir de entre los cuatro cuál es el que más le gustó. Por ejemplo, luego de ver el primer capítulo de cada uno de los 4 anime, el experto elige un sólo ganador de los 4. Para no sobre-cargar cognitivamente a los Expertos, la evaluación selimitó a la evaluación de los primeros 12 capitulos de cada serie.
+
+El equipo de programación piensa que esta información puede ser muy relevante para guiar las decisiones de programación. En estas decisión es importante considerar no solo cuál es la serie que tiene mayor rating sino que también el público al que les resulta más atractivo y si hubieran dinámicas en la evaluación en el tiempo. Quizás hay algunas series que, aunque en el global pueden ser bien evaluadas, podrían una partida lenta con baja preferencia en los primeros capítulos. Aunque hay un amplio historial de series existosas que han partido con bajo rating, es útil indentificar estas dinámicas para que, en caso de emitirse, el lanzamiento sea apoyado con estrategias promocionales que consoliden la propuesta de valor.  
+
+#### **Preguntas**
+
+1. (0 puntos) Explore los datos para poder entender qué variables podrían ser más influyentes en el hecho de que un experto elija un anime. 
+
+2. (2,0 puntos) Defina un modelo Logit y Mixed Logit multinomiales para estudiar las razones que llevan a un experto a elegir animes. Interprete los coeficientes y calcule la probabilidad de que una mujer de 25 años elija el anime _naruto_ para el modelo logit multinomial.
+
+3. (1,0 puntos) Construya un modelo Probit que capture los elementos de elección principales y comente sobre cómo se interpretan sus coeficientes.
+
+4. (2,0 puntos) Utilizando lo aprendido de los modelos anteriores, construya dos modelos de _machine and learning_ diferentes y compárelos con los modelos logits y probits estimados anteriormente, para ello calcule la matriz de confusión de cada modelo respecto a su predicción y utilice métricas derivadas a partir de esta para la comparación de los modelos.
+
+5. (1,0 puntos) Resuma sus aprendizajes principales en un máximo de 4 tablas o figuras. Redacte de manera concisa sus resultados tal como los reportaría al departamento comercial interesado en informarse de la preferencia de los expertos. Agregue cualquier conclusión o idea que le parezca relevante de comunicar para que los representantes del canal de televisión tomen la mejor estrategia de programación televisiva.
+
+#### **Reglas del juego** 
+
+- Las tareas buscan replicar parcialmente las labores a las que se enfrentarían en el análisis de datos en una organización para el apoyo en la toma de decisiones. Por esto, se han propuesto preguntas relativamente abiertas que requieren que ustedes discutan y decidan cual es el mejor enfoque de solución. Les pedimos que se involucren tempranamente en el desarrollo de la tarea para tener una discusión enriquecedora. 
+
+- Todas las dudas, comentarios y errores publicarlos exclusivamente en el foro de u-cursos. De esta forma todos se benefician de las respuestas ofrecidas. 
+
+- Consideramos que es muy importante que logren escribir un informe conciso con una redacción acorde de un informe técnico profesional, los análisis y las conclusiones que obtengan de cada pregunta es en específico lo que debe declararse. La presentación y comunicación de resultados es parte integral de la tarea y por tanto será evaluada cuidadosamente. 
+
+- La tarea se desarrolla en grupos de máximo 3 integrantes. No hay excepciones. El entregable principal es un único markdown separado en tres tabs (a través de la opción .tabset). En el primer tab incluya todo el desarrollo de la tarea adecuadamente comentado. El segundo tab incluya el resumen de sus resultado de acuerdo a lo pedido en la pregunta 6. Este segundo tab es el que usarán en caso de que les corresponda presentar sus resultados. Considere el tercer tab como de anexos y puede incluir aquí cualquier resultado complementario. Para entregar sus resultados suba vía u-cursos un único archivo comprimido llamado t2-A1-A2-A3.zip, donde A1, A2 y A3 es el primer apellido de los integrantes del grupo. Incluya tanto el archivo .html de salida del markdown como los códigos fuentes que permitan reproducir sus resultados. 
+
+- Para la pregunta 6 consideramos que 4 figuras son suficientes para resumir los aprendizajes más relevantes, pero si están convencidos de que agregar una figura adicional es absolutamente necesaria, ¡adelante! 
+
+- La fecha de entrega de la tarea es el día miércoles 23 de Junio a las 09:00 hrs, sin excepciones y no habrá plazo extra para la entrega. Si por algún motivo de fuerza mayor se ve imposibilitado de entregar la tarea en el plazo estipulado, deberá escribir directamente al profesor explicando su situación. El profesor decidirá el curso de acción de acuerdo a los méritos del caso. 
+
+- Recuerde que tenemos contempladas dos sesiones de presentaciones de las tareas. La primera sesión, a realizarse el día jueves 17 de Junio, está destinada a que compartan sus avances y podamos identificar de manera conjunta cuáles podrían ser dificultades técnicas que requieran orientación adicional. La segunda sesión, a realizarse el día jueves 6 de Mayo, está destinada para que expongan los resultados más relevantes de su trabajo y resuman sus principales aprendizajes, para que tanto los compañeros como el equipo docente puedan proveer retroalimentación. Todos los grupos deben estar disponibles para presentar en ambas ocasiones, pero si hay grupos voluntarios se les dará preferencia. Las presentaciones tendrán una duración máxima de 10 minutos y no es necesario que preparen material adicional. Esperamos que la salida del markdown sea lo suficientemente explicativa para comunicar sus resultados. 
+
+- El equipo docente considera que la copia de tareas atenta en contra de tu aprendizaje y por tanto aplicará todas las medidas que estén a su disposición para desincentivar esta mala práctica. 
+
+## Preliminares
+
+Escribe acá todos los comandos que necesitas ejecutar antes de abordar las preguntas de la tarea (carga de librerías, lectura de datos, limpieza de la data, transformación de variables y todo lo que necesites)
+
+#### Preparación Tarea
+
+```{r P}
+#Exploración de datos
+
+```
+
+## Desarrollo
+
+Documenta acá el desarrollo de tu tarea por pregunta.
+
+#### Pregunta 1
+
+(0 puntos) Explore los datos para poder entender qué variables podrían ser más influyentes en el hecho de que un experto elija un anime. 
+```{r P1}
+#Exploración de datos
+
+```
+
+#### Pregunta 2
+
+(2,0 puntos) Defina un modelo Logit y Mixed Logit multinomiales para estudiar las razones que llevan a un experto a elegir animes. Interprete los coeficientes y calcule la probabilidad de que una mujer de 25 años elija el anime _naruto_ para el modelo logit multinomial.
+
+```{r P2_l}
+#logit
+
+```
+
+```{r P2_m}
+#mixed logit
+```
+
+#### Pregunta 3
+
+(1,0 puntos) Construya un modelo Probit que capture los elementos de elección principales y comente sobre cómo se interpretan sus coeficientes.
+
+```{r P3}
+#probit
+
+```
+
+#### Pregunta 4
+
+(2,0 puntos) Utilizando lo aprendido de los modelos anteriores, construya dos modelos de _machine and learning_ diferentes y compárelos con los modelos logits y probits estimados anteriormente, para ello calcule la matriz de confusión de cada modelo respecto a su predicción y utilice métricas derivadas a partir de esta para la comparación de los modelos.
+
+```{r P4.1}
+#ML 1
+
+```
+
+```{r P4.2}
+#ML2
+
+```
+
+#### Pregunta 5
+
+(1,0 puntos) Resuma sus aprendizajes principales en un máximo de 4 tablas o figuras. Redacte de manera concisa sus resultados tal como los reportaría al departamento comercial interesado en informarse de la preferencia de los expertos. Agregue cualquier conclusión o idea que le parezca relevante de comunicar para que los representantes del canal de televisión tomen la mejor estrategia de programación televisiva.
+
+
+```{r P5}
+#Resuma
+
+```
+
+## Anexos
+
+Documenta acá cualquier otro adicional que consideres útil tener de referencia. 
+
+#### Pregunta X
+
+```{r PX}
+
+```
+
+#### Pregunta Y
+
+```{r PY}
+
+```
+
+#### Pregunta Z
+
+```{r PZ}
+
+```
+

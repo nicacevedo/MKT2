@@ -1,0 +1,93 @@
+---
+title: "Laboratorio de Modelos de Elección Discreta"
+author: "Gabriela Mora"
+date: "09-06-2021"
+output:
+  html_document:
+    df_print: paged
+    highlight: tango
+    theme: simplex
+  pdf_document:
+    toc: yes
+encoding: UTF-8
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Primera parte del laboratorio
+
+Un grupo de ex-alumnos/as del IN5602 que hoy se han dedicado a emprender estan considerando crear un servicio de turismo basado en la pesca recreativa. Para entender el comportamiento de los clientes y así poder planificar las estregias de venta, una integrante de este grupo de emprendedores implementó una encuesta para entender las preferencias de los clientes. La encuesta fue contestada por una muestra de 1182 personas quienes eligieron su modalidad de pesca preferido entre 4 modos distintos. La encuesta incluye la opción escogida (beach, pier, boat, charter) el precio por alternativa de modo de pesca (*price*), la tasa de pesca por opción (*catch*) y por último, el ingreso de cada individuo (*income*).
+
+```{r ,message=FALSE}
+#Se limpia el espacio de trabajo
+
+rm(list=ls())				# Limpiamos todos los objetos creados en R
+graphics.off()	    # se limpian los graficos 
+
+```
+
+```{r ,message=FALSE}
+#Se carga la base de datos
+data("Fishing", package = "mlogit")
+head(Fishing, 5)
+```
+
+### Preguntas
+
+
+1. Usando la librería _mlogit_, estime un modelo logit e interprete sus resultados.
+
+```{r ,message=FALSE}
+#cargar libreria
+library(mlogit)
+
+#Formatear la data
+Fishing2 <- mlogit.data(data = Fishing, shape = "wide", varying=2:9, choice = "mode")
+
+#La base ya viene en formato long, por lo que la podemos seguir usando
+modelo_logit<-mlogit(mode ~ price + catch| income | 0 , data=Fishing2)	
+summary(modelo_logit)
+
+
+
+```
+
+2. Usando la librería _mlogit_, estime un modelo probit e interprete sus resultados incluyendo los valores de la matriz de varianza covarianza"
+
+Es importante notar que en el modelo no se incluye "catch" pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error. 
+
+```{r ,message=FALSE}
+#Modelo probit
+modelo_probit <- mlogit(mode ~ price | income | 0, data = Fishing2, probit = TRUE, print.level=1)	
+summary(modelo_probit)
+
+#matriz var covar
+vcov(modelo_probit)
+
+```
+
+
+3. Usando la librería _gmnl_ Construya un modelo con 2 clases latentes e interprete sus resultados.
+
+```{r ,message=FALSE, warning=FALSE}
+
+detach("package:mlogit", unload=TRUE)
+install.packages("https://cran.r-project.org/src/contrib/Archive/mlogit/mlogit_1.0-2.tar.gz", repos=NULL,type="source")
+library(gmnl)
+library(mlogit) 
+
+modelogmnl <- gmnl(mode ~ price + catch | income | 0 | 0 | 1 , data=Fishing2, model='lc', Q=2)
+summary(modelogmnl)
+
+```
+
+4. En base a sus resultados de al menos una sugerencia comercial al equipo de emprendedores. 
+
+Se sugiere al equipo de emprendedores, ofrecer un servicio de pesca recreativa considerando que "charter" presenta alta preferencia, sin embargo, si se considera el ingreso de cada individuo, esta preferencia puede disminuir. Por lo que es aconsejable ofrecer un servicio en barco (charter) que sea asequible a su grupo objetivo.
+
+
+
+

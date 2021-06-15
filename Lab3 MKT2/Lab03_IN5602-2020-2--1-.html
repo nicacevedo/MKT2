@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Gabriela Mora" />
+<meta name="author" content="Nicolás Acevedo, Constanza Bastías, Pablo Ubilla" />
 
 
 <title>Laboratorio de Modelos de Elección Discreta</title>
@@ -1709,7 +1709,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">Laboratorio de Modelos de Elección Discreta</h1>
-<h4 class="author">Gabriela Mora</h4>
+<h4 class="author">Nicolás Acevedo, Constanza Bastías, Pablo Ubilla</h4>
 <h4 class="date">09-06-2021</h4>
 
 </div>
@@ -1776,12 +1776,11 @@ pre code {
 ## Log-Likelihood: -1215.1
 ## McFadden R^2:  0.18868 
 ## Likelihood ratio test : chisq = 565.17 (p.value = &lt; 2.22e-16)</code></pre>
+<p>Se puede observar que la mayoría de los coeficientes obtenidos son significativos. a excepción de las interacciones boat:income y charter:income. Vemos que en los efectos fijos por cada opción existe el siguiente orden de preferencias según la magnitud del coeficiente (recordando que beach es la elección de control): charter, pier, boat y beach. Ahora bien, si analizamos las interacciones que existen con el ingreso vemos que son poco significativas para boat y charter, pero en el caso de pier vemos un efecto decreciente según el ingreso. Respecto a las variables asociadas a price, está tiene un signo coherente, pues entre más cara es la opción menor será su preferencia. El signo de catch también es coherente, pues entre mayor es la tasa de captura en la opción, mayor su preferencia (es una experiencia más grata de pesca).</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Usando la librería <em>mlogit</em>, estime un modelo probit e interprete sus resultados incluyendo los valores de la matriz de varianza covarianza&quot;</li>
 </ol>
-<p>Es importante notar que en el modelo no se incluye “catch” pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co">#Modelo probit</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>modelo_probit &lt;-<span class="st"> </span><span class="kw">mlogit</span>(mode <span class="op">~</span><span class="st"> </span>price <span class="op">|</span><span class="st"> </span>income <span class="op">|</span><span class="st"> </span><span class="dv">0</span>, <span class="dt">data =</span> Fishing2, <span class="dt">probit =</span> <span class="ot">TRUE</span>, <span class="dt">print.level=</span><span class="dv">1</span>)   </span></code></pre></div>
+<p>Es importante notar que en el modelo no se incluye “catch” pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error al tener una matriz no invertible.</p>
 <pre><code>## Initial value of the function : 1232.83031653839 
 ## iteration 1, step = 0.5, lnL = 1226.93817211, chi2 = 52.55125682
 ## iteration 2, step = 0.25, lnL = 1223.14243634, chi2 = 59.29299396
@@ -1816,7 +1815,6 @@ pre code {
 ## iteration 31, step = 1, lnL = 1203.3811992, chi2 = 1.079e-05
 ## iteration 32, step = 1, lnL = 1203.38119862, chi2 = 1.1e-06
 ## iteration 33, step = 1, lnL = 1203.38119858, chi2 = 7e-08</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">summary</span>(modelo_probit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## mlogit(formula = mode ~ price | income | 0, data = Fishing2, 
@@ -1827,7 +1825,7 @@ pre code {
 ## 0.11337 0.35364 0.38240 0.15059 
 ## 
 ## bfgs method
-## 33 iterations, 0h:3m:3s 
+## 33 iterations, 0h:3m:20s 
 ## g&#39;(-H)^-1g = 6.84E-08 
 ## gradient close to zero 
 ## 
@@ -1851,8 +1849,6 @@ pre code {
 ## Log-Likelihood: -1203.4
 ## McFadden R^2:  0.19653 
 ## Likelihood ratio test : chisq = 588.68 (p.value = &lt; 2.22e-16)</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="co">#matriz var covar</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="kw">vcov</span>(modelo_probit)</span></code></pre></div>
 <pre><code>##                     boat:(intercept) charter:(intercept) pier:(intercept)
 ## boat:(intercept)        1.443167e-02        8.069147e-03     1.003315e-02
 ## charter:(intercept)     8.069147e-03        2.856465e-02     1.941778e-02
@@ -1905,19 +1901,20 @@ pre code {
 ## charter.charter      2.919160e-02
 ## charter.pier         2.251799e-02
 ## pier.pier            1.880831e-02</code></pre>
+<p>SA</p>
 <ol start="3" style="list-style-type: decimal">
 <li>Usando la librería <em>gmnl</em> Construya un modelo con 2 clases latentes e interprete sus resultados.</li>
 </ol>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="kw">detach</span>(<span class="st">&quot;package:mlogit&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="kw">install.packages</span>(<span class="st">&quot;https://cran.r-project.org/src/contrib/Archive/mlogit/mlogit_1.0-2.tar.gz&quot;</span>, <span class="dt">repos=</span><span class="ot">NULL</span>,<span class="dt">type=</span><span class="st">&quot;source&quot;</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="kw">library</span>(gmnl)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a><span class="kw">library</span>(mlogit) </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a>modelogmnl &lt;-<span class="st"> </span><span class="kw">gmnl</span>(mode <span class="op">~</span><span class="st"> </span>price <span class="op">+</span><span class="st"> </span>catch <span class="op">|</span><span class="st"> </span>income <span class="op">|</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span><span class="dv">1</span> , <span class="dt">data=</span>Fishing2, <span class="dt">model=</span><span class="st">&#39;lc&#39;</span>, <span class="dt">Q=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">detach</span>(<span class="st">&quot;package:mlogit&quot;</span>, <span class="dt">unload=</span><span class="ot">TRUE</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="kw">install.packages</span>(<span class="st">&quot;https://cran.r-project.org/src/contrib/Archive/mlogit/mlogit_1.0-2.tar.gz&quot;</span>, <span class="dt">repos=</span><span class="ot">NULL</span>,<span class="dt">type=</span><span class="st">&quot;source&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="kw">library</span>(gmnl)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="kw">library</span>(mlogit) </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>modelogmnl &lt;-<span class="st"> </span><span class="kw">gmnl</span>(mode <span class="op">~</span><span class="st"> </span>price <span class="op">+</span><span class="st"> </span>catch <span class="op">|</span><span class="st"> </span>income <span class="op">|</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span><span class="dv">1</span> , <span class="dt">data=</span>Fishing2, <span class="dt">model=</span><span class="st">&#39;lc&#39;</span>, <span class="dt">Q=</span><span class="dv">2</span>)</span></code></pre></div>
 <pre><code>## Estimating LC model</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">summary</span>(modelogmnl)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">summary</span>(modelogmnl)</span></code></pre></div>
 <pre><code>## 
-## Model estimated on: lun. jun. 14 14:44:01 2021 
+## Model estimated on: mar. jun. 15 10:45:16 2021 
 ## 
 ## Call:
 ## gmnl(formula = mode ~ price + catch | income | 0 | 0 | 1, data = Fishing2, 
@@ -1928,7 +1925,7 @@ pre code {
 ##   beach    boat charter    pier 
 ## 0.11337 0.35364 0.38240 0.15059 
 ## 
-## The estimation took: 0h:0m:16s 
+## The estimation took: 0h:0m:10s 
 ## 
 ## Coefficients:
 ##                                Estimate  Std. Error  z-value  Pr(&gt;|z|)    
@@ -1957,10 +1954,11 @@ pre code {
 ## Number of observations: 1182
 ## Number of iterations: 763
 ## Exit of MLE: successful convergence</code></pre>
+<p>En primer lugar, cabe notar que los coeficientes asociados a la clase 2 son en general significativos, a diferencia de los asociados a la clase 1 donde no se obtiene ningún coeficiente significativo. Destaca que el efecto del precio en la clase 2 es menor, lo que podría dar a entender un mayor poder adquisitivo. Respecto a catch se ve que en la clase 1 afecta negativamente, lo que de alguna forma da entender que se prefieren menores tasas de captura (experiencia más relajada, a diferencia de la clase 2 donde si aumenta la preferencia la tasa de captura. Para la clase 2 se ve que respecto a los modos charter y pier se ve un decrecimiento según el income, aunque ambos tienen un efecto fijo positivo (respecto a beach). Para la clase 1 el decrecimiento en income solo se ve para charter, que también tiene un efecto positivo fijo respecto a beach. La clase 2 tiene un efecto fijo de utilidad sobre beach respecto a la clase 1.</p>
 <ol start="4" style="list-style-type: decimal">
 <li>En base a sus resultados de al menos una sugerencia comercial al equipo de emprendedores.</li>
 </ol>
-<p>Se sugiere al equipo de emprendedores, ofrecer un servicio de pesca recreativa considerando que “charter” presenta alta preferencia, sin embargo, si se considera el ingreso de cada individuo, esta preferencia puede disminuir. Por lo que es aconsejable ofrecer un servicio en barco (charter) que sea asequible a su grupo objetivo.</p>
+<p>Se sugiere al equipo de emprendedores, ofrecer un servicio de pesca recreativa considerando que “charter” presenta alta preferencia, sin embargo, si se considera el ingreso de cada individuo, esta preferencia puede disminuir. Por lo que es aconsejable ofrecer un servicio en barco (charter) que sea asequible a su grupo objetivo. En general se puede observar que las preferencias varian según ingreso, lo que da a entender que puede ser importante determinar segmentos en los clientes para ver qué tipo de modo de pesca promocionar. Es claro que el precio tiene un efecto negativo en las preferencias, pero este es más marcado en algunos tipos de clientes que son más sensibles al precio (como se puede observar en las clases latentes), para este tipo de clientes puede ser bueno incluir algún tipo de promoción si es que se quiere incentivar un tipo de pesca.</p>
 </div>
 </div>
 

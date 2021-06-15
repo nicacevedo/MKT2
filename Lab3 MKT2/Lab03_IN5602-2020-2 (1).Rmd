@@ -1,8 +1,8 @@
 ---
 title: "Laboratorio de Modelos de Elección Discreta"
-author: "Gabriela Mora"
+author: "Nicolás Acevedo, Constanza Bastías, Pablo Ubilla"
 date: "09-06-2021"
-output:
+output: 
   html_document:
     df_print: paged
     highlight: tango
@@ -15,7 +15,6 @@ encoding: UTF-8
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 
 ## Primera parte del laboratorio
 
@@ -37,8 +36,7 @@ head(Fishing, 5)
 
 ### Preguntas
 
-
-1. Usando la librería _mlogit_, estime un modelo logit e interprete sus resultados.
+1.  Usando la librería *mlogit*, estime un modelo logit e interprete sus resultados.
 
 ```{r ,message=FALSE}
 #cargar libreria
@@ -50,27 +48,26 @@ Fishing2 <- mlogit.data(data = Fishing, shape = "wide", varying=2:9, choice = "m
 #La base ya viene en formato long, por lo que la podemos seguir usando
 modelo_logit<-mlogit(mode ~ price + catch| income | 0 , data=Fishing2)	
 summary(modelo_logit)
-
-
-
 ```
 
-2. Usando la librería _mlogit_, estime un modelo probit e interprete sus resultados incluyendo los valores de la matriz de varianza covarianza"
+Se puede observar que la mayoría de los coeficientes obtenidos son significativos. a excepción de las interacciones boat:income y charter:income. Vemos que en los efectos fijos por cada opción existe el siguiente orden de preferencias según la magnitud del coeficiente (recordando que beach es la elección de control): charter, pier, boat y beach. Ahora bien, si analizamos las interacciones que existen con el ingreso vemos que son poco significativas para boat y charter, pero en el caso de pier vemos un efecto decreciente según el ingreso. Respecto a las variables asociadas a price, está tiene un signo coherente, pues entre más cara es la opción menor será su preferencia. El signo de catch también es coherente, pues entre mayor es la tasa de captura en la opción, mayor su preferencia (es una experiencia más grata de pesca).
 
-Es importante notar que en el modelo no se incluye "catch" pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error. 
+2.  Usando la librería *mlogit*, estime un modelo probit e interprete sus resultados incluyendo los valores de la matriz de varianza covarianza"
 
-```{r ,message=FALSE}
+Es importante notar que en el modelo no se incluye "catch" pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error al tener una matriz no invertible.
+
+```{r ,message=FALSE, echo=FALSE}
 #Modelo probit
 modelo_probit <- mlogit(mode ~ price | income | 0, data = Fishing2, probit = TRUE, print.level=1)	
 summary(modelo_probit)
 
 #matriz var covar
 vcov(modelo_probit)
-
 ```
 
+SA
 
-3. Usando la librería _gmnl_ Construya un modelo con 2 clases latentes e interprete sus resultados.
+3.  Usando la librería *gmnl* Construya un modelo con 2 clases latentes e interprete sus resultados.
 
 ```{r ,message=FALSE, warning=FALSE}
 
@@ -84,10 +81,8 @@ summary(modelogmnl)
 
 ```
 
-4. En base a sus resultados de al menos una sugerencia comercial al equipo de emprendedores. 
+En primer lugar, cabe notar que los coeficientes asociados a la clase 2 son en general significativos, a diferencia de los asociados a la clase 1 donde no se obtiene ningún coeficiente significativo. Destaca que el efecto del precio en la clase 2 es menor, lo que podría dar a entender un mayor poder adquisitivo. Respecto a catch se ve que en la clase 1 afecta negativamente, lo que de alguna forma da entender que se prefieren menores tasas de captura (experiencia más relajada, a diferencia de la clase 2 donde si aumenta la preferencia la tasa de captura. Para la clase 2 se ve que respecto a los modos charter y pier se ve un decrecimiento según el income, aunque ambos tienen un efecto fijo positivo (respecto a beach). Para la clase 1 el decrecimiento en income solo se ve para charter, que también tiene un efecto positivo fijo respecto a beach. La clase 2 tiene un efecto fijo de utilidad sobre beach respecto a la clase 1.
 
-Se sugiere al equipo de emprendedores, ofrecer un servicio de pesca recreativa considerando que "charter" presenta alta preferencia, sin embargo, si se considera el ingreso de cada individuo, esta preferencia puede disminuir. Por lo que es aconsejable ofrecer un servicio en barco (charter) que sea asequible a su grupo objetivo.
+4.  En base a sus resultados de al menos una sugerencia comercial al equipo de emprendedores.
 
-
-
-
+Se sugiere al equipo de emprendedores, ofrecer un servicio de pesca recreativa considerando que "charter" presenta alta preferencia, sin embargo, si se considera el ingreso de cada individuo, esta preferencia puede disminuir. Por lo que es aconsejable ofrecer un servicio en barco (charter) que sea asequible a su grupo objetivo. En general se puede observar que las preferencias varian según ingreso, lo que da a entender que puede ser importante determinar segmentos en los clientes para ver qué tipo de modo de pesca promocionar. Es claro que el precio tiene un efecto negativo en las preferencias, pero este es más marcado en algunos tipos de clientes que son más sensibles al precio (como se puede observar en las clases latentes), para este tipo de clientes puede ser bueno incluir algún tipo de promoción si es que se quiere incentivar un tipo de pesca.

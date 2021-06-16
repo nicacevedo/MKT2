@@ -44,28 +44,50 @@ library(mlogit)
 
 #Formatear la data
 Fishing2 <- mlogit.data(data = Fishing, shape = "wide", varying=2:9, choice = "mode")
+```
 
-#La base ya viene en formato long, por lo que la podemos seguir usando
+Veamos un modelo Logit condicionado en el ingreso de las personas, incluyendo el efecto entre opciones de las variables que son independientes a estas (price y catch)
+
+```{r ,message=FALSE}
+#La base ya viene en formato long, por lo que tiramos Logit condicionado
 modelo_logit<-mlogit(mode ~ price + catch| income | 0 , data=Fishing2)	
 summary(modelo_logit)
 ```
 
-Se puede observar que la mayoría de los coeficientes obtenidos son significativos. a excepción de las interacciones boat:income y charter:income. Vemos que en los efectos fijos por cada opción existe el siguiente orden de preferencias según la magnitud del coeficiente (recordando que beach es la elección de control): charter, pier, boat y beach. Ahora bien, si analizamos las interacciones que existen con el ingreso vemos que son poco significativas para boat y charter, pero en el caso de pier vemos un efecto decreciente según el ingreso. Respecto a las variables asociadas a price, está tiene un signo coherente, pues entre más cara es la opción menor será su preferencia. El signo de catch también es coherente, pues entre mayor es la tasa de captura en la opción, mayor su preferencia (es una experiencia más grata de pesca).
+Se puede observar que la mayoría de los coeficientes obtenidos son significativos. a excepción de las interacciones boat:income y charter:income. Vemos que en los efectos fijos por cada opción existe el siguiente orden de preferencias según la magnitud del coeficiente (recordando que beach es la elección de control): charter, pier, boat y beach. Ahora bien, si analizamos las interacciones que existen con el ingreso (en realidad es el efecto del ingreso en cada opción, que se analiza en conjunto con los coeficiente, pero se entiende la idea) vemos que son poco significativas para boat y charter, pero en el caso de pier vemos un efecto decreciente según el ingreso. Respecto a las variables asociadas a price, está tiene un signo coherente, pues entre más cara es la opción menor será su preferencia. El signo de catch también es coherente, pues entre mayor es la tasa de captura en la opción, mayor su preferencia (es una experiencia más grata de pesca).
 
 2.  Usando la librería *mlogit*, estime un modelo probit e interprete sus resultados incluyendo los valores de la matriz de varianza covarianza"
 
-Es importante notar que en el modelo no se incluye "catch" pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error al tener una matriz no invertible.
+Es importante notar que en el modelo no se incluye "catch" pues al incluir esta variable, se calculan los valores de la matriz Cholesky, termina provocando que esta no sea definida positiva (es una condición de ese tipo de matriz), arrojando un error al tener una matriz no invertible. Esto no debería realmente afectar el cálculo de la matriz de varianza-covarianza de todas maneras.
 
-```{r ,message=FALSE, echo=FALSE}
+```{r, message=FALSE}
 #Modelo probit
-modelo_probit <- mlogit(mode ~ price | income | 0, data = Fishing2, probit = TRUE, print.level=1)	
+modelo_probit <- mlogit(mode ~ price | income | 0, data = Fishing2, probit = TRUE)
 summary(modelo_probit)
-
-#matriz var covar
-vcov(modelo_probit)
 ```
 
-SA
+Con los coeficientes anteriores podemos interpretar algo similar al modelo Logit, que con respecto a la opción de control "beach", a mayor ingreso, será más probable que la persona escoja bote, mientras que será menos probable que escoja pier, y aún menos probable que escoja charter, pero con los coeficientes de los interceptos logrando el efecto contrario para valor muy muy bajos de ingreso, ya que todos tienen el signo contrario y podrían llegar a ser mayores los interceptos de por sí para valores bajos de ingreso. El precio sigue bajando la probabilidad en cualquier opción.
+
+En cuanto a la matriz de varianza, vamos a utilizar la decomposición de Cholesky para calcular la matriz de varianza--covarianza. Es decir, aprovechando que la matriz de covarianza $\Sigma$ es semi-definida positiva, entonces podemos escribirla en descomposición de Cholesky como:
+
+$$
+\Sigma = LL^{T}
+$$ Donde cada componente de $L$ es el coeficiente que no entrega la estimación anterior (ej: pier.per para la componente de pier con pier), normalizados por boat (por eso no aparece en los resultados), con lo que obtenemos entonces la matriz de var-cov normalizada según el coeficiente de boat con esta multiplicación de matrices, rellenando la matriz $L$ (simétrica):
+
+```{r}
+
+# Descomposición
+L <- matrix(0, 3, 3)
+L[!upper.tri(L)] <- c(1, coef(modelo_probit)[8:12])
+
+#matriz var covar
+V <- L %*% t(L)
+V
+```
+
+Obtenemos el 1 en la diagonal para boat (1,1) dato que es la versión normalizada por este vista en clases. Dado esto, resulta complejo interpretar sus valores, ya que son sumas, restas y divisiones de las covarianzas entre cada opción.
+
+Sin embargo, podemos intentar interpretar por sí solos los coeficientes obtenidos en el modelo Probit, en caso de que estos sean interpretables como las covarianzas pos sí solas (lo que según entiendo no es así por más de que el profesor haya dicho que sí era así en clases, pero interpretemos de todas maneras). De esta manera, nuestra matriz sería simplemente $L$ , por lo que los coeficientes por sí solos nos entregarían las covarianzas; es decir, la varianza de pier es 1.3423e-01, la de charter es 7.6262e-01, pero con esto no decimos mucho, en cambio sí podemos decir algo con las covarianzas, donde vemos que la covarianza entre los efectos no observables de la utilidad entre boat y chartes es negativa, mientras que el resto de covarianzas son positivas, por lo que la gente que escoge boat podría tener características no observables contrarias al resto. Sigue no teniendo mucho sentido interpretar esto en mi opinión.
 
 3.  Usando la librería *gmnl* Construya un modelo con 2 clases latentes e interprete sus resultados.
 

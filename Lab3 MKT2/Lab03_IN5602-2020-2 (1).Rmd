@@ -50,7 +50,7 @@ Veamos un modelo Logit condicionado en el ingreso de las personas, incluyendo el
 
 ```{r ,message=FALSE}
 #La base ya viene en formato long, por lo que tiramos Logit condicionado
-modelo_logit<-mlogit(mode ~ price + catch| income | 0 , data=Fishing2)	
+modelo_logit<-mlogit(mode ~  price + catch | income | 0, data=Fishing2)	
 summary(modelo_logit)
 ```
 

@@ -83,6 +83,7 @@ Escribe acá todos los comandos que necesitas ejecutar antes de abordar las preg
 
 ```{r P}
 #Exploración de datos
+
 # Cargamos librerias útiles
 library(dplyr)
 library(knitr) 
@@ -93,9 +94,25 @@ library(lattice)
 library(caret) 
 library(Metrics)
 
+```
+
+##  Desarrollo
+
+Documenta acá el desarrollo de tu tarea por pregunta.
+
+#### Pregunta 1
+
+(0 puntos) Explore los datos para poder entender qué variables podrían ser más influyentes en el hecho de que un experto elija un anime.
+
+Primero vemos algunos graficos de frecuencia para cada variable
+
+```{r P1}
+#Exploración de datos
+
 #Base de datos
 df <- read_csv("./Dataset/Anime.csv")
 
+#Hacemos un for para graficar todas las variables y su frecuencia
 for (col in names(df)){
   print(col)
   if ( col != 'X1' ){ 
@@ -108,20 +125,68 @@ for (col in names(df)){
     print(gg)
   }
 }
-```
-
-##  Desarrollo
-
-Documenta acá el desarrollo de tu tarea por pregunta.
-
-#### Pregunta 1
-
-(0 puntos) Explore los datos para poder entender qué variables podrían ser más influyentes en el hecho de que un experto elija un anime.
-
-```{r P1}
-#Exploración de datos
 
 ```
+Ahora vemos algunos graficos de distribución con interaciiones
+```{r}
+# Eleccion de anime según género
+ggplot(data=df, aes(x=Mujer, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Genero")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según género")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# Eleccion de anime según cantidad de capitulos
+ggplot(data=df, aes(x=CantCaps, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Cantidad capítulos")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según cantidad de capítulos")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Eleccion de anime según número de escenas de combate
+ggplot(data=df, aes(x=NEscenasCombate, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Cantidad escenas de combate")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según cantidad deescenas de combate")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Eleccion de anime según número de escenas emocionantes
+ggplot(data=df, aes(x=NescenasEmocionantes, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Cantidad escenas emocionantes")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según cantidad de escenas emocionantes")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Eleccion de anime según calidad animación
+ggplot(data=df, aes(x=CalidadAnimacion, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Calidad animación")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según calidad animación")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Eleccion de anime según duracion del capítulo (min)
+ggplot(data=df, aes(x=DuracionCapituloMin, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Duración capítulos (min)")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según duración del capítulo")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Eleccion de anime según Rating TV
+ggplot(data=df, aes(x=RatingTV, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Rating TV")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime según Rating TV")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
 
 #### Pregunta 2
 

@@ -684,9 +684,9 @@ print(paste('Error de predicción: ', mean(abs(error.lm2))))
 
 Se puede observar que este modelo tampoco explica de la forma deseada la variable de interés (poca significancia), sin embargo, disminuye el error de predicción.
 
-3\. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA cuadrimensional ciertas variaciones notables en la variable de interés. 
+3\. Regresión con interacciones "Branch x Customer type x Month" y "Gender x Payment x Product line", pues se vio en el EDA cuadrimensional ciertas variaciones notables en la variable de interés.
 
-a. Branch x Customer type x Month: en el gráfico N°48 [ver anexo 1], se vieron variaciones según este tipo de variables, por ejemplo, según tienda, varía el Rating, lo mismo para tipo de cliente, y que estos efectos también varían según el mes.
+a.  Branch x Customer type x Month: en el gráfico N°48 [ver anexo 1], se vieron variaciones según este tipo de variables, por ejemplo, según tienda, varía el Rating, lo mismo para tipo de cliente, y que estos efectos también varían según el mes.
 
 b.  Gender x Payment x Product line: también se pueden ver variaciones interesantes en el gráfico N°43 [Ver anexo 2]
 
@@ -755,9 +755,9 @@ Se puede observar distitnos errores de predicción según tienda.
 
 **b)** Sobre los dos modelos planteados en la parte anterior, aplique un método de selección automática de variables y compare respecto a los resultados anteriores.
 
-Para esta parte, se continuará trabajando con el modelo que mejor funcionó en las partes anteriores (menor error de predicción): 
+Para esta parte, se continuará trabajando con el modelo que mejor funcionó en las partes anteriores (menor error de predicción):
 
-Rating = Branch * Customer type * Month + Gender  * Payment * Product line + Hour + Day + Week + Unit price * Quantity
+Rating = Branch \* Customer type \* Month + Gender \* Payment \* Product line + Hour + Day + Week + Unit price \* Quantity
 
 1.  Se usa LASSO para seleccionar las varibles más importantes de la regresión anterior, ya que va a castigar a los coeficientes que tengan mayor error llevando algunos a 0.
 
@@ -972,14 +972,11 @@ boxplot(abs(subset(error.test))); title(main="RL + Autom models", sub="Forecasti
 boxplot(subset(error.test)); title(main="RL + Autom models", sub="Forecasting Errors")
 ```
 
-
 En cuanto a las fortalezas y debilidades de cada modelo, se tiene que para los de regresión lineal, si bien son los únicos que permiten obtener inferencia estadística, hay que probar varios modelos hasta encontrar uno óptimo, lo cual en este caso no resultaría eficiente pues se vio que lo que explica el modelos son interacciones entre variables, por lo que habría que indagar e invertir bastante tiempo.
 
 Por otro lado, los modelos de Machine Learning, si bien toman un conjunto de datos y los trabajan para realizar una predicción óptima, en este caso no resultaron mejor que los de selección automática. Esto se puede deber a la cantidad de datos con los que se trabajó (que si fuesen más, los métodos de ML podrían funcionar mejor).En particular, para el caso de Knn es un algoritmo sencillo que se basa escencialmente en la distancia entre observaciones. Algunas desventajas radican en que hay que ajustar los datos para que las distancias sean comparables y que no entrega información de cómo se relacionan las variables, siendo un modelo principalmente enfocado en la predicción. Para el caso de Random Forest también se tiene un modelo sencillo, donde no se necesita ajustar los datos, pues se basa en un sampleo aleatorio de árboles de decisión. Un problema de Random Forest radica en el tiempo computacional que implica el sampleo aleatorio de estos árboles.
 
 Por último, se puede observar que aquellos modelos que mejor funcionan son el de selección automática LASSO y Stepwise Regression (backwards), entregando menor error y variación. Esto se puede deber a que fueron seleccionando aquellas variables e interacciones funcionaban mejor para explicar la variable de interés Rating. Así, se recomendaría utilizar estos. Sin embargo, para hacer inferencia estadística, los de regresión lineal resultan más útil.
-
-
 
 #### Pregunta 5
 
@@ -999,7 +996,6 @@ Documenta acá el resumen y las conclusiones principales (esto te servirá para 
 
 #### Pregunta 6
 
-
 Finalmente, dado el estudio de modelos desarrollado, se puede concluir, primero, que las variables por sí solas pueden no explicar fenómenos complejos como la decisión de qué nivel de satisfacción se tiene con una atención, pues distintos factores pueden afectar en conjunto. Esto se vio en el EDA inicial y también en las primeras regresiones lineales donde se evluaba cómo una variable independiente podía explicar el Rating, sin embargo, se vio poca significancia y correlación.
 
 En segundo lugar, se vio que los métodos de selección automática tuvieron un rendimiento mejor, lo cual puede deberser a fenómenos que no se pueden ver a simple vista, y que guardan relación con cada posible varibale e interacción.
@@ -1012,7 +1008,7 @@ También se puede concluir que si bien nada predice con un 100% de precisión, u
 
 Por último, en cuanto a los modelos de decisión (homogeneo y heterogeneo), se observa que las distribuciones sobre los $\theta$ correspondientes a cada Branch dependen bastante poco de la segmentación, al tener parámetros $\alpha$ y $\beta$ muy altos. En general se ve que hay poca certeza a la hora de ver si un cliente está satisfecho, donde la probabilidad en los modelos estudiados siempre se estima cercana a 0.5. Esto daría a entender que es muy difícil hacer inferencias sobre el comportamiento de los distintos clientes, pero si se pueden hacer inferencias del comportamiento agregado de los clientes y segmentos, donde se espera que la fracción de clientes satisfechos esté cercano al 50%.
 
-
+```{=tex}
 \begin{table}[]
 \begin{tabular}{llll}
          & $\alpha$ & $\beta$  & $E(\theta)$ \\ \hline
@@ -1021,9 +1017,7 @@ Branch B & 519.556  & 530.852  & 0.495       \\
 Branch C & 581.162  & 473.7344 & 0.55       
 \end{tabular}
 \end{table}
-
- 
-
+```
 ## Anexos
 
 Documenta acá cualquier otro adicional que consideres útil tener de referencia.
@@ -1049,5 +1043,3 @@ ggplot(df) +
   theme(axis.text.x = element_text(angle = 30))
 
 ```
-
-

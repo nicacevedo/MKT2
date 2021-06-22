@@ -8,18 +8,18 @@ library(mlogit)			# load package to compare
 library(mnlogit)
 
 # Base de datos ####
-dir = './Tarea2/Dataset/homogeneo.csv' # Nueva base actualizada
+dir = './Tarea2/Dataset/Anime2_Logit.csv' # Nueva base actualizada
 df <- read.table(file=dir, header=TRUE, sep=",")		#complete data file loaded in a matrix*/
 df$Eleccion <- as.factor(df$Eleccion)
 
 # Cambio de formato ####
-df_formateada <- mlogit.data(df, shape="wide", varying=4:ncol(df), choice="Eleccion")		#format the data
+df_formateada <- mlogit.data(df, shape="wide", varying=3:ncol(df), choice="Eleccion")		#format the data
 
 #run logit model
 # cat("mlogit - logit\n")
 
 
-animelogit <- mlogit(Eleccion ~ Combat + Emotion + Qual + Duration + Rating | Edad + Mujer, data = df_formateada)		
+animelogit <- mlogit(Eleccion ~ Combat + Emotion + Qual | Mujer, data = df_formateada)		
 #animelogit <- mlogit(Eleccion ~ 0 | Mujer, data = df_formateada)
 summary(animelogit)
 

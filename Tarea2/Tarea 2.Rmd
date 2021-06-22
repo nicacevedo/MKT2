@@ -110,6 +110,19 @@ for (col in names(df)){
 }
 ```
 
+```{r}
+ggplot(data=df, aes(x=Mujer, col=factor(Eleccion):factor(Animes)))+
+  geom_bar(fill="white", alpha=0.2)+
+  xlab("Genero")+ #Etiqueta para el eje x
+  ylab("Frecuencia")+ #Etiqueta para el eje y
+  ggtitle("Distribución Eleccion por anime")+ #Título del gráfico
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+head(df)
+```
+
 ##  Desarrollo
 
 Documenta acá el desarrollo de tu tarea por pregunta.

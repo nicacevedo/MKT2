@@ -96,7 +96,7 @@ library(Metrics)
 
 ```
 
-##  Desarrollo
+## Desarrollo
 
 Documenta acá el desarrollo de tu tarea por pregunta.
 
@@ -127,7 +127,9 @@ for (col in names(df)){
 }
 
 ```
+
 Ahora vemos algunos graficos de distribución con interaciiones
+
 ```{r}
 # Eleccion de anime según género
 ggplot(data=df, aes(x=Mujer, col=factor(Eleccion):factor(Animes)))+
@@ -186,7 +188,6 @@ ggplot(data=df, aes(x=RatingTV, col=factor(Eleccion):factor(Animes)))+
   ggtitle("Distribución Eleccion por anime según Rating TV")+ #Título del gráfico
   theme(plot.title = element_text(hjust = 0.5))
 ```
-
 
 #### Pregunta 2
 

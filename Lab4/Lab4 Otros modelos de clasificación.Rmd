@@ -1,6 +1,6 @@
 ---
 title: 'Lab 4: Otros modelos de clasificación - Otoño 2021'
-author: "Renato Ignacio Cerda Hernández"
+author: 'Nicolás Acevedo, Constanza Bastías y Pablo Ubilla'
 date: "23/6/2021"
 output:
   html_document:
@@ -52,7 +52,7 @@ A continuación un diccionario de las variables:
 ```{r someVar, echo=FALSE, results="hide",include=FALSE}
 library(caret) #librería modelos de ML
 library(dplyr) #librería para usar antijoint y crear test data
-library("rattle") #librería que contiene la BD wine
+library(rattle) #librería que contiene la BD wine
 library('ggplot2')
 library('MLmetrics')
 rm(list=ls())   # Limpiamos todos los objetos creados en R. la función ls() indica los nombres de todos los objetos y rm() los remueve.
@@ -149,6 +149,11 @@ ggplot(wine, aes(x=Type,y=Dilution,fill=Type)) +
 ggplot(wine, aes(x=Type,y=Proline,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Proline")+ggtitle("Boxplot de Proline por tipo de vino")+guides(fill=FALSE)
+```
+```{r}
+ggplot(wine, aes(x=Type,y=Color,fill=Type)) + 
+  geom_boxplot(alpha=0.8) +
+  labs(fill="Tipo", x="Tipo de vino", y="Coloración")+ggtitle("Boxplot de intensidad de color por tipo de vino")+guides(fill=FALSE)
 ```
 
 ## KNN
@@ -267,12 +272,29 @@ $$F1_{score}=\frac{2⋅Recall⋅Precision}{Recall+Presicion}$$
 ## Preguntas
 
 ##### Pregunta 1
-
 ```{r p1}
 # Seleccione 3 variables del dataset para generar las predicciones y argumente por qué serían buenas variables para predecir el tipo de vino. Puede realizar un EDA o basarse en los gráficos ya incluidos.
 # Determine 2 métricas para comparar los modelos, justifique su elección.
 # Si se viera en la obligación de NO agregar ciertas variables del dataset, comente sobre cuál o cuáles serían apoyándose en un EDA o los gráficos ya incluídos (Mínimo una variable)
 ```
+
+Observando el EDA, seleccionamos las siguientes variables:
+- Dilución: mide cuán diluido está un tipo de vino, y si observamos el EDA, podemos notar que hay alta variabilidad entre los tipos de vinos, por lo que nos podría ayudar a identificar mejor qué tipo de vino es al momento de correr un modelo.
+
+
+- Grado alcoholico: mide cuánto alcohol hay en una cierta medida del vino, y la seleccionamos por un argumento similar al anterior, pues hay variabilidad entre los tipos de vino (dan números diferentes entre ellos), lo que ayudaría a identificarlos mejor.
+
+- Intensidad de color: mide el grado en que la luz puede atravesar el vino (ve la opacidad), y tal como en las variables anteriores, esta métrica cambia bastante entre los tipos de vinos.
+
+
+Las métricas que utilizaremos para comparar modelos son:
+
+- Accuracy: pues queremos ver qué tan bien funcionan nuestros modelos, y si son capaces de identificar bien el tipo de vino. 
+
+- F1: pues considera las métricas de Recall y Precision, lo que nos entrega una información más completa.
+
+
+Algunas variables que no incorporaremos, son "Hue" o el matiz del vino, pues observando el EDA, notamos que para el tipo de vino 1 y 2 son bastantes similares, y podría llevar a confundir nuestros modelos al momentos de predecir.
 
 
 ##### Pregunta 2
@@ -281,16 +303,91 @@ $$F1_{score}=\frac{2⋅Recall⋅Precision}{Recall+Presicion}$$
 # Corra 2 modelos de clasificación con las variables seleccionadas anteriormente para predecir el tipo de vino.
 # Cálcule para cada modelo las metricas seleccionadas para el set de testeo, además muestre la matriz de confusión.
 # Comente sobre los resultados, ¿Los modelos poseen capacidad de generalización? ¿se observa overfitting o underfitting?
+```
 
+```{r}
+#Primero creamos un dataset con las variables escogidas
+df <- wine[,c(1,2,11,12)]
+```
+
+```{r}
+# Creamos los sets de entrenamiento y testeo
+train_df=df[sample(nrow(df),100 ), ]
+test_df=anti_join(df, train_df)
 
 ```
+Los modelos a utilizar son KNN y SVM:
+
+KNN
+```{r}
+train.knn <- train( Type ~.,data=train_df, method="knn",
+                   trControl  = trainControl("cv",number=5,classProbs=TRUE, summaryFunction=multiClassSummary),
+                   preProcess = c("center","scale"),
+                   tuneLength = 6,
+                   metric = 'logLoss')
+
+print(train.knn)
+ggplot(train.knn)
+train.knn$results
+```
+
+
+```{r}
+#Testeamos
+test.knn<-predict(train.knn,newdata=test_df)
+confusionMatrix(as.factor(test.knn),as.factor(test_df$Type))
+```
+```{r}
+# Obtenemos las métricas
+Metrica=c('F1_Score', 'Accuracy')
+Valores=c(F1_Score(test_df$Type,test.knn),Accuracy(test_df$Type,test.knn))
+KNN=data.frame(Metrica,Valores)
+head(KNN)
+```
+
+SVM
+```{r}
+#Usamos los mismos sets de train y test
+
+train.svm <- train( Type ~.,data=train_df, method="svmLinear2",
+                   trControl  = trainControl("cv",number=5,classProbs=TRUE, summaryFunction=multiClassSummary),
+                   preProcess = c("center","scale"),
+                   tuneLength = 6,
+                   metric= 'logLoss')
+
+print(train.svm)
+ggplot(train.svm)
+train.svm$results
+```
+```{r}
+test.svm<-predict(train.svm,newdata=testwine)
+confusionMatrix(as.factor(test.svm),as.factor(testwine$Type))
+```
+```{r}
+Metrica=c('F1_Score', 'Accuracy')
+Valores=c(F1_Score(test_df$Type,test.svm),Accuracy(test_df$Type,test.svm))
+svm=data.frame(Metrica,Valores)
+#print(svm)
+head(svm)
+```
+
+
+Observando la matriz de confusión de cada modelo, podemos observar que en ambos casos el balanced accuracy es alto, por lo que los modelos estarían prediciendo bien el tipo de vino, presentando una cantidad ínfima de falsos negativos y positivos. Lo mismo ocurre al observar los valores de las métricas escogidas (F1 y Accuracy), siendo en todos los casos, sobre el 80%. 
+
+Sobre la presencia de over/underfitting, podemos notar que los sets de entrenamiento y testeo fueron divididos en 0.56 train y 0.44 test, por lo que de partida, sería una buena distribución de los datos. Además, tanto las métricas para train como para test dan bastante bien, por lo que no habría presencia de overfitting ni underfitting.
 
 ##### Pregunta 3
 
 
 ```{r p3}
 # Compare los modelos a través de métricas presentadas en el laboratorio. ¿Con que modelo se quedaría? 
-
-
 ```
+Ambos modelos funcionan bastante bien, sin embargo, el modelo KNN es el que presenta mejores métricas (aunque por poco), presentando mejor accuracy (89%) y mejor F1 (87%).
+
+Podemos resumirlo en la siguiente tabla:
+
+|          | KNN       | SVM       |
+|----------|-----------|-----------|
+| F1       | 0.8666667 | 0.8400000 |
+| Accuracy | 0.8846154 | 0.8461538 |
 

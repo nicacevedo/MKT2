@@ -21,8 +21,8 @@ Machine Learning es un conjunto de métodos que Automatizar la construcción de 
 
 Los problemas más típicos que resuelven los modelos de Machine Learning son 2:
 
-1. Regresiones: Predicción de una variable continua
-2. Clasificación: Predeción de una variable discreta
+1.  Regresiones: Predicción de una variable continua
+2.  Clasificación: Predeción de una variable discreta
 
 # Laboratorio {.tabset}
 
@@ -34,20 +34,20 @@ Los datos no contienen valores perdidos y se componen de solo datos numéricos, 
 
 A continuación un diccionario de las variables:
 
-* **Type** : Tipo de vino (factor)
-* **Alcohol** : Alcohol (numérica)
-* **Malic**: Ácido málico (numérica)
-* **Ash**: Ceniza (numérica)
-* **Alcalinity**: Alcalinidad de la ceniza (numérica)
-* **Magnesium**: Magnesio (numérica)
-* **Phenols**: Fenoles totales (numérica)
-* **Flavanoids**: Flavonoides (numérica)
-* **Nonflavanoids**: Fenoles no flavonoides (numérica)
-* **Proanthocyanins** : Proantocianinas (numérica)
-* **Color**: Intensidad del color (numérica)
-* **Hue**: Matiz (numérica)
-* **Dilution**: D280 / OD315 de vinos diluidos (numérica)
-* **Proline**: Prolina (numérica)
+-   **Type** : Tipo de vino (factor)
+-   **Alcohol** : Alcohol (numérica)
+-   **Malic**: Ácido málico (numérica)
+-   **Ash**: Ceniza (numérica)
+-   **Alcalinity**: Alcalinidad de la ceniza (numérica)
+-   **Magnesium**: Magnesio (numérica)
+-   **Phenols**: Fenoles totales (numérica)
+-   **Flavanoids**: Flavonoides (numérica)
+-   **Nonflavanoids**: Fenoles no flavonoides (numérica)
+-   **Proanthocyanins** : Proantocianinas (numérica)
+-   **Color**: Intensidad del color (numérica)
+-   **Hue**: Matiz (numérica)
+-   **Dilution**: D280 / OD315 de vinos diluidos (numérica)
+-   **Proline**: Prolina (numérica)
 
 ```{r someVar, echo=FALSE, results="hide",include=FALSE}
 library(caret) #librería modelos de ML
@@ -65,6 +65,7 @@ wine$Type=as.numeric(wine$Type) #convertimos a numerica la columna de tipo de vi
 ```
 
 Head del dataset:
+
 ```{r}
 head(wine[sample(nrow(wine),6 ), ])
 ```
@@ -72,6 +73,7 @@ head(wine[sample(nrow(wine),6 ), ])
 ## EDA
 
 Para usar modelos de ML para clasificar es necesario que las categorías estén como texto:
+
 ```{r, echo=FALSE}
 #character variable Type
 wine$Type[wine$Type== 1] <- 'Tipo1'
@@ -80,76 +82,91 @@ wine$Type[wine$Type== 3] <- 'Tipo3'
 ```
 
 Vemos la distribución de los tipos de vino en el dataset:
+
 ```{r}
 ggplot(wine, aes(Type, fill=Type)) + geom_bar(alpha=0.8) +
   labs(x="Tipo", y="Número de Vinos en categoría") +
   guides(fill=FALSE)+ggtitle("Frecuencia de tipo de vinos")
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Alcohol,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Grado Alcohólico")+ggtitle("Boxplot de niveles de alcohol por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Malic,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Malic")+ggtitle("Boxplot de Malic por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Ash,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Ash")+ggtitle("Boxplot de Ash por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(Alcalinity, fill=Type)) + 
   geom_histogram(binwidth=1,alpha=0.8) +
   labs(fill="Tipo", x="Grados de alcohol", y="Número de vinos")+ggtitle("Frecuencia de Alcalinidad por tipo de vino")
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Magnesium,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Magnesium")+ggtitle("Boxplot de Magnesium por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Phenols,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Phenols")+ggtitle("Boxplot de Phenols por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Flavanoids,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Flavanoids")+ggtitle("Boxplot de Flavanoids por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Nonflavanoids,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Flavanoids")+ggtitle("Boxplot de Flavanoids por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Proanthocyanins,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Flavanoids")+ggtitle("Boxplot de Flavanoids por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(Color, fill=Type)) + 
   geom_histogram(binwidth=1,alpha=0.8) +
   labs(fill="Tipo", x="Intensidad del color", y="Número de vinos")+ggtitle("Frecuencia de Color por tipo de vino")
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Hue,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Hue")+ggtitle("Boxplot de Hue por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Dilution,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
-  labs(fill="Tipo", x="Tipo de vino", y="Hue")+ggtitle("Boxplot de Hue por tipo de vino")+guides(fill=FALSE)
+  labs(fill="Tipo", x="Tipo de vino", y="Dilution")+ggtitle("Boxplot de Hue por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Proline,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
   labs(fill="Tipo", x="Tipo de vino", y="Proline")+ggtitle("Boxplot de Proline por tipo de vino")+guides(fill=FALSE)
 ```
+
 ```{r}
 ggplot(wine, aes(x=Type,y=Color,fill=Type)) + 
   geom_boxplot(alpha=0.8) +
@@ -160,7 +177,8 @@ ggplot(wine, aes(x=Type,y=Color,fill=Type)) +
 
 ### K-Nearest Neighbors
 
-<img src="https://helloacm.com/wp-content/uploads/2016/03/2012-10-26-knn-concept.png" alt="KNN">
+<img src="https://helloacm.com/wp-content/uploads/2016/03/2012-10-26-knn-concept.png" alt="KNN"/>
+
 ```{r}
 trainwine=wine[sample(nrow(wine),100 ), ]
 testwine=anti_join(wine, trainwine)
@@ -193,7 +211,7 @@ head(KNN)
 
 ### Random Forest
 
-<img src="https://cdn.analyticsvidhya.com/wp-content/uploads/2020/02/rfc_vs_dt1.png" alt="RF ">
+<img src="https://cdn.analyticsvidhya.com/wp-content/uploads/2020/02/rfc_vs_dt1.png" alt="RF "/>
 
 ```{r}
 train.rf <- train( Type ~.,data=trainwine, method="rf",
@@ -223,7 +241,7 @@ head(rf)
 
 ### Suppot Vector Machines
 
-<img src="https://static.javatpoint.com/tutorial/machine-learning/images/support-vector-machine-algorithm.png" alt="RF ">
+<img src="https://static.javatpoint.com/tutorial/machine-learning/images/support-vector-machine-algorithm.png" alt="RF "/>
 
 ```{r}
 train.svm <- train( Type ~.,data=trainwine, method="svmLinear2",
@@ -253,25 +271,26 @@ head(svm)
 
 ### Métricas en modelos de clasificación
 
-* *Accuracy* Indica sobre el total de elementos cuantos son predichos correctamente
+-   *Accuracy* Indica sobre el total de elementos cuantos son predichos correctamente
 
 $$Accuracy=\frac{TruePositives+TrueNegatives}{TruePositives+FalsePositives+TrueNegatives+FalseNegatives}$$
 
-* *Precision* Indica respecto a los elementos predichos como positivos cuantos lo son efectivamente. 
+-   *Precision* Indica respecto a los elementos predichos como positivos cuantos lo son efectivamente.
 
 $$Precision=\frac{TruePositives}{TruePositives+FalsePositives}$$
 
-* *Recall - Sensibility* Mide respecto a todos los elementos que efectivamente son positivos cuantos fueron predichos correctamente. (Exhaustividad )
+-   *Recall - Sensibility* Mide respecto a todos los elementos que efectivamente son positivos cuantos fueron predichos correctamente. (Exhaustividad )
 
 $$Recall=\frac{TruePositives}{TruePositives+FalseNegatives}$$
 
-* *F1-Score* Entrega un promedio ponderado entre precision y recall.
+-   *F1-Score* Entrega un promedio ponderado entre precision y recall.
 
 $$F1_{score}=\frac{2⋅Recall⋅Precision}{Recall+Presicion}$$
 
 ## Preguntas
 
 ##### Pregunta 1
+
 ```{r p1}
 # Seleccione 3 variables del dataset para generar las predicciones y argumente por qué serían buenas variables para predecir el tipo de vino. Puede realizar un EDA o basarse en los gráficos ya incluidos.
 # Determine 2 métricas para comparar los modelos, justifique su elección.
@@ -279,23 +298,20 @@ $$F1_{score}=\frac{2⋅Recall⋅Precision}{Recall+Presicion}$$
 ```
 
 Observando el EDA, seleccionamos las siguientes variables:
-- Dilución: mide cuán diluido está un tipo de vino, y si observamos el EDA, podemos notar que hay alta variabilidad entre los tipos de vinos, por lo que nos podría ayudar a identificar mejor qué tipo de vino es al momento de correr un modelo.
 
+-   Dilución: mide cuán diluido está un tipo de vino, y si observamos el EDA, podemos notar que hay alta variabilidad entre los tipos de vinos, por lo que nos podría ayudar a identificar mejor qué tipo de vino es al momento de correr un modelo.
 
-- Grado alcoholico: mide cuánto alcohol hay en una cierta medida del vino, y la seleccionamos por un argumento similar al anterior, pues hay variabilidad entre los tipos de vino (dan números diferentes entre ellos), lo que ayudaría a identificarlos mejor.
+-   Grado alcoholico: mide cuánto alcohol hay en una cierta medida del vino, y la seleccionamos por un argumento similar al anterior, pues hay variabilidad entre los tipos de vino (dan números diferentes entre ellos), lo que ayudaría a identificarlos mejor.
 
-- Intensidad de color: mide el grado en que la luz puede atravesar el vino (ve la opacidad), y tal como en las variables anteriores, esta métrica cambia bastante entre los tipos de vinos.
-
+-   Intensidad de color: mide el grado en que la luz puede atravesar el vino (ve la opacidad), y tal como en las variables anteriores, esta métrica cambia bastante entre los tipos de vinos.
 
 Las métricas que utilizaremos para comparar modelos son:
 
-- Accuracy: pues queremos ver qué tan bien funcionan nuestros modelos, y si son capaces de identificar bien el tipo de vino. 
+-   Accuracy: pues queremos ver qué tan bien funcionan nuestros modelos, y si son capaces de identificar bien el tipo de vino.
 
-- F1: pues considera las métricas de Recall y Precision, lo que nos entrega una información más completa.
+-   F1: Pues considera las métricas de Recall y Precision, lo que nos entrega una información más completa y comparable al pesar de igual manera la cantidad de falsos positivos y falsos negativos (a través de los ratios entregados por Recall y Precision), lo que nos entrega una métrica mucho más acorde a la clasificación cuando tenemos clases desbalanceadas.
 
-
-Algunas variables que no incorporaremos, son "Hue" o el matiz del vino, pues observando el EDA, notamos que para el tipo de vino 1 y 2 son bastantes similares, y podría llevar a confundir nuestros modelos al momentos de predecir.
-
+Algunas variables que no incorporaremos, son "Hue" o el "Malic", pues observando el EDA, notamos que para el tipo de vino 1 y 2 son bastantes similares, por lo que no aportan demasiada infromación con respecto a la diferencia ente todas las clases, y, dado que tenemos otras variables que sí varian bastante entre clases, es mejor mantener estas y no agregar posible información que cause confusiones.
 
 ##### Pregunta 2
 
@@ -307,36 +323,45 @@ Algunas variables que no incorporaremos, son "Hue" o el matiz del vino, pues obs
 
 ```{r}
 #Primero creamos un dataset con las variables escogidas
-df <- wine[,c(1,2,11,12)]
+df <- wine[,c(1,2,11,13)]
+head(df)
 ```
 
 ```{r}
 # Creamos los sets de entrenamiento y testeo
 train_df=df[sample(nrow(df),100 ), ]
 test_df=anti_join(df, train_df)
-
 ```
+
 Los modelos a utilizar son KNN y SVM:
 
 KNN
+
 ```{r}
-train.knn <- train( Type ~.,data=train_df, method="knn",
-                   trControl  = trainControl("cv",number=5,classProbs=TRUE, summaryFunction=multiClassSummary),
+train.knn <- train( Type ~.,
+                    data=train_df, 
+                    method="knn",
+                    trControl  = trainControl("cv",
+                                              number=5,
+                                              classProbs=TRUE, 
+                                              summaryFunction=multiClassSummary
+                                              ),
                    preProcess = c("center","scale"),
                    tuneLength = 6,
-                   metric = 'logLoss')
+                   metric = 'logLoss'
+                   )
 
 print(train.knn)
 ggplot(train.knn)
 train.knn$results
 ```
 
-
 ```{r}
 #Testeamos
 test.knn<-predict(train.knn,newdata=test_df)
 confusionMatrix(as.factor(test.knn),as.factor(test_df$Type))
 ```
+
 ```{r}
 # Obtenemos las métricas
 Metrica=c('F1_Score', 'Accuracy')
@@ -346,6 +371,7 @@ head(KNN)
 ```
 
 SVM
+
 ```{r}
 #Usamos los mismos sets de train y test
 
@@ -359,35 +385,34 @@ print(train.svm)
 ggplot(train.svm)
 train.svm$results
 ```
+
 ```{r}
 test.svm<-predict(train.svm,newdata=testwine)
 confusionMatrix(as.factor(test.svm),as.factor(testwine$Type))
 ```
+
 ```{r}
 Metrica=c('F1_Score', 'Accuracy')
 Valores=c(F1_Score(test_df$Type,test.svm),Accuracy(test_df$Type,test.svm))
 svm=data.frame(Metrica,Valores)
-#print(svm)
 head(svm)
 ```
 
+Observando la matriz de confusión de cada modelo, podemos observar que en ambos casos el balanced accuracy es alto ( 0.94 el más bajo para KNN y 0.92 el más bajo para SVM), por lo que los modelos estarían prediciendo bien el tipo de vino de manera transversal (sin tener en cuenta el desbalance), presentando una cantidad relativamente baja de falsos negativos y positivos en ambos modelos, aunque con mejor rendimiento en KNN al presentar menos y en 1 sola clase (la 2), por lo que en KNN podemos decir que el Tipo 1 y 3 se clasifican muy bien, mientras que en el Tipo 2 podemos presentar algunos resultados bajos, mientras que en SVM tenemos falsos resultados en todas las clases. Justamente por esto es que es relevante el F1-Score, donde podemos ver que en el caso de KNN es de aproximadamente 0.94, mientras que que en SVM es cercano a 0.84, por lo que esta métrica da cuenta justamente de la situación que vimos en la matriz de confusión: KNN predice mucho mejor a las clases 1 y 3 por lo que al medir de manera justa cada clase vemos que esto aumenta el rendimiento de KNN en comparación a SVM, lo que el Accuracy muestra en menor cantidad.
 
-Observando la matriz de confusión de cada modelo, podemos observar que en ambos casos el balanced accuracy es alto, por lo que los modelos estarían prediciendo bien el tipo de vino, presentando una cantidad ínfima de falsos negativos y positivos. Lo mismo ocurre al observar los valores de las métricas escogidas (F1 y Accuracy), siendo en todos los casos, sobre el 80%. 
-
-Sobre la presencia de over/underfitting, podemos notar que los sets de entrenamiento y testeo fueron divididos en 0.56 train y 0.44 test, por lo que de partida, sería una buena distribución de los datos. Además, tanto las métricas para train como para test dan bastante bien, por lo que no habría presencia de overfitting ni underfitting.
+Sobre la presencia de over/underfitting, podemos notar que los sets de entrenamiento y testeo fueron divididos en aproximadamente 56% de set de entrenamiento y 44% de set de testeo, por lo que, de partida, estamos testeando con casi la misma cantidad de observaciones que con las que entrenamos, lo que vuelve mucho más robusto nuestro testeo, y al observar las métricas de interés sobre el test de testeo que ya mencionamos en el párrafo anterior, podemos concluir que claramente no existe overfitting, ya que dan valores muy buenos en ambos modelos para este set "externo" al entrenamiento del modelo, sobretodo para KNN, por lo que no se puede concluir que no existe overfitting en nuestros modelos y son generalizables. El underfitting se produce cuando el modelo no es capaz siquiera de ajustarse bien al set de entrenamiento, lo que claramente implica que es casi imposible también que se ajuste bien al de testeo, por lo que al ver los resultados del set de testeo también debería bastar para decir que no existe underfitting, pero sólo para guiarnos explícitamente por la definición de este, vemos que en las métricas entregadas por el reporte del entrenamiento en ambos modelos, el mínimo valor de F1 promedio es 0.88, mientras que el Accuracy Balanceado siempre supera el 0.9, por lo que se ve lo que esperábamos, que no existe underfitting si miramos los resultados sobre el set de entrenamiento.
 
 ##### Pregunta 3
-
 
 ```{r p3}
 # Compare los modelos a través de métricas presentadas en el laboratorio. ¿Con que modelo se quedaría? 
 ```
-Ambos modelos funcionan bastante bien, sin embargo, el modelo KNN es el que presenta mejores métricas (aunque por poco), presentando mejor accuracy (89%) y mejor F1 (87%).
 
-Podemos resumirlo en la siguiente tabla:
+Ambos modelos funcionan bastante bien, considerando que tomamos un set de entrenamiento casi del mismo tamaño que el set de testeo para poner a prueba tanto los modelos como las variables y demostrar que las variables que se escogieron realmente eran capaces de explicar bastante de cada clase. Sin embargo, es necesario mencionar que el modelo KNN es el que presenta mejores resultados en ambas métricas, presentando mejor Accuracy y mejor F1-Score, por lo que claramente funciona mejor que SVM a la hora de clasificar en la cantidad de datos que tenemos, lo que tiene sentido, ya que este no depende demasiado de la cantidad de datos si se tiene suficiente variabilidad, ya que sólo necesita de unos pocos datos similares a la observación que se quiere clasificar para poder arrojar un resultado, mientras que en SVM se necesita generar un plano separador que depende de las observaciones más cercanas a este, por lo que no es suficiente con la variabilidad, también se necesitan suficiente valores extramos cercanos al gap entre clases además de esta, por lo que con pocos datos podrían no obtenerse tan buenos resultados tal y como pudimos ver en nuetros resultados. Por último, KNN es muy "barato" computacionalmente y arroja excelente métricas, por lo que sin ninguna duda nos quedaríamos con este modelo.
+
+Podemos resumir las métricas en la siguiente tabla:
 
 |          | KNN       | SVM       |
 |----------|-----------|-----------|
-| F1       | 0.8666667 | 0.8400000 |
-| Accuracy | 0.8846154 | 0.8461538 |
-
+| F1       | 0.9583333 | 0.8936170 |
+| Accuracy | 0.9487179 | 0.7948718 |
